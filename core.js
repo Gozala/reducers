@@ -36,8 +36,8 @@ var reduce = Reducible.reduce
 exports.reduce = reduce
 
 Reducible({
-  reduce: function(f, reducible, start) {
-    return reducible.reduce(f, start)
+  reduce: function(f, source, start) {
+    return source.reduce(f, start)
   }
 })
 Reducible(Array, {
@@ -45,13 +45,23 @@ Reducible(Array, {
     var result = start, index = 0, count = array.length
     while (index < count) {
       result = f(result, array[index++])
+      if (is(result, reduced)) return result.value
     }
-    return f(result, end)
+    return result
   }
 })
 
-var end = []
-exports.end = end
+function marker(name) {
+  return function mark(value) {
+    return { name: name, value: value, is: mark }
+  }
+}
+
+function is(item, marked) {
+  return item && item.is === marked
+}
+
+var reduced = marker('reduced')
 
 function reducible(reduce) {
   return { reduce: reduce }
@@ -62,86 +72,89 @@ function reducer(process) {
   return function reductor(f, items) {
     return reducible(function(next, start) {
       return reduce(function(result, item) {
-        var value = process(f, item)
-        return value === undefined ? result : next(result, value)
+        return process(f, next, result, item)
       }, items, start)
     })
   }
 }
 exports.reducer = reducer
 
-var filter = reducer(function(f, item) {
+var filter = reducer(function(f, next, result, item) {
   /**
   Returns further reduced `reducible` to an
   items to which `f(item)` returns `true`
   **/
-  if (f(item)) return item
+  return f(item) ? next(result, item) : result
 })
 exports.filter = filter
   
-var map = reducer(function(f, item) {
+var map = reducer(function(f, next, result, item) {
   /**
   Returns `reducible` with each item mapped
   mapped as `f(item)`.
   **/
-  return f(item)
+  return next(result, f(item))
 })
 exports.map = map
 
-var take = reducer(function take(f, item) {
+var take = reducer(function take(f, next, result, item) {
   /**
   Reduces given `reducible` to first `n` items to
   on which `f(item)` is `true`.
   **/
-  return f(item) ? item : end
+  return f(item) ? next(result, item) : reduced(result)
 })
 exports.take = take
 
-function pick(n, reducible) {
+function pick(n, source) {
   /**
   Reduces given `reducible` to a firs `n` items.
   **/
-  var count = n
-  return take(function() {
-    return count -- > 0
-  }, reducible)
+  return reducible(function(next, result) {
+    var count = n
+    return reduce(function(result, item) {
+      return count -- > 0 ? next(result, item) : reduced(result)
+    }, source, result)
+  })
 }
 exports.pick = pick
 
-function drop(f, reducible) {
+function drop(f, source) {
   /**
   Reduces `reducible` further by dropping first `n`
   items to on which `f(item)` ruturns `true`
   **/
-  var keep = false
-  return filter(function(item) {
-    keep = keep || !f(item)
-    if (keep) return item
-  }, reducible)
+  return reducible(function(next, result) {
+    var active = true
+    return reduce(function(result, item) {
+      return active && (active = f(item)) ? result : next(result, item)
+    }, source, result)
+  })
 }
 exports.drop = drop
 
-function skip(n, reducible) {
+function skip(n, source) {
   /**
-  Reduces given `reducible` further by excluding first
-  `n` items.
+  Reduces given `reducible` to a firs `n` items.
   **/
-  var count = n
-  return drop(function() {
-    return count -- > 0
-  }, reducible)
+  return reducible(function(next, result) {
+    var count = n
+    return reduce(function(result, item) {
+      return count -- > 0 ? result : next(result, item)
+    }, source, result)
+  })
 }
-exports.skip = skip  
+exports.skip = skip
 
-function into(reducible, array) {
- /**
- Adds items of given `reducible` into
- given `array` or a new empty one if omitted.
- **/
+function into(source, buffer) {
+  /**
+  Adds items of given `reducible` into
+  given `array` or a new empty one if omitted.
+  **/
   return reduce(function(result, item) {
-    if (item !== end) result.push(item)
+    result.push(item)
     return result
-  }, reducible, array || [])
+  }, source, buffer || [])
 }
 exports.into = into
 
