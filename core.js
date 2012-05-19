@@ -60,8 +60,10 @@ function marker(name) {
 function is(item, marked) {
   return item && item.is === marked
 }
+exports.is = is
 
 var reduced = marker('reduced')
+exports.reduced = reduced
 
 function reducible(reduce) {
   return { reduce: reduce }

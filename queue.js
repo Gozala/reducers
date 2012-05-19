@@ -34,6 +34,10 @@ var eventuals = require('eventual/core'),
 var ego = require('alter-ego/core'),
     define = ego.define, record = ego.record
 
+var unbind = Function.call.bind(Function.bind, Function.call)
+var slice = Array.slice || unbind(Array.prototype.slice)
+
+
 function identity(value) { return value }
 
 var Enqueueable = protocol({
@@ -42,6 +46,16 @@ var Enqueueable = protocol({
 var enqueue = Enqueueable.enqueue
 exports.enqueue = enqueue
 exports.Enqueueable = Enqueueable
+
+var Closeable = protocol({
+  closed: [ protocol ],
+  close: [ protocol ]
+})
+var close = Closeable.close
+var closed = Closeable.closed
+exports.close = close
+exports.closed = closed
+exports.Closeable = Closeable
 
 
 var Reactor = protocol({
@@ -53,6 +67,26 @@ exports.react = react
 
 var Queue = define(
   record, [ 'queued', 'reducers' ],
+  Enqueueable, {
+    enqueue: function enqueue(queue, item) {
+      if (!closed(queue)) {
+        queue.queued.push(item)
+        react(queue)
+      }
+    }
+  },
+  Reducible, {
+    reduce: function reduce(f, queue, start) {
+      var promise = defer()
+      if (!closed(queue)) {
+        queue.reducers.push({ next: f, state: start, promise: promise })
+        react(queue)
+      } else {
+        realize(promise, start)
+      }
+      return promise
+    }
+  },
   Reactor, {
     react: function react(queue) {
       var queued = queue.queued
@@ -62,29 +96,30 @@ var Queue = define(
         var result = reducer.next(reducer.state, queued.shift())
         if (is(result, reduced)) {
           reducers.shift()
-          realize(reducer.result, result.value)
+          realize(reducer.promise, result.value)
         } else {
           reducer.state = result
         }
       }
     }
   },
-  Enqueueable, {
-    enqueue: function enqueue(queue, item) {
-      queue.queued.push(item)
-      react(queue)
-    }
-  },
-  Reducible, {
-    reduce: function reduce(f, queue, start) {
-      var promise = defer()
-      queue.reducers.push({ next: f, state: start, results: promise })
-      react(queue)
-      return go(identity, promise)
+  Closeable, {
+    closed: function closed(queue) {
+      return !queue.queued && !queue.reducers
+    },
+    close: function close(queue) {
+      var reducers = queue.reducers, count = reducers.length, index = 0
+      queue.queued = queue.reducers = null
+      while (index < count) {
+        var reducer = reducers[index++]
+        realize(reducer.promise, reducer.state)
+      }
     }
   })
 
-function queue() { return new Queue([], [], [], []) }
+function queue() {
+  return new Queue(slice(arguments), [])
+}
 exports.queue = queue
 
 });
