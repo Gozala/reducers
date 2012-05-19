@@ -1,8 +1,7 @@
 /* vim:set ts=2 sw=2 sts=2 expandtab */
-/*jshint asi: true undef: true es5: true node: true devel: true
-         forin: true latedef: false supernew: true */
-/*global define: true */
-
+/*jshint asi: true undef: true es5: true node: true browser: true devel: true
+         forin: true latedef: false */
+/*global define: true, Cu: true, __URI__: true */
 ;(function(id, factory) { // Module boilerplate :(
   if (typeof(define) === 'function') { // RequireJS
     define(factory);
@@ -16,9 +15,10 @@
     }, this, { uri: __URI__, id: id });
     exports.EXPORTED_SYMBOLS = Object.keys(exports);
   } else {  // Browser or alike
+    var globals = this
     factory(function require(id) {
       return globals[id];
-    }, (this[id] = {}), { uri: document.location.href + '#' + id, id: id });
+    }, (globals[id] = {}), { uri: document.location.href + '#' + id, id: id });
   }
 }).call(this, 'reducers', function(require, exports, module) {
 
