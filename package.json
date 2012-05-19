@@ -17,12 +17,14 @@
   "devDependencies": {
     "test": ">=0.4.4",
     "repl-utils": ">=1.0.0",
-    "swank-js": ">=0.0.1"
+    "swank-js": ">=0.0.1",
+    "benchmark": ">=0.3.0"
   },
   "scripts": {
     "test": "node tests/test-all.js",
     "repl": "node node_modules/repl-utils",
-    "swank": "node node_modules/swank-js"
+    "swank": "node node_modules/swank-js",
+    "benchmark": "node tests/benchmark.js"
   },
   "licenses": [{
     "type" : "MIT",
