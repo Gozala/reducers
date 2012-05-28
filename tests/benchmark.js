@@ -13,14 +13,14 @@
       Cu.import(uri, imports);
       return imports;
     }, this, { uri: __URI__, id: id });
-    exports.EXPORTED_SYMBOLS = Object.keys(exports);
+    this.EXPORTED_SYMBOLS = Object.keys(this);
   } else {  // Browser or alike
     var globals = this
     factory(function require(id) {
       return globals[id];
     }, (globals[id] = {}), { uri: document.location.href + '#' + id, id: id });
   }
-}).call(this, 'reducers', function(require, exports, module) {
+}).call(this, 'loader', function(require, exports, module) {
 
 'use strict';
 
