@@ -40,22 +40,22 @@ var slice = Array.slice || unbind(Array.prototype.slice)
 
 function identity(value) { return value }
 
-var Enqueueable = protocol({
+var Queueable = protocol({
   enqueue: [ protocol, Object ]
 })
-var enqueue = Enqueueable.enqueue
+var enqueue = Queueable.enqueue
 exports.enqueue = enqueue
-exports.Enqueueable = Enqueueable
+exports.Queueable = Queueable
 
-var Closeable = protocol({
+var Closable = protocol({
   closed: [ protocol ],
   close: [ protocol ]
 })
-var close = Closeable.close
-var closed = Closeable.closed
+var close = Closable.close
+var closed = Closable.closed
 exports.close = close
 exports.closed = closed
-exports.Closeable = Closeable
+exports.Endable = Closable
 
 
 var Reactor = protocol({
@@ -67,7 +67,7 @@ exports.react = react
 
 var Queue = define(
   record, [ 'queued', 'reducers' ],
-  Enqueueable, {
+  Queueable, {
     enqueue: function enqueue(queue, item) {
       if (!closed(queue)) {
         queue.queued.push(item)
@@ -103,7 +103,7 @@ var Queue = define(
       }
     }
   },
-  Closeable, {
+  Closable, {
     closed: function closed(queue) {
       return !queue.queued && !queue.reducers
     },
