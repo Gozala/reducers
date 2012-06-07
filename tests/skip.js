@@ -24,15 +24,28 @@
 
 'use strict';
 
-exports['test filter'] = require('./filter')
-exports['test map'] = require('./map')
-exports['test take'] = require('./take')
-exports['test pick'] = require('./pick')
-exports['test drop'] = require('./drop')
-exports['test skip'] = require('./skip')
-exports['test into'] = require('./into')
-exports['test append'] = require('./append')
-exports['test flatten'] = require('./flatten')
+var $ = require('../core'),
+    into = $.into, skip = $.skip
+
+exports['test skip'] = function(assert) {
+  var actual = skip(2, [ 1, 2, 3, 4 ])
+
+  assert.deepEqual(into(actual), [ 3, 4 ], 'skipped two items')
+  assert.deepEqual(into(actual), [ 3, 4 ], 'can be re-reduced same')
+}
+
+exports['test skip none'] = function(assert) {
+  var actual = skip(0, [ 1, 2, 3, 4 ])
+
+  assert.deepEqual(into(actual), [ 1, 2, 3, 4 ], 'skips none on 0')
+}
+
+exports['test skip all'] = function(assert) {
+  var actual = skip(100, [ 1, 2, 3, 4 ])
+
+  assert.deepEqual(into(actual), [],
+                   'skips all if has less than requested')
+}
 
 if (module == require.main)
   require('test').run(exports)

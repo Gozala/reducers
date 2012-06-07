@@ -24,17 +24,24 @@
 
 'use strict';
 
-exports['test filter'] = require('./filter')
-exports['test map'] = require('./map')
-exports['test take'] = require('./take')
-exports['test pick'] = require('./pick')
-exports['test drop'] = require('./drop')
-exports['test skip'] = require('./skip')
-exports['test into'] = require('./into')
-exports['test append'] = require('./append')
-exports['test flatten'] = require('./flatten')
+var $ = require('../core'),
+    map = $.map, into = $.into
+
+exports['test map'] = function(assert) {
+  var called = 0
+  var source = [ 1, 2, 3 ]
+  var actual = map(function(item) {
+    called = called + 1
+    return item + 10
+  }, source)
+
+  assert.equal(called, 0, 'map does not invokes until result is reduced')
+  assert.deepEqual(into(actual), [ 11, 12, 13 ], 'values are mapped')
+  assert.equal(called, 3, 'mapper called once per item')
+}
 
 if (module == require.main)
   require('test').run(exports)
 
 });
+

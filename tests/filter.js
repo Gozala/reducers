@@ -24,17 +24,24 @@
 
 'use strict';
 
-exports['test filter'] = require('./filter')
-exports['test map'] = require('./map')
-exports['test take'] = require('./take')
-exports['test pick'] = require('./pick')
-exports['test drop'] = require('./drop')
-exports['test skip'] = require('./skip')
-exports['test into'] = require('./into')
-exports['test append'] = require('./append')
-exports['test flatten'] = require('./flatten')
+var $ = require('../core'),
+    into = $.into, filter = $.filter
+
+exports['test filter'] = function(assert) {
+  var called = 0
+  var source = [ 1, 2, 3 ]
+  var actual = filter(function(item) {
+    called = called + 1
+    return item % 2
+  }, source)
+
+  assert.equal(called, 0, 'filter does not invokes until result is reduced')
+  assert.deepEqual(into(actual), [ 1, 3 ], 'items were filtered')
+  assert.equal(called, 3, 'filterer called once per item')
+}
 
 if (module == require.main)
   require('test').run(exports)
 
 });
+
