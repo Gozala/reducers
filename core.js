@@ -115,7 +115,10 @@ function pick(n, source) {
   return reducible(function(next, result) {
     var count = n
     return reduce(function(result, item) {
-      return count -- > 0 ? next(result, item) : reduced(result)
+      count = count - 1
+      return count === 0 ? reduced(next(result, item)) :
+             count > 0 ? next(result, item) :
+             reduced(result)
     }, source, result)
   })
 }
