@@ -170,6 +170,16 @@ exports.into = into
 
 //console.log(into(skip(2, [ 1, 2, 3, 4, 5, 6 ])))
 
+function append(first, second) {
+  /**
+  Joins given `reducible`s into `reducible` of items
+  of all the `reducibles` preserving an order of items.
+  **/
+  return flatten(slice(arguments))
+}
+exports.append = append
+
+// console.log(into(join([ 1, 2 ], [ 3 ], [ 3, 5 ])))
 
 function flatten(source) {
   /**
@@ -187,16 +197,8 @@ function flatten(source) {
 }
 exports.flatten = flatten
 
-function join() {
-  /**
-  Joins given `reducible`s into `reducible` of items
-  of all the `reducibles` preserving an order of items.
-  **/
-  return flatten(slice(arguments))
 }
-exports.join = join
 
-//console.log(into(join([ 1, 2 ], [ 3 ], [ 3, 5 ])))
 
 // console.log(into(flatten([ [1, 2], [ 3, 4 ], [ 7, 8 ], [ [ 9 ] ] ])))
 
