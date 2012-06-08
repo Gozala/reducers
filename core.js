@@ -223,5 +223,15 @@ console.log(into(expand(function(x) {
 }, [ 1, 2, 3 ])))
 */
 
+function pop(source) {
+  return tail(source)
+}
+exports.pop = pop
+
+function peek(source) {
+  return head(source)
+}
+exports.peek = peek
+
 
 });
