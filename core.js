@@ -161,7 +161,8 @@ function into(source, buffer) {
   Adds items of given `reducible` into
   given `array` or a new empty one if omitted.
   **/
-  return reduce(function(result, item) {
+  var result = buffer || []
+  return reduce(function(_, item) {
     result.push(item)
     return result
   }, source, buffer || [])
