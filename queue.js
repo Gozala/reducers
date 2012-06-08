@@ -55,7 +55,7 @@ var close = Closable.close
 var closed = Closable.closed
 exports.close = close
 exports.closed = closed
-exports.Endable = Closable
+exports.Closable = Closable
 
 
 var Reactor = protocol({
