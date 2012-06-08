@@ -24,17 +24,22 @@
 
 'use strict';
 
-exports['test filter'] = require('./filter')
-exports['test map'] = require('./map')
-exports['test take'] = require('./take')
-exports['test pick'] = require('./pick')
-exports['test drop'] = require('./drop')
-exports['test skip'] = require('./skip')
-exports['test into'] = require('./into')
-exports['test append'] = require('./append')
-exports['test flatten'] = require('./flatten')
+var $ = require('../core'),
+    into = $.into, flatten = $.flatten
 
-exports['test channel'] = require('./channel')
+exports['test flatten'] = function(assert) {
+  var source = [ [ 1 ], [ 2, 3 ], [ 4, 5, 6 ] ]
+  var actual = flatten(source)
+
+  assert.deepEqual(into(actual),
+                   [ 1, 2, 3, 4, 5, 6 ],
+                   'flatten reducers')
+  assert.deepEqual(into(actual),
+                   [ 1, 2, 3, 4, 5, 6 ],
+                   'can be re-reduced')
+  assert.deepEqual(source, [ [ 1 ], [ 2, 3 ], [ 4, 5, 6 ] ],
+                   'no changes to a source')
+}
 
 if (module == require.main)
   require('test').run(exports)

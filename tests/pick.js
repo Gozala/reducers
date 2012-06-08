@@ -24,17 +24,28 @@
 
 'use strict';
 
-exports['test filter'] = require('./filter')
-exports['test map'] = require('./map')
-exports['test take'] = require('./take')
-exports['test pick'] = require('./pick')
-exports['test drop'] = require('./drop')
-exports['test skip'] = require('./skip')
-exports['test into'] = require('./into')
-exports['test append'] = require('./append')
-exports['test flatten'] = require('./flatten')
+var $ = require('../core'),
+    pick = $.pick, into = $.into
 
-exports['test channel'] = require('./channel')
+exports['test pick'] = function(assert) {
+  var actual = pick(2, [ 1, 2, 3, 4 ])
+
+  assert.deepEqual(into(actual), [ 1, 2 ], 'picked two items')
+  assert.deepEqual(into(actual), [ 1, 2 ], 'can be re-reduced same')
+}
+
+exports['test pick none'] = function(assert) {
+  var actual = pick(0, [ 1, 2, 3, 4 ])
+
+  assert.deepEqual(into(actual), [], 'picks none on 0')
+}
+
+exports['test pick all'] = function(assert) {
+  var actual = pick(100, [ 1, 2, 3, 4 ])
+
+  assert.deepEqual(into(actual), [ 1, 2, 3, 4 ],
+                   'picks all if has less than requested')
+}
 
 if (module == require.main)
   require('test').run(exports)

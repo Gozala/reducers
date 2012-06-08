@@ -15,7 +15,9 @@
     "url": "http://github.com/Gozala/reducers/issues/"
   },
   "dependencies": {
-    "protocol": ">=0.4.0"
+    "protocol": ">=0.4.0",
+    "eventual": ">=0.0.2",
+    "alter-ego": ">=0.0.1"
   },
   "devDependencies": {
     "test": ">=0.4.4",

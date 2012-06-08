@@ -50,6 +50,11 @@ Reducible(Array, {
     return result
   }
 })
+Reducible(undefined, null, {
+  reduce: function reduce(f, _, start) {
+    return start
+  }
+})
 
 function marker(name) {
   return function mark(value) {
@@ -60,8 +65,10 @@ function marker(name) {
 function is(item, marked) {
   return item && item.is === marked
 }
+exports.is = is
 
 var reduced = marker('reduced')
+exports.reduced = reduced
 
 function reducible(reduce) {
   return { reduce: reduce }
@@ -113,7 +120,10 @@ function pick(n, source) {
   return reducible(function(next, result) {
     var count = n
     return reduce(function(result, item) {
-      return count -- > 0 ? next(result, item) : reduced(result)
+      count = count - 1
+      return count === 0 ? reduced(next(result, item)) :
+             count > 0 ? next(result, item) :
+             reduced(result)
     }, source, result)
   })
 }
@@ -146,12 +156,25 @@ function skip(n, source) {
 }
 exports.skip = skip
 
+function tail(source) {
+  return skip(1, source)
+}
+exports.tail = tail
+
+function head(source) {
+  return reduce(function(result, item) {
+    return reduced(item)
+  }, source)
+}
+exports.head = head
+
 function into(source, buffer) {
   /**
   Adds items of given `reducible` into
   given `array` or a new empty one if omitted.
   **/
-  return reduce(function(result, item) {
+  var result = buffer || []
+  return reduce(function(_, item) {
     result.push(item)
     return result
   }, source, buffer || [])
@@ -160,6 +183,16 @@ exports.into = into
 
 //console.log(into(skip(2, [ 1, 2, 3, 4, 5, 6 ])))
 
+function append(first, second) {
+  /**
+  Joins given `reducible`s into `reducible` of items
+  of all the `reducibles` preserving an order of items.
+  **/
+  return flatten(slice(arguments))
+}
+exports.append = append
+
+// console.log(into(join([ 1, 2 ], [ 3 ], [ 3, 5 ])))
 
 function flatten(source) {
   /**
@@ -167,26 +200,38 @@ function flatten(source) {
   to a `reducible` with items of nested `reducibles`.
   **/
   return reducible(function(next, start) {
-    return reduce(function(result, items) {
-      return reduce(function(result, item) {
-        return next(result, item)
-      }, items, result)
+    return reduce(function(result, nested) {
+      return reduce(function(result, value) {
+        result = next(result, value)
+        return is(result, reduced) ? reduced(result) : result
+      }, nested, result)
     }, source, start)
   })
 }
 exports.flatten = flatten
 
-function join() {
-  /**
-  Joins given `reducible`s into `reducible` of items
-  of all the `reducibles` preserving an order of items.
-  **/
-  return flatten(slice(arguments))
+// console.log(into(flatten([ [1, 2], [ 3, 4 ], [], [ 7, 8 ] ])))
+
+function expand(f, source) {
+  return flatten(map(f, source))
 }
-exports.join = join
+exports.expand = expand
 
-//console.log(into(join([ 1, 2 ], [ 3 ], [ 3, 5 ])))
+/*
+console.log(into(expand(function(x) {
+  return [ x, x * x ]
+}, [ 1, 2, 3 ])))
+*/
 
-// console.log(into(flatten([ [1, 2], [ 3, 4 ], [ 7, 8 ], [ [ 9 ] ] ])))
+function pop(source) {
+  return tail(source)
+}
+exports.pop = pop
+
+function peek(source) {
+  return head(source)
+}
+exports.peek = peek
+
 
 });
