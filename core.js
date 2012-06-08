@@ -156,6 +156,18 @@ function skip(n, source) {
 }
 exports.skip = skip
 
+function tail(source) {
+  return skip(1, source)
+}
+exports.tail = tail
+
+function head(source) {
+  return reduce(function(result, item) {
+    return reduced(item)
+  }, source)
+}
+exports.head = head
+
 function into(source, buffer) {
   /**
   Adds items of given `reducible` into
