@@ -198,9 +198,18 @@ function flatten(source) {
 }
 exports.flatten = flatten
 
+// console.log(into(flatten([ [1, 2], [ 3, 4 ], [], [ 7, 8 ] ])))
+
+function expand(f, source) {
+  return flatten(map(f, source))
 }
+exports.expand = expand
 
+/*
+console.log(into(expand(function(x) {
+  return [ x, x * x ]
+}, [ 1, 2, 3 ])))
+*/
 
-// console.log(into(flatten([ [1, 2], [ 3, 4 ], [ 7, 8 ], [ [ 9 ] ] ])))
 
 });
