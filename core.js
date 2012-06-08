@@ -177,10 +177,11 @@ function flatten(source) {
   to a `reducible` with items of nested `reducibles`.
   **/
   return reducible(function(next, start) {
-    return reduce(function(result, items) {
-      return reduce(function(result, item) {
-        return next(result, item)
-      }, items, result)
+    return reduce(function(result, nested) {
+      return reduce(function(result, value) {
+        result = next(result, value)
+        return is(result, reduced) ? reduced(result) : result
+      }, nested, result)
     }, source, start)
   })
 }
