@@ -34,6 +34,8 @@ exports['test into'] = require('./into')
 exports['test append'] = require('./append')
 exports['test flatten'] = require('./flatten')
 
+exports['test channel'] = require('./channel')
+
 if (module == require.main)
   require('test').run(exports)
 
