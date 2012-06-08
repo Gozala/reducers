@@ -50,6 +50,11 @@ Reducible(Array, {
     return result
   }
 })
+Reducible(undefined, null, {
+  reduce: function reduce(f, _, start) {
+    return start
+  }
+})
 
 function marker(name) {
   return function mark(value) {
