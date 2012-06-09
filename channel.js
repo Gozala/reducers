@@ -122,7 +122,7 @@ var Channel = define(
       var promise = defer()
       channel.reducers.push({ next: f, state: start, promise: promise })
       react(channel)
-      return promise
+      return go(identity, promise)
     }
   })
 
