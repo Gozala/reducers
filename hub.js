@@ -120,6 +120,7 @@ function hub(stream, meta) {
   return new Hub(stream, [], null, meta)
 }
 exports.hub = hub
+exports.Hub = Hub
 
 });
 

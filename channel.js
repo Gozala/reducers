@@ -33,12 +33,14 @@ var eventuals = require('eventual/core'),
     then = eventuals.then, Deferred = eventuals.Deferred,
     eventual = eventuals.eventual
 var ego = require('alter-ego/core'),
-    define = ego.define, record = ego.record, over = ego.over
+    define = ego.define, record = ego.record, over = ego.over, extend = ego.extend
 var queue = require('./queue'),
     Queueable = queue.Queueable, enqueue = queue.enqueue,
     Closable = queue.Closable, close = queue.close,
     closed = queue.closed, Reactor = queue.Reactor,
     react = queue.react
+var buffer = require('./buffer').buffer
+var Hub = require('./hub').Hub
 
 var unbind = Function.call.bind(Function.bind, Function.call)
 var slice = Array.slice || unbind(Array.prototype.slice)
@@ -62,69 +64,15 @@ Closable({
 })
 
 var Channel = define(
-  record, [ 'reducers', 'queued', 'meta' ],
-  Reactor, {
-    react: function(channel) {
-      var reducers = channel.reducers
-      channel.queued.splice(0).forEach(function(item) {
-        reducers.slice(0).forEach(function(reducer) {
-          // TODO: Add exception handling to reject promise
-          // if it occurs.
-          var result = reducer.next(reducer.state, item)
-          //if (is(result, reduced)) {
-          //  reducers.splice(index, 1)
-          //  realize(reducer.promise, result.value)
-          //} else {
-            //reducer.state = result
-            reducer.state = go(function(result) {
-              if (is(result, reduced)) {
-                var index = reducers.indexOf(reducer)
-                realize(reducer.promise, result.value)
-                if (~index) reducers.splice(index, 1)
-                if (!reducers.length) close(channel)
-              }
-              return result
-            }, result);
-          //}
-        })
-      })
-    }
-  },
+  extend, Hub,
+  record, [ 'source', 'reducers', 'result' ],
   Queueable, {
-    enqueue: function(channel, item) {
-      if (!closed(channel)) {
-        channel.queued.push(item)
-        react(channel)
-      }
+    enqueue: function(channel, value) {
+      if (!closed(channel)) enqueue(channel.source, value)
       return channel
-    }
-  },
-  Closable, {
-    closed: function(channel) {
-      return !channel.queued && !channel.reducers
-    },
-    close: function(channel) {
-      if (!closed(channel)) {
-        var reducers = channel.reducers, count = reducers.length, index = 0
-        channel.queued = channel.reducers = null
-        while (index < count) {
-          var reducer = reducers[index++]
-          realize(reducer.promise, reducer.state)
-        }
-      }
-      return channel
-    }  
-  },
-  Reducible, {
-    reduce: function(f, channel, start) {
-      // If channel is closed it acts like an empty list returning `start`
-      if (closed(channel)) return start
-      var promise = defer()
-      channel.reducers.push({ next: f, state: start, promise: promise })
-      react(channel)
-      return go(identity, promise)
     }
   })
+
 
 function channel(meta) {
   /**
@@ -135,7 +83,7 @@ function channel(meta) {
   to how nodejs quits once there's no task is left in a queue). All items are
   enqueued up until first consumption.
   **/
-  return new Channel([], [], meta)
+  return new Channel(buffer(), [], null,  meta)
 }
 exports.channel = channel
 exports.Channel = Channel
