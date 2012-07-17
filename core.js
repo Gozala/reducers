@@ -7,12 +7,14 @@
 var Method = require('method')
 var Box = require('./box')
 
-// Define a shortcut for `Array.prototype.slice.call`.
-var unbind = Function.call.bind(Function.bind, Function.call)
-var slice = Array.slice || unbind(Array.prototype.slice)
-
 var end = Box('end of the sequence')
+exports.end = end
+
 var accumulated = Box('Indicator that source has being accumulateed')
+exports.accumulated = accumulated
+
+var error = Box('error')
+exports.error = error
 
 var accumulate = Method()
 exports.accumulate = accumulate
@@ -30,17 +32,23 @@ accumulate.define(Array, function(array, next, initial) {
   }
 })
 
-function accumulator(make) {
+function accumulator(method) {
+  return accumulate.implement({}, method)
+}
+exports.accumulator = accumulator
+
+function transformer(make) {
   return accumulate.implement({}, function(self, next, initial) {
     return accumulate(make(), next, initial)
   })
 }
+exports.transformer = transformer
 
-function transform(source, f, state) {
-  return accumulate.implement({}, function(self, next, initial) {
+function transform(source, f) {
+  return accumulator(function(self, next, initial) {
     accumulate(source, function(value, result) {
       return value && value.isBoxed ? next(value, result)
-                                    : f(next, value, result, state)
+                                    : f(next, value, result)
     }, initial)
   })
 }
@@ -72,7 +80,7 @@ function take(source, n) {
   Composes version of given `source` containing only element up until `f(item)`
   was true.
   **/
-  return accumulator(function() {
+  return transformer(function() {
     var count = n >= 0 ? n : Infinity
     return transform(source, function(next, value, result) {
       count = count - 1
@@ -88,7 +96,7 @@ function drop(source, n) {
   /**
   Reduces given `reducible` to a firs `n` items.
   **/
-  return accumulator(function() {
+  return transformer(function() {
     var count = n >= 0 ? n : 1
     return transform(source, function(next, value, result) {
       return count -- > 0 ? result :
@@ -114,7 +122,7 @@ function dropWhile(source, predicate) {
   Reduces `reducible` further by dropping first `n`
   items to on which `f(item)` ruturns `true`
   **/
-  return accumulator(function() {
+  return transformer(function() {
     var active = true
     return transform(source, function(next, value, result) {
       return active && (active = predicate(value)) ? result :
@@ -135,52 +143,12 @@ function into(source, buffer) {
   given `array` or a new empty one if omitted.
   **/
   var result = buffer || []
-  accumulate(source, function(value, state) {
+  accumulate(source, function(value) {
     if (value && value.isBoxed) return value
-    state.push(value)
-    return state
-  }, result)
+    result.push(value)
+  })
   return result
 }
 exports.into = into
 
 //console.log(into(skip(2, [ 1, 2, 3, 4, 5, 6 ])))
-
-function append(left, right) {
-  /**
-  Joins given `reducible`s into `reducible` of items
-  of all the `reducibles` preserving an order of items.
-  **/
-  return flatten(slice(arguments))
-}
-exports.append = append
-
-// console.log(into(join([ 1, 2 ], [ 3 ], [ 3, 5 ])))
-
-function flatten(source) {
-  /**
-  Flattens given `reducible` collection of `reducible`s
-  to a `reducible` with items of nested `reducibles`.
-  **/
-  return reducible(function(_, next, start) {
-    return reduce(source, function(result, nested) {
-      return reduce(nested, function(result, value) {
-        return next(result, value)
-      }, result)
-    }, start)
-  })
-}
-exports.flatten = flatten
-
-// console.log(into(flatten([ [1, 2], [ 3, 4 ], [], [ 7, 8 ] ])))
-
-function expand(source, f) {
-  return flatten(map(source, f))
-}
-exports.expand = expand
-
-/*
-console.log(into(expand(function(x) {
-  return [ x, x * x ]
-}, [ 1, 2, 3 ])))
-*/
