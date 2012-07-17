@@ -1,125 +1,81 @@
 /* vim:set ts=2 sw=2 sts=2 expandtab */
 /*jshint asi: true undef: true es5: true node: true browser: true devel: true
-         forin: true latedef: false */
-/*global define: true, Cu: true, __URI__: true */
-;(function(id, factory) { // Module boilerplate :(
-  if (typeof(define) === 'function') { // RequireJS
-    define(factory);
-  } else if (typeof(require) === 'function') { // CommonJS
-    factory.call(this, require, exports, module);
-  } else if (~String(this).indexOf('BackstagePass')) { // JSM
-    factory(function require(uri) {
-      var imports = {};
-      Cu.import(uri, imports);
-      return imports;
-    }, this, { uri: __URI__, id: id });
-    exports.EXPORTED_SYMBOLS = Object.keys(exports);
-  } else {  // Browser or alike
-    var globals = this
-    factory(function require(id) {
-      return globals[id];
-    }, (globals[id] = {}), { uri: document.location.href + '#' + id, id: id });
-  }
-}).call(this, 'reducers', function(require, exports, module) {
+         forin: true latedef: false globalstrict: true */
 
 'use strict';
 
-var protocol = require('protocol/core').protocol
-var reducers = require('./core'),
-    Reducible = reducers.Reducible, reduced = reducers.reduced,
-    is = reducers.is, reduce = reducers.reduce
-var eventuals = require('eventual/core'),
-    defer = eventuals.defer, go = eventuals.go, realize = eventuals.realize,
-    then = eventuals.then
-var ego = require('alter-ego/core'),
-    define = ego.define, record = ego.record
+var Name = require('name')
+var Method = require('method')
+var core = require('./core'),
+    reduce = core.reduce, reduced = core.reduced
+var eventuals = require('eventual/eventual'),
+    defer = eventuals.defer, deliver = eventuals.deliver
 
 var unbind = Function.call.bind(Function.bind, Function.call)
 var slice = Array.slice || unbind(Array.prototype.slice)
 
 
-function identity(value) { return value }
-
-var Queueable = protocol({
-  enqueue: [ protocol, Object ]
-})
-var enqueue = Queueable.enqueue
+// Method to enqueue values.
+var enqueue = Method()
 exports.enqueue = enqueue
-exports.Queueable = Queueable
 
-var Closable = protocol({
-  closed: [ protocol ],
-  close: [ protocol ]
-})
-var close = Closable.close
-var closed = Closable.closed
+// Method to close a queue.
+var close = Method()
 exports.close = close
-exports.closed = closed
-exports.Closable = Closable
 
+var isClosed = Method()
+exports.isClosed = isClosed
 
-var Reactor = protocol({
-  react: [ protocol ]
-})
-var react = Reactor.react
-exports.Reactor = Reactor
+var react = Method()
 exports.react = react
 
-var Queue = define(
-  record, [ 'queued', 'reducers' ],
-  Queueable, {
-    enqueue: function enqueue(queue, item) {
-      if (!closed(queue)) {
-        queue.queued.push(item)
-        react(queue)
-      }
-    }
-  },
-  Reducible, {
-    reduce: function reduce(f, queue, start) {
-      var promise = defer()
-      if (!closed(queue)) {
-        queue.reducers.push({ next: f, state: start, promise: promise })
-        react(queue)
-      } else {
-        realize(promise, start)
-      }
-      return promise
-    }
-  },
-  Reactor, {
-    react: function react(queue) {
-      var queued = queue.queued
-      var reducers = queue.reducers
-      while (queued.length && reducers.length) {
-        var reducer = reducers[0]
-        var result = reducer.next(reducer.state, queued.shift())
-        if (is(result, reduced)) {
-          reducers.shift()
-          realize(reducer.promise, result.value)
-        } else {
-          reducer.state = result
-        }
-      }
-    }
-  },
-  Closable, {
-    closed: function closed(queue) {
-      return !queue.queued && !queue.reducers
-    },
-    close: function close(queue) {
-      var reducers = queue.reducers, count = reducers.length, index = 0
-      queue.queued = queue.reducers = null
-      while (index < count) {
-        var reducer = reducers[index++]
-        realize(reducer.promise, reducer.state)
-      }
-    }
-  })
+var state = Name()
+var result = Name()
+var next = Name()
+var queued = Name()
+
+function Queue() {}
+isClosed.define(Queue, function(queue) {
+  return !queue.result
+})
+close.define(Queue, function(queue) {
+  if (!isClosed(queue)) {
+    var value = queue[state]
+    value = value && value.is === reduced ? value.value : value
+    deliver(queue[result], value)
+    queue[next] = queue[state] = queue[result] = queue[queued] = null
+  }
+  return queue
+})
+react.define(Queue, function(queue) {
+  var values = queue[queued], f = queue[next]
+  while (values.length && f) {
+    queue[state] = f(queue[state], values.shift())
+    if (is(queued[state], reduced))
+      return close(queue)
+  }
+})
+enqueue.define(Queue, function(queue, item) {
+  if (!isClosed(queue)) {
+    queue[queued].push(item)
+    react(queue)
+  }
+  return queue
+})
+reduce.define(Queue, function(queue, f, start) {
+  if (isClosed(queue)) return start
+  queue[state] = start
+  queue[next] = f
+  react(queue)
+  return queue[result]
+})
 
 function queue() {
-  return new Queue(slice(arguments), [])
+  var result = new Queue()
+  result[queued] = slice(arguments)
+  result[result] = defer()
+  result[state] = null
+  result[next] = null
+  return result
 }
 exports.queue = queue
-
-});

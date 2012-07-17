@@ -1,74 +1,30 @@
 /* vim:set ts=2 sw=2 sts=2 expandtab */
 /*jshint asi: true undef: true es5: true node: true browser: true devel: true
-         forin: true latedef: false */
-/*global define: true, Cu: true, __URI__: true */
-;(function(id, factory) { // Module boilerplate :(
-  if (typeof(define) === 'function') { // RequireJS
-    define(factory);
-  } else if (typeof(require) === 'function') { // CommonJS
-    factory.call(this, require, exports, module);
-  } else if (~String(this).indexOf('BackstagePass')) { // JSM
-    factory(function require(uri) {
-      var imports = {};
-      Cu.import(uri, imports);
-      return imports;
-    }, this, { uri: __URI__, id: id });
-    this.EXPORTED_SYMBOLS = Object.keys(this);
-  } else {  // Browser or alike
-    var globals = this
-    factory(function require(id) {
-      return globals[id];
-    }, (globals[id] = {}), { uri: document.location.href + '#' + id, id: id });
-  }
-}).call(this, 'loader', function(require, exports, module) {
-
+         forin: true latedef: false globalstrict: true*/
 'use strict';
 
 var $ = require('../core'),
-    drop = $.drop, into = $.into
+    into = $.into, drop = $.drop
 
 exports['test drop'] = function(assert) {
-  var called = 0
-  var source = [ 1, 2, 3, 4 ]
-  var actual = drop(function(item) {
-    called = called + 1
-    return item <= 2
-  }, source)
+  var actual = drop([ 1, 2, 3, 4 ], 2)
 
-  assert.equal(called, 0, 'drop does not invokes until result is reduced')
-  assert.deepEqual(into(actual), [ 3, 4 ], 'items were dropped')
-  assert.equal(called, 3, 'drop called until it returns false')
-  assert.deepEqual(into(actual), [ 3, 4 ], 'can be re-reduced')
+  assert.deepEqual(into(actual), [ 3, 4 ], 'skipped two items')
+  assert.deepEqual(into(actual), [ 3, 4 ], 'can be re-reduced same')
 }
 
 exports['test drop none'] = function(assert) {
-  var called = 0
-  var source = [ 1, 2, 3 ]
-  var actual = drop(function(item) {
-    called = called + 1
-    return false
-  }, source)
+  var actual = drop([ 1, 2, 3, 4 ], 0)
 
-  assert.equal(called, 0, 'drop does not invokes until result is reduced')
-  assert.deepEqual(into(actual), [ 1, 2, 3 ], '0 items were dropped')
-  assert.equal(called, 1, 'dropper called only once')
+  assert.deepEqual(into(actual), [ 1, 2, 3, 4 ], 'skips none on 0')
 }
 
 exports['test drop all'] = function(assert) {
-  var called = 0
-  var source = [ 1, 2, 3 ]
-  var actual = drop(function(item) {
-    called = called + 1
-    return true
-  }, source)
+  var actual = drop([ 1, 2, 3, 4 ], 100)
 
-  assert.equal(called, 0, 'drop does not invokes until result is reduced')
-  assert.deepEqual(into(actual), [], 'all items were dropped')
-  assert.equal(called, 3, 'dropper called on each item')
+  assert.deepEqual(into(actual), [],
+                   'skips all if has less than requested')
 }
-
 
 if (module == require.main)
   require('test').run(exports)
-
-});
