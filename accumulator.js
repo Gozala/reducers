@@ -7,93 +7,81 @@
 var Name = require('name')
 var Method = require('method')
 var Box = require('./box')
+var core = require('./core'),
+    accumulate = core.accumulate, end = core.end,
+    accumulator = core.accumulator, map = core.map
+
 var eventuals = require('eventual/eventual'),
     defer = eventuals.defer, deliver = eventuals.deliver
 
+// Define a shortcut for `Array.prototype.slice.call`.
 var unbind = Function.call.bind(Function.bind, Function.call)
 var slice = Array.slice || unbind(Array.prototype.slice)
 
-var end = Box('end of the sequence')
-var accumulateed = Box('Indicator that source has being accumulateed')
-var error = Box('error')
-
-var accumulate = Method()
-exports.accumulate = accumulate
-
-var enqueue = Method()
-exports.enqueue = enqueue
-
-var dispose = Method()
-exports.dispose = dispose
-
-var close = Method()
-exports.close = close
-
-var accumulateor = Name()
-var state = Name()
-
-function Channel() {}
-accumulate.define(Channel, function(channel, next, initial) {
-  channel[accumulateor] = next
-  channel[state] = initial
-})
-dispose.define(Channel, function(channel) {
-  channel[accumulateor] = null
-  channel[state] = null
-})
-enqueue.define(Channel, function(channel, value) {
-  var result = channel[accumulateor](value, channel[state])
-  channel[state] = result
-  if (result && result.is === accumulateed)
-    dispose(channel)
-})
-close.define(Channel, function(channel, value) {
-  if (value !== undefined) enqueue(channel, value)
-  var result = channel[state]
-  var next = channel[accumulateor]
-  dispose(channel)
-  next(end(), result)
-})
-
-function channel() { return new Channel() }
-exports.channel = channel
 
 function reduce(source, f, start) {
   var promise = defer()
   accumulate(source, function(value, result) {
-    return value && value.is === end ? deliver(promise, result)
-                                     : f(result, value)
+    if (value && value.isBoxed) {
+      if (value.is === end) deliver(promise, result)
+      return value
+    } else {
+      return f(result, value)
+    }
   }, start)
   return promise
 }
 exports.reduce = reduce
 
-function tranform(source, f) {
-  return accumulate.implement({}, function(self, next, initial) {
-    accumulate(source, function(value, result) {
-      return value && value.isBoxed ? next(value, result)
-                                    : f(next, value, result)
+function reducible(f) {
+  return accumulator(function(source, next, initial) {
+    return f(source, function forward(result, value) {
+      return next(value, result)
     }, initial)
   })
 }
-exports.tranform = tranform
 
-function filter(source, f) {
-  return tranform(source, function(next, value, result) {
-    return f(value) ? next(value, result) : result
+function append(left, right) {
+  /**
+  Joins given `reducible`s into `reducible` of items
+  of all the `reducibles` preserving an order of items.
+  **/
+  return flatten(slice(arguments))
+}
+exports.append = append
+
+// console.log(into(join([ 1, 2 ], [ 3 ], [ 3, 5 ])))
+
+function flatten(source) {
+  /**
+  Flattens given `reducible` collection of `reducible`s
+  to a `reducible` with items of nested `reducibles`.
+  **/
+  return reducible(function(_, next, initial) {
+    return reduce(source, function(result, nested) {
+      return reduce(nested, function(result, value) {
+        return next(result, value)
+      }, result)
+    }, initial)
   })
 }
-exports.filter = filter
+exports.flatten = flatten
 
-function map(source, f) {
-  return tranform(source, function(next, value, result) {
-    return next(f(value), result)
-  })
+// console.log(into(flatten([ [1, 2], [ 3, 4 ], [], [ 7, 8 ] ])))
+
+function expand(source, f) {
+  return flatten(map(source, f))
 }
-exports.map = map
+exports.expand = expand
+
+/*
+console.log(into(expand(function(x) {
+  return [ x, x * x ]
+}, [ 1, 2, 3 ])))
+*/
 
 function generator(generate) {
-  return accumulate.implement({}, function(self, next, initial) {
+  return accumulator(function(self, next, initial) {
     var state = initial
     generate(function(value) {
       state = next(value, state)
