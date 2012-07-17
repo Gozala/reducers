@@ -3,14 +3,106 @@
          forin: true latedef: false globalstrict: true*/
 'use strict';
 
-var $ = require('../core'),
-    into = $.into, flatten = $.flatten, pick = $.pick
-var $ = require('../channel'),
-    channel = $.channel, enqueue = $.enqueue, close = $.close,
-    closed = $.closed, sequential = $.sequential, parallel = $.parallel
+var core = require('../core'),
+    into = core.into, flatten = core.flatten, take = core.take
+var accumulators = require('../accumulator'),
+    reduce = accumulators.reduce
+var channels = require('../channel'),
+    channel = channels.channel, enqueue = channels.enqueue,
+    close = channels.close, isClosed = channels.isClosed,
+    isOpen = channels.isOpen,
+    sequential = channels.sequential,
+    parallel = channels.parallel
 
-var go = require('eventual/core').go
+var eventuals = require('eventual/eventual'),
+    await = eventuals.await
 
+exports['test channel basics'] = function(assert, done) {
+  var c = channel()
+
+  assert.ok(!isOpen(c), 'channel is not open')
+  assert.ok(!isClosed(c), 'channel is not closed')
+
+  var p = reduce(c, function(result, value) {
+    result.push(value)
+    return result
+  }, [])
+
+  assert.ok(isOpen(c), 'channel is open after reduce is called')
+  assert.ok(!isClosed(c), 'channel is not closed until close is called')
+
+  await(p, function(actual) {
+    assert.deepEqual(actual, [ 1, 2, 3, 4 ],
+                     'All queued values were accumulated')
+    assert.ok(isClosed(c), 'channel is closed after it is closed')
+    done()
+  })
+
+  enqueue(c, 1)
+  enqueue(c, 2)
+  enqueue(c, 3)
+  close(c, 4)
+}
+
+exports['test channel auto-close'] = function(assert, done) {
+  var c = channel()
+
+  assert.ok(!isOpen(c), 'channel is not open')
+  assert.ok(!isClosed(c), 'channel is not closed')
+
+  var t = take(c, 3)
+
+  assert.ok(!isOpen(c), 'channel is not open on take')
+  assert.ok(!isClosed(c), 'channel is not closed on take')
+
+  var p = reduce(t, function(result, value) {
+    result.push(value)
+    return result
+  }, [])
+
+  assert.ok(isOpen(c), 'channel is open after reduce is called')
+  assert.ok(!isClosed(c), 'channel is not closed until close is called')
+
+  enqueue(c, 1)
+  enqueue(c, 2)
+  enqueue(c, 3)
+
+  assert.ok(isClosed(c), 'channel is closed once consumption is complete')
+
+  assert.throws(function() {
+    enqueue(c, 4)
+  }, 'Error is thrown if queued to closed channel')
+  assert.throws(function() {
+    close(c)
+  }, 'Error is thrown on close of closed channel')
+
+  await(p, function(actual) {
+    assert.deepEqual(actual, [ 1, 2, 3 ],
+                     'All queued values were accumulated')
+    assert.ok(isClosed(c), 'channel is closed after it is closed')
+    done()
+  })
+}
+
+exports['test channel can have single consumer'] = function(assert, done) {
+  var c = channel()
+  var p = reduce(c, function(result, value) {
+    result.push(value)
+    return result
+  }, [])
+
+  assert.throws(function() {
+    reduce(c, function() { })
+  }, 'channel can be consumed by a single reader only')
+
+  close(c, 0)
+  await(p, function(actual) {
+    assert.deepEqual(actual, [ 0 ], 'items were accumulated')
+    done()
+  })
+}
+
+/*
 exports['test channel'] = function(assert, done) {
   var first = channel()
   var second = channel()
@@ -106,6 +198,7 @@ exports['test auto close of channel of channels'] = function(assert, done) {
     done()
   }, ordered, unordered)
 }
+*/
 
 if (module == require.main)
-  require('test').run(exports);
+  require('test').run(exports)
