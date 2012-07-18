@@ -6,76 +6,58 @@
 
 var Name = require('name')
 var Method = require('method')
+
+
 var core = require('./core'),
-    reduce = core.reduce, reduced = core.reduced
-var eventuals = require('eventual/eventual'),
-    defer = eventuals.defer, deliver = eventuals.deliver
+    accumulate = core.accumulate, accumulator = core.accumulator
 
-var unbind = Function.call.bind(Function.bind, Function.call)
-var slice = Array.slice || unbind(Array.prototype.slice)
+var channels = require('./channel'),
+    isClosed = channels.isClosed, isOpen = channels.isOpen,
+    enqueue = channels.enqueue, dispose = channels.dispose,
+    close = channels.close
 
-
-// Method to enqueue values.
-var enqueue = Method()
-exports.enqueue = enqueue
-
-// Method to close a queue.
-var close = Method()
-exports.close = close
-
-var isClosed = Method()
-exports.isClosed = isClosed
-
-var react = Method()
-exports.react = react
-
-var state = Name()
-var result = Name()
-var next = Name()
 var queued = Name()
+var target = Name()
 
-function Queue() {}
+function drain(queue) {
+  var values = queue[queued]
+  while (values.length) enqueue(queue[target], values.shift())
+  queue[queued] = null
+  return queue
+}
+
+function isDrained(queue) {
+  return isOpen(queue) && !queue[queued]
+}
+
+function Queue(channel, items) {
+  this[queued] = items
+  this[target] = channel
+}
+enqueue.define(Queue, function(queue, value) {
+  if (isDrained(queue))
+    enqueue(queue[target], value)
+  else queue[queued].push(value)
+  return queue
+})
+accumulate.define(Queue, function(queue, next, initial) {
+  var opened = isOpen(queue)
+  accumulate(queue[target], next, initial)
+  if (!opened) drain(queue)
+  return queue
+})
 isClosed.define(Queue, function(queue) {
-  return !queue.result
+  return isClosed(queue[target])
 })
-close.define(Queue, function(queue) {
-  if (!isClosed(queue)) {
-    var value = queue[state]
-    value = value && value.is === reduced ? value.value : value
-    deliver(queue[result], value)
-    queue[next] = queue[state] = queue[result] = queue[queued] = null
-  }
-  return queue
+isOpen.define(Queue, function(queue) {
+  return isOpen(queue[target])
 })
-react.define(Queue, function(queue) {
-  var values = queue[queued], f = queue[next]
-  while (values.length && f) {
-    queue[state] = f(queue[state], values.shift())
-    if (is(queued[state], reduced))
-      return close(queue)
-  }
-})
-enqueue.define(Queue, function(queue, item) {
-  if (!isClosed(queue)) {
-    queue[queued].push(item)
-    react(queue)
-  }
-  return queue
-})
-reduce.define(Queue, function(queue, f, start) {
-  if (isClosed(queue)) return start
-  queue[state] = start
-  queue[next] = f
-  react(queue)
-  return queue[result]
+close.define(Queue, function(queue, value) {
+  if (value !== undefined) enqueue(queue, value)
+  return close(queue[target])
 })
 
-function queue() {
-  var result = new Queue()
-  result[queued] = slice(arguments)
-  result[result] = defer()
-  result[state] = null
-  result[next] = null
-  return result
+function queue(target) {
+  return new Queue(target, [])
 }
 exports.queue = queue
