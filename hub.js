@@ -9,24 +9,24 @@ var Method = require('method')
 
 var core = require('./core'),
     accumulate = core.accumulate, accumulated = core.accumulated,
-    end = core.end, accumulator = core.accumulator
+    end = core.end, convert = core.convert
 
 var channels = require('./channel'),
     channel = channels.channel, close = channels.close,
     isClosed = channels.isClosed, isOpen = channels.isOpen,
     enqueue = channels.enqueue, dispose = channels.dispose
 
-var source = Name()
+var input = Name()
 var accumulators = Name()
 
 function update(hub) {
-  if (!hub[accumulators].length && !isClosed(hub[source]))
-    close(hub[source])
+  if (!hub[accumulators].length && !isClosed(hub[input]))
+    close(hub[input])
 }
 
 function open(hub) {
   var consumers = hub[accumulators]
-  accumulate(hub[source], function distribute(value) {
+  accumulate(hub[input], function distribute(value) {
     var accumulators = consumers.slice(0)
     var count = consumers.length, index = 0
     while (index < count) {
@@ -45,11 +45,10 @@ function open(hub) {
   })
 }
 
-function hub(input) {
-  var value = Object.create(input)
-  value[source] = input
+function hub(source) {
+  var value = convert(source, hub.accumulate)
+  value[input] = source
   value[accumulators] = []
-  accumulate.implement(value, hub.accumulate)
   return value
 }
 hub.accumulate = function accumulate(hub, next, initial) {

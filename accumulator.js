@@ -9,7 +9,7 @@ var Method = require('method')
 var Box = require('./box')
 var core = require('./core'),
     accumulate = core.accumulate, end = core.end,
-    accumulator = core.accumulator, map = core.map
+    convert = core.convert, map = core.map
 
 var eventuals = require('eventual/eventual'),
     defer = eventuals.defer, deliver = eventuals.deliver
@@ -33,8 +33,8 @@ function reduce(source, f, start) {
 }
 exports.reduce = reduce
 
-function reducible(f) {
-  return accumulator(function(source, next, initial) {
+function reducible(source, f) {
+  return convert(source, function(source, next, initial) {
     return f(source, function forward(result, value) {
       return next(value, result)
     }, initial)
@@ -57,7 +57,7 @@ function flatten(source) {
   Flattens given `reducible` collection of `reducible`s
   to a `reducible` with items of nested `reducibles`.
   **/
-  return reducible(function(_, next, initial) {
+  return reducible(source, function(_, next, initial) {
     return reduce(source, function(result, nested) {
       return reduce(nested, function(result, value) {
         return next(result, value)

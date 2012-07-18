@@ -4,6 +4,8 @@
 
 'use strict';
 
+var create = Object.create
+
 var Method = require('method')
 var Box = require('./box')
 
@@ -32,20 +34,20 @@ accumulate.define(Array, function(array, next, initial) {
   }
 })
 
-function accumulator(method) {
-  return accumulate.implement({}, method)
-}
-exports.accumulator = accumulator
-
-function transformer(make) {
-  return accumulate.implement({}, function(self, next, initial) {
-    return accumulate(make(), next, initial)
+function transformer(source, transform) {
+  return convert(source, function(self, next, initial) {
+    return accumulate(transform(source), next, initial)
   })
 }
 exports.transformer = transformer
 
+function convert(source, method) {
+  return accumulate.implement(create(source), method)
+}
+exports.convert = convert
+
 function transform(source, f) {
-  return accumulator(function(self, next, initial) {
+  return convert(source, function(self, next, initial) {
     accumulate(source, function(value, result) {
       return value && value.isBoxed ? next(value, result)
                                     : f(next, value, result)
@@ -80,7 +82,7 @@ function take(source, n) {
   Composes version of given `source` containing only element up until `f(item)`
   was true.
   **/
-  return transformer(function() {
+  return transformer(source, function(source) {
     var count = n >= 0 ? n : Infinity
     return transform(source, function(next, value, result) {
       count = count - 1
@@ -96,7 +98,7 @@ function drop(source, n) {
   /**
   Reduces given `reducible` to a firs `n` items.
   **/
-  return transformer(function() {
+  return transformer(source, function(source) {
     var count = n >= 0 ? n : 1
     return transform(source, function(next, value, result) {
       return count -- > 0 ? result :
@@ -122,7 +124,7 @@ function dropWhile(source, predicate) {
   Reduces `reducible` further by dropping first `n`
   items to on which `f(item)` ruturns `true`
   **/
-  return transformer(function() {
+  return transformer(source, function(source) {
     var active = true
     return transform(source, function(next, value, result) {
       return active && (active = predicate(value)) ? result :
