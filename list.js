@@ -1,48 +1,59 @@
 /* vim:set ts=2 sw=2 sts=2 expandtab */
 /*jshint asi: true undef: true es5: true node: true browser: true devel: true
-         forin: true latedef: false */
-/*global define: true, Cu: true, __URI__: true */
-;(function(id, factory) { // Module boilerplate :(
-  if (typeof(define) === 'function') { // RequireJS
-    define(factory);
-  } else if (typeof(require) === 'function') { // CommonJS
-    factory.call(this, require, exports, module);
-  } else if (~String(this).indexOf('BackstagePass')) { // JSM
-    factory(function require(uri) {
-      var imports = {};
-      Cu.import(uri, imports);
-      return imports;
-    }, this, { uri: __URI__, id: id });
-    this.EXPORTED_SYMBOLS = Object.keys(this);
-  } else {  // Browser or alike
-    var globals = this
-    factory(function require(id) {
-      return globals[id];
-    }, (globals[id] = {}), { uri: document.location.href + '#' + id, id: id });
-  }
-}).call(this, 'loader', function(require, exports, module) {
-
+         forin: true latedef: false globalstrict: true */
 'use strict';
 
-var protocol = require('protocol/core').protocol
-var reducers = require('./core'),
-    Reducible = reducers.Reducible, reduced = reducers.reduced,
-    is = reducers.is, reduce = reducers.reduce
+var sequence = require('./sequence'),
+    isEmpty = sequence.isEmpty, count = sequence.count,
+    first = sequence.first, rest = sequence.rest
 
-var ego = require('alter-ego/core'),
-    define = ego.define, record = ego.record
+function List() {}
+List.prototype.length = 0
+List.prototype.toString = function() {
+  var value = '', tail = this;
+  while (!isEmpty(tail)) {
+    value = value + ' ' + first(tail)
+    tail = rest(tail)
+  }
 
-var List = define(
-  record, [ 'head', 'tail' ],
-  Reducible, {
-    reduce: function(next, list, start) {
-      return reduce(next, list.tail, next(start, list.head))
-    }
-  })
+  return '(' + value.substr(1) + ')'
+}
 
-function list(head, tail) {
-  return new List(head, tail)
+isEmpty.define(List, function(list) { return count(list) === 0 })
+count.define(List, function(list) { return list.length })
+first.define(List, function(list) { return list.head })
+rest.define(List, function(list) { return list.tail })
+
+function empty() {
+  return new List()
+}
+exports.empty = empty
+
+function list() {
+  var items = arguments, count = items.length, tail = empty()
+  while (count--) tail = cons(items[count], tail)
+  return tail;
 }
 exports.list = list
 
-});
+function cons(head, tail) {
+  var list = new List()
+  list.head = head
+  list.tail = tail
+  list.length = count(tail) + 1
+  return list
+}
+exports.cons = cons
+
+function filter(source, f) {
+  return f(first(source)) ? cons(first(source), filter(rest(source)), f) :
+                            filter(rest(source), f)
+}
+exports.filter = filter
+
+function map(source, f) {
+  return cons(f(first(source)), map(rest(source), f))
+}
+exports.map = map
+
+
