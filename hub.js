@@ -55,10 +55,6 @@ isOpen.define(Hub, function(hub) {
 isClosed.define(Hub, function(hub) {
   return isClosed(hub[source])
 })
-dispose.define(Hub, function(hub) {
-  hub[source] = null
-  hub[accumulators] = null
-})
 accumulate.define(Hub, function(hub, next, initial) {
   if (isClosed(hub)) return next(end(), initial)
   hub[accumulators].push({ next: next, state: initial })
