@@ -20,7 +20,7 @@ var queue = require('../queue')
 var eventuals = require('eventual/eventual'),
     await = eventuals.await
 
-exports['test queue bofer open'] = function(assert, done) {
+exports['test queue before open'] = function(assert, done) {
   var c = channel()
   var q = queue(c)
 
