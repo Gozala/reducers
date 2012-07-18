@@ -8,7 +8,8 @@ var Name = require('name')
 var Method = require('method')
 
 var core = require('./core'),
-    accumulate = core.accumulate, accumulated = core.accumulated, end = core.end
+    accumulate = core.accumulate,
+    accumulated = core.accumulated, end = core.end
 
 var enqueue = Method()
 exports.enqueue = enqueue
