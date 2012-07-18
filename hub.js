@@ -45,25 +45,16 @@ function open(hub) {
   })
 }
 
-function Hub(input, consumers) {
-  this[source] = input
-  this[accumulators] = consumers
+function hub(input) {
+  var value = Object.create(input)
+  value[source] = input
+  value[accumulators] = []
+  accumulate.implement(value, hub.accumulate)
+  return value
 }
-isOpen.define(Hub, function(hub) {
-  return isOpen(hub[source])
-})
-isClosed.define(Hub, function(hub) {
-  return isClosed(hub[source])
-})
-accumulate.define(Hub, function(hub, next, initial) {
+hub.accumulate = function accumulate(hub, next, initial) {
   if (isClosed(hub)) return next(end(), initial)
   hub[accumulators].push({ next: next, state: initial })
   if (!isOpen(hub)) open(hub)
-})
-
-
-function hub(source) {
-  return new Hub(source, [])
 }
-exports.hub = hub
-exports.Hub = Hub
+module.exports = hub

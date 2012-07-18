@@ -30,34 +30,29 @@ function isDrained(queue) {
   return isOpen(queue) && !queue[queued]
 }
 
-function Queue(channel, items) {
-  this[queued] = items
-  this[target] = channel
+function queue(output) {
+  var value = Object.create(output)
+  value[target] = output
+  value[queued] = []
+  enqueue.implement(value, queue.enqueue)
+  accumulate.implement(value, queue.accumulate)
+  return value
 }
-enqueue.define(Queue, function(queue, value) {
+queue.enqueue = function(queue, value) {
   if (isDrained(queue))
     enqueue(queue[target], value)
   else queue[queued].push(value)
   return queue
-})
-accumulate.define(Queue, function(queue, next, initial) {
+}
+queue.accumulate = function(queue, next, initial) {
   var opened = isOpen(queue)
   accumulate(queue[target], next, initial)
   if (!opened) drain(queue)
   return queue
-})
-isClosed.define(Queue, function(queue) {
-  return isClosed(queue[target])
-})
-isOpen.define(Queue, function(queue) {
-  return isOpen(queue[target])
-})
-close.define(Queue, function(queue, value) {
+}
+queue.close = function(queue, value) {
   if (value !== undefined) enqueue(queue, value)
   return close(queue[target])
-})
-
-function queue(target) {
-  return new Queue(target, [])
 }
-exports.queue = queue
+
+module.exports = queue

@@ -13,8 +13,7 @@ var channels = require('../channel'),
     isOpen = channels.isOpen,
     sequential = channels.sequential,
     parallel = channels.parallel
-var hubs = require('../hub'),
-    hub = hubs.hub
+var hub = require('../hub')
 
 var eventuals = require('eventual/eventual'),
     await = eventuals.await

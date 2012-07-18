@@ -15,8 +15,7 @@ var channels = require('../channel'),
     parallel = channels.parallel
 var hubs = require('../hub'),
     hub = hubs.hub
-var queues = require('../queue'),
-    queue = queues.queue
+var queue = require('../queue')
 
 var eventuals = require('eventual/eventual'),
     await = eventuals.await
