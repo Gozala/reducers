@@ -49,9 +49,5 @@ queue.accumulate = function(queue, next, initial) {
   if (!opened) drain(queue)
   return queue
 }
-queue.close = function(queue, value) {
-  if (value !== undefined) enqueue(queue, value)
-  return close(queue[output])
-}
 
 module.exports = queue
