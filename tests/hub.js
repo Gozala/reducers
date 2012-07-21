@@ -9,10 +9,7 @@ var accumulators = require('../accumulator'),
     reduce = accumulators.reduce, into = accumulators.into
 var channels = require('../channel'),
     channel = channels.channel, enqueue = channels.enqueue,
-    close = channels.close, isClosed = channels.isClosed,
-    isOpen = channels.isOpen,
-    sequential = channels.sequential,
-    parallel = channels.parallel
+    close = channels.close
 var hub = require('../hub')
 
 var eventuals = require('eventual/eventual'),
@@ -22,29 +19,24 @@ exports['test hub open / close propagate'] = function(assert, done) {
   var c = channel()
   var h = hub(c)
 
-  assert.ok(!isOpen(c), 'channel is not open')
-  assert.ok(!isClosed(c), 'channel is not closed')
-  assert.ok(!isClosed(h), 'hub is not closed')
-  assert.ok(!isOpen(h), 'hub is not opened')
+  assert.ok(!channel.isOpen(c), 'channel is not open')
+  assert.ok(!channel.isClosed(c), 'channel is not closed')
+  assert.ok(!channel.isClosed(h), 'hub is not closed')
+  assert.ok(!channel.isOpen(h), 'hub is not opened')
 
-  var p = reduce(h, function(result, value) {
-    result.push(value)
-    return result
-  }, [])
+  var p = into(h)
 
-  assert.ok(isOpen(c), 'channel is open after reduce is called')
-  assert.ok(!isClosed(c), 'channel is not closed until close is called')
-  assert.ok(isOpen(h), 'hub is open after reduce is called')
-  assert.ok(!isClosed(h), 'hub is not closed until close is called')
+  assert.ok(channel.isOpen(c), 'channel is open after reduce is called')
+  assert.ok(!channel.isClosed(c), 'channel is not closed until close is called')
+  assert.ok(channel.isOpen(h), 'hub is open after reduce is called')
+  assert.ok(!channel.isClosed(h), 'hub is not closed until close is called')
 
   enqueue(c, 1)
   enqueue(c, 2)
   close(c, 3)
 
-  assert.ok(isOpen(c), 'channel is open')
-  assert.ok(isClosed(c), 'channel closed')
-  assert.ok(isClosed(h), 'hub is closed')
-  assert.ok(isOpen(h), 'hub is opened')
+  assert.ok(channel.isClosed(c), 'channel closed')
+  assert.ok(channel.isClosed(h), 'hub is closed')
 
   await(p, function(actual) {
     assert.deepEqual(actual, [ 1, 2, 3 ], 'all value were propagated')
@@ -55,31 +47,19 @@ exports['test hub open / close propagate'] = function(assert, done) {
 exports['test multiple subscribtion'] = function(assert, done) {
   var c = channel()
   var h = hub(c)
-  var p1 = reduce(h, function(result, value) {
-    result.push(value)
-    return result
-  }, [])
+  var p1 = into(h)
 
-  var p2 = reduce(h, function(result, value) {
-    result.push(value)
-    return result
-  }, [])
+  var p2 = into(h)
 
 
   enqueue(c, 1)
 
-  var p3 = reduce(h, function(result, value) {
-    result.push(value)
-    return result
-  }, [])
+  var p3 = into(h)
 
   enqueue(c, 2)
   enqueue(c, 3)
 
-  var p4 = reduce(h, function(result, value) {
-    result.result(value)
-    return result
-  }, [])
+  var p4 = into(h)
 
   close(c)
 
@@ -106,15 +86,12 @@ exports['test source is closed on end'] = function(assert, done) {
   var h = hub(c)
   var t = take(h, 2)
 
-  var p = reduce(t, function(result, value) {
-    result.push(value)
-    return result
-  }, [])
+  var p = into(t)
 
   enqueue(c, 1)
   enqueue(c, 2)
 
-  assert.ok(isClosed(h), 'channel is closed once consumer is done')
+  assert.ok(channel.isClosed(h), 'channel is closed once consumer is done')
 
   await(p, function(actual) {
     assert.deepEqual(actual, [ 1, 2 ], 'value propagated')
@@ -129,28 +106,19 @@ exports['test source is closed on last end'] = function(assert, done) {
   var t2 = take(h, 2)
   var t3 = take(h, 3)
 
-  var p1 = reduce(t1, function(result, value) {
-    result.push(value)
-    return result
-  }, [])
+  var p1 = into(t1)
 
-  var p2 = reduce(t2, function(result, value) {
-    result.push(value)
-    return result
-  }, [])
+  var p2 = into(t2)
 
   enqueue(c, 1)
 
-  var p3 = reduce(t3, function(result, value) {
-    result.push(value)
-    return result
-  }, [])
+  var p3 = into(t3)
 
   enqueue(c, 2)
   enqueue(c, 3)
   enqueue(c, 4)
 
-  assert.ok(isClosed(h), 'channel is closed once consumer is done')
+  assert.ok(channel.isClosed(h), 'channel is closed once consumer is done')
 
   await(p1, function(actual) {
     assert.deepEqual(actual, [ 1 ], '#1 took 1 item')
@@ -168,20 +136,13 @@ exports['test reducing closed'] = function(assert, done) {
   var c = channel()
   var h = hub(c)
 
-  var p1 = reduce(h, function(result, value) {
-    result.push(value)
-    return result
-  }, [])
+  var p1 = into(h)
 
   close(c, 0)
-  assert.ok(isClosed(h), 'hub is closed')
-  assert.ok(isClosed(c), 'channel is closed')
+  assert.ok(channel.isClosed(h), 'hub is closed')
+  assert.ok(channel.isClosed(c), 'channel is closed')
 
-  var p2 = reduce(h, function(result, value) {
-    result.push(value)
-    return result
-  }, [])
-
+  var p2 = into(h)
 
   await(p1, function(actual) {
     assert.deepEqual(actual, [ 0 ], 'only item was collected')
@@ -190,6 +151,19 @@ exports['test reducing closed'] = function(assert, done) {
       done()
     })
   })
+}
+
+exports['test hub with non channels'] = function(assert) {
+  assert.equal(hub(null), null, 'null is considered to be a hub')
+  assert.equal(hub(), undefined, 'undefined is considered to be a hub')
+
+
+  var h = hub([ 1, 2, 3 ])
+  var p1 = into(h)
+  var p2 = into(h)
+
+  assert.deepEqual(p1, [ 1, 2, 3 ], 'first reduce got all items')
+  assert.deepEqual(p2, [ 1, 2, 3 ], 'second reduce got all items')
 }
 
 

@@ -20,21 +20,18 @@ var eventuals = require('eventual/eventual'),
 exports['test channel basics'] = function(assert, done) {
   var c = channel()
 
-  assert.ok(!isOpen(c), 'channel is not open')
-  assert.ok(!isClosed(c), 'channel is not closed')
+  assert.ok(!channel.isOpen(c), 'channel is not open')
+  assert.ok(!channel.isClosed(c), 'channel is not closed')
 
-  var p = reduce(c, function(result, value) {
-    result.push(value)
-    return result
-  }, [])
+  var p = into(c)
 
-  assert.ok(isOpen(c), 'channel is open after reduce is called')
-  assert.ok(!isClosed(c), 'channel is not closed until close is called')
+  assert.ok(channel.isOpen(c), 'channel is open after reduce is called')
+  assert.ok(!channel.isClosed(c), 'channel is not closed until close is called')
 
   await(p, function(actual) {
     assert.deepEqual(actual, [ 1, 2, 3, 4 ],
                      'All queued values were accumulated')
-    assert.ok(isClosed(c), 'channel is closed after it is closed')
+    assert.ok(channel.isClosed(c), 'channel is closed after it is closed')
     done()
   })
 
@@ -47,27 +44,24 @@ exports['test channel basics'] = function(assert, done) {
 exports['test channel auto-close'] = function(assert, done) {
   var c = channel()
 
-  assert.ok(!isOpen(c), 'channel is not open')
-  assert.ok(!isClosed(c), 'channel is not closed')
+  assert.ok(!channel.isOpen(c), 'channel is not open')
+  assert.ok(!channel.isClosed(c), 'channel is not closed')
 
   var t = take(c, 3)
 
-  assert.ok(!isOpen(c), 'channel is not open on take')
-  assert.ok(!isClosed(c), 'channel is not closed on take')
+  assert.ok(!channel.isOpen(c), 'channel is not open on take')
+  assert.ok(!channel.isClosed(c), 'channel is not closed on take')
 
-  var p = reduce(t, function(result, value) {
-    result.push(value)
-    return result
-  }, [])
+  var p = into(t)
 
-  assert.ok(isOpen(c), 'channel is open after reduce is called')
-  assert.ok(!isClosed(c), 'channel is not closed until close is called')
+  assert.ok(channel.isOpen(c), 'channel is open after reduce is called')
+  assert.ok(!channel.isClosed(c), 'channel is not closed until close is called')
 
   enqueue(c, 1)
   enqueue(c, 2)
   enqueue(c, 3)
 
-  assert.ok(isClosed(c), 'channel is closed once consumption is complete')
+  assert.ok(channel.isClosed(c), 'channel is closed once consumption is complete')
 
   assert.throws(function() {
     enqueue(c, 4)
@@ -79,17 +73,14 @@ exports['test channel auto-close'] = function(assert, done) {
   await(p, function(actual) {
     assert.deepEqual(actual, [ 1, 2, 3 ],
                      'All queued values were accumulated')
-    assert.ok(isClosed(c), 'channel is closed after it is closed')
+    assert.ok(channel.isClosed(c), 'channel is closed after it is closed')
     done()
   })
 }
 
 exports['test channel can have single consumer'] = function(assert, done) {
   var c = channel()
-  var p = reduce(c, function(result, value) {
-    result.push(value)
-    return result
-  }, [])
+  var p = into(c)
 
   assert.throws(function() {
     reduce(c, function() { })
