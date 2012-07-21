@@ -13,47 +13,62 @@ var core = require('./core'),
 
 var channels = require('./channel'),
     channel = channels.channel, close = channels.close,
-    isClosed = channels.isClosed, isOpen = channels.isOpen,
-    enqueue = channels.enqueue, dispose = channels.dispose
+    enqueue = channels.enqueue, dispose = channels.dispose,
+    isChannel = channels.isChannel
 
 var input = Name()
-var accumulators = Name()
-
-function update(hub) {
-  if (!hub[accumulators].length && !isClosed(hub[input]))
-    close(hub[input])
-}
+var consumers = Name()
 
 function open(hub) {
-  var consumers = hub[accumulators]
-  accumulate(hub[input], function distribute(value) {
-    var accumulators = consumers.slice(0)
-    var count = consumers.length, index = 0
+  var source = hub[input]
+  var hubConsumers = hub[consumers]
+  hub[input] = null         // mark hub as open
+  accumulate(source, function distribute(value) {
+    var activeConsumers = hubConsumers.slice(0)
+    var count = activeConsumers.length, index = 0
     while (index < count) {
-      var accumulator = accumulators[index++]
-      var state = accumulator.next(value, accumulator.state)
+      var consumer = activeConsumers[index++]
+      var state = consumer.next(value, consumer.state)
       if (state && state.is === accumulated) {
-        var position = consumers.indexOf(accumulator)
-        if (position >= 0) consumers.splice(position, 1)
-        accumulator.next(end(), accumulator.state)
-        update(hub)
+        var position = hubConsumers.indexOf(consumer)
+        if (position >= 0) hubConsumers.splice(position, 1)
+        consumer.next(end(), consumer.state)
       } else {
-        accumulator.state = state
+        consumer.state = state
       }
     }
-    update(hub)
+
+    if (value && value.is === end) {
+      hubConsumers.splice(0)
+      hub[input] = source
+    }
+    if (!hubConsumers.length) {
+      hub[input] = source       // mark hub as not open.
+      return accumulated()      // will notify source consumption is complete.
+    }
   })
 }
 
+function isHub(value) {
+  return !value || (input in value && consumers in value)
+}
+
+function isOpen(hub) {
+  return hub[input] === null
+}
+
 function hub(source) {
+  // If source is already a hub avoid just return.
+  if (isHub(source)) return source
   var value = convert(source, hub.accumulate)
   value[input] = source
-  value[accumulators] = []
+  value[consumers] = []
   return value
 }
+hub.isHub = isHub
+hub.isOpen = isOpen
 hub.accumulate = function accumulate(hub, next, initial) {
-  if (isClosed(hub)) return next(end(), initial)
-  hub[accumulators].push({ next: next, state: initial })
+  hub[consumers].push({ next: next, state: initial })
   if (!isOpen(hub)) open(hub)
 }
 module.exports = hub
