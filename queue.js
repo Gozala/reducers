@@ -9,25 +9,16 @@ var Method = require('method')
 
 
 var core = require('./core'),
-    convert = core.convert, accumulate = core.accumulate
+    convert = core.convert, accumulate = core.accumulate, append = core.append
 
 var channels = require('./channel'),
-    isClosed = channels.isClosed, isOpen = channels.isOpen,
-    enqueue = channels.enqueue, dispose = channels.dispose,
-    close = channels.close
+    enqueue = channels.enqueue, close = channels.close
 
 var queued = Name()
 var output = Name()
 
-function drain(queue) {
-  var values = queue[queued]
-  while (values.length) enqueue(queue[output], values.shift())
-  queue[queued] = null
-  return queue
-}
-
 function isDrained(queue) {
-  return isOpen(queue) && !queue[queued]
+  return !queue[queued]
 }
 
 function queue(target) {
@@ -44,10 +35,8 @@ queue.enqueue = function(queue, value) {
   return queue
 }
 queue.accumulate = function(queue, next, initial) {
-  var opened = isOpen(queue)
-  accumulate(queue[output], next, initial)
-  if (!opened) drain(queue)
-  return queue
+  accumulate(append(queue[queued], queue[output]), next, initial)
+  queued = null
 }
 
 module.exports = queue
