@@ -13,11 +13,6 @@ var core = require('./core'),
 
 var hub = require('./hub')
 
-var channels = require('./channel'),
-    isClosed = channels.isClosed, isOpen = channels.isOpen,
-    enqueue = channels.enqueue, dispose = channels.dispose,
-    close = channels.close
-
 var cached = Name()
 var input = Name()
 

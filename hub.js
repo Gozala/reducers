@@ -11,11 +11,6 @@ var core = require('./core'),
     accumulate = core.accumulate, accumulated = core.accumulated,
     end = core.end, convert = core.convert
 
-var channels = require('./channel'),
-    channel = channels.channel, close = channels.close,
-    enqueue = channels.enqueue, dispose = channels.dispose,
-    isChannel = channels.isChannel
-
 var input = Name()
 var consumers = Name()
 

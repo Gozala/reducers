@@ -7,14 +7,8 @@
 var Name = require('name')
 var Method = require('method')
 
-
 var core = require('./core'),
     convert = core.convert, accumulate = core.accumulate
-
-var channels = require('./channel'),
-    isClosed = channels.isClosed, isOpen = channels.isOpen,
-    enqueue = channels.enqueue, dispose = channels.dispose,
-    close = channels.close
 
 var queued = Name()
 var input = Name()

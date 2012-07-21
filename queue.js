@@ -12,7 +12,7 @@ var core = require('./core'),
     convert = core.convert, accumulate = core.accumulate, append = core.append
 
 var channels = require('./channel'),
-    enqueue = channels.enqueue, close = channels.close
+    enqueue = channels.enqueue
 
 var queued = Name()
 var output = Name()
