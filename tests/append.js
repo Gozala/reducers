@@ -3,8 +3,8 @@
          forin: true latedef: false globalstrict: true*/
 'use strict';
 
-var into = require('../core').into
-var append = require('../accumulator').append
+var into = require('../accumulator').into
+var append = require('../core').append
 
 exports['test append'] = function(assert) {
   var actual = append([ 1 ], [ 2, 3 ], [ 4, 5, 6 ])

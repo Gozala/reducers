@@ -3,8 +3,8 @@
          forin: true latedef: false globalstrict: true*/
 'use strict';
 
-var into = require('../core').into
-var flatten = require('../accumulator').flatten
+var accumulators = require('../accumulator'),
+    flatten = accumulators.flatten, into = accumulators.into
 
 exports['test flatten'] = function(assert) {
   var source = [ [ 1 ], [ 2, 3 ], [ 4, 5, 6 ] ]

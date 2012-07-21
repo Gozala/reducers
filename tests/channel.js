@@ -4,9 +4,9 @@
 'use strict';
 
 var core = require('../core'),
-    into = core.into, flatten = core.flatten, take = core.take
+    flatten = core.flatten, take = core.take
 var accumulators = require('../accumulator'),
-    reduce = accumulators.reduce
+    reduce = accumulators.reduce, into = accumulators.into
 var channels = require('../channel'),
     channel = channels.channel, enqueue = channels.enqueue,
     close = channels.close, isClosed = channels.isClosed,

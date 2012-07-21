@@ -3,8 +3,8 @@
          forin: true latedef: false globalstrict: true*/
 'use strict';
 
-var $ = require('../core'),
-    dropWhile = $.dropWhile, into = $.into
+var dropWhile = require('../core').dropWhile
+var into = require('../accumulator').into
 
 exports['test dropWhile'] = function(assert) {
   var called = 0

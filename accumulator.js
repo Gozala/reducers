@@ -8,47 +8,36 @@ var Name = require('name')
 var Method = require('method')
 var Box = require('./box')
 var core = require('./core'),
-    accumulate = core.accumulate, end = core.end,
+    accumulate = core.accumulate, end = core.end, error = core.error,
     convert = core.convert, map = core.map
 
 var eventuals = require('eventual/eventual'),
-    defer = eventuals.defer, deliver = eventuals.deliver
+    defer = eventuals.defer, deliver = eventuals.deliver, when = eventuals.when
 
-// Define a shortcut for `Array.prototype.slice.call`.
-var unbind = Function.call.bind(Function.bind, Function.call)
-var slice = Array.slice || unbind(Array.prototype.slice)
-
-
-function reduce(source, f, start) {
+function reduce(source, f, state) {
   var promise = defer()
-  accumulate(source, function(value, result) {
+  accumulate(source, function(value) {
     if (value && value.isBoxed) {
-      if (value.is === end) deliver(promise, result)
+      if (value.is === end) deliver(promise, state)
+      if (value.is === error) deliver(promise, value.value)
       return value
     } else {
-      return f(result, value)
+      state = f(state, value)
+      return state
     }
-  }, start)
-  return promise
+  }, state)
+  return when(promise)
 }
 exports.reduce = reduce
 
 function reducible(source, f) {
   return convert(source, function(source, next, initial) {
-    return f(source, function forward(result, value) {
+    var result = f(source, function forward(result, value) {
       return next(value, result)
     }, initial)
+    when(result, function(value) { next(end(), value) })
   })
 }
-
-function append(left, right) {
-  /**
-  Joins given `reducible`s into `reducible` of items
-  of all the `reducibles` preserving an order of items.
-  **/
-  return flatten(slice(arguments))
-}
-exports.append = append
 
 // console.log(into(join([ 1, 2 ], [ 3 ], [ 3, 5 ])))
 
@@ -80,13 +69,15 @@ console.log(into(expand(function(x) {
 }, [ 1, 2, 3 ])))
 */
 
-function generator(generate) {
-  return accumulator(function(self, next, initial) {
-    var state = initial
-    generate(function(value) {
-      state = next(value, state)
-      return state
-    })
-  })
+
+function into(source, buffer) {
+  /**
+  Adds items of given `reducible` into
+  given `array` or a new empty one if omitted.
+  **/
+  return reduce(source, function(result, value) {
+    result.push(value)
+    return result
+  }, buffer || [])
 }
-exports.generator = generator
+exports.into = into

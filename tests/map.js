@@ -4,8 +4,8 @@
 
 'use strict';
 
-var $ = require('../core'),
-    map = $.map, into = $.into
+var map = require('../core').map
+var into = require('../accumulator').into
 
 exports['test map'] = function(assert) {
   var called = 0

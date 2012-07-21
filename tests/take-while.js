@@ -3,8 +3,8 @@
          forin: true latedef: false globalstrict: true*/
 'use strict';
 
-var $ = require('../core'),
-    into = $.into, takeWhile = $.takeWhile
+var takeWhile = require('../core').takeWhile
+var into = require('../accumulator').into
 
 exports['test takeWhile'] = function(assert) {
   var called = 0

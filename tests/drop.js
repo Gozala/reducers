@@ -3,8 +3,8 @@
          forin: true latedef: false globalstrict: true*/
 'use strict';
 
-var $ = require('../core'),
-    into = $.into, drop = $.drop
+var into = require('../accumulator').into
+var drop = require('../core').drop
 
 exports['test drop'] = function(assert) {
   var actual = drop([ 1, 2, 3, 4 ], 2)

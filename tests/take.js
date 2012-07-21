@@ -3,8 +3,8 @@
          forin: true latedef: false globalstrict: true*/
 'use strict';
 
-var $ = require('../core'),
-    take = $.take, into = $.into
+var take = require('../core').take
+var into = require('../accumulator').into
 
 exports['test take'] = function(assert) {
   var actual = take([ 1, 2, 3, 4 ], 2)

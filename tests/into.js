@@ -3,8 +3,7 @@
          forin: true latedef: false globalstrict: true*/
 'use strict';
 
-var $ = require('../core'),
-    into = $.into
+var into = require('../accumulator').into
 
 exports['test into'] = function(assert) {
   var source = [ 1, 2, 3 ]

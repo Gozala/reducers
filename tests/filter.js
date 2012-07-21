@@ -3,8 +3,8 @@
          forin: true latedef: false globalstrict: true */
 'use strict';
 
-var $ = require('../core'),
-    into = $.into, filter = $.filter
+var filter = require('../core').filter
+var into = require('../accumulator').into
 
 exports['test filter'] = function(assert) {
   var called = 0

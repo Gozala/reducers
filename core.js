@@ -9,6 +9,10 @@ var create = Object.create
 var Method = require('method')
 var Box = require('./box')
 
+// Define a shortcut for `Array.prototype.slice.call`.
+var unbind = Function.call.bind(Function.bind, Function.call)
+var slice = Array.slice || unbind(Array.prototype.slice)
+
 var end = Box('end of the sequence')
 exports.end = end
 
@@ -32,6 +36,7 @@ accumulate.define(Array, function(array, next, initial) {
     state = next(array[index++], state)
     if (state && state.is === accumulated) break
   }
+  next(end(), state)
 })
 
 function transformer(source, transform) {
@@ -139,18 +144,25 @@ function tail(source) {
 }
 exports.tail = tail
 
-function into(source, buffer) {
-  /**
-  Adds items of given `reducible` into
-  given `array` or a new empty one if omitted.
-  **/
-  var result = buffer || []
-  accumulate(source, function(value) {
-    if (value && value.isBoxed) return value
-    result.push(value)
-  })
-  return result
-}
-exports.into = into
 
 //console.log(into(skip(2, [ 1, 2, 3, 4, 5, 6 ])))
+//
+
+function append1(left, right) {
+  return convert({}, function(self, next, initial) {
+    accumulate(left, function(value, result) {
+      return value && value.is === end ? accumulate(right, next, result) :
+                                         next(value, result)
+    }, initial)
+  })
+}
+function append(left, right, rest) {
+  /**
+  Joins given `reducible`s into `reducible` of items
+  of all the `reducibles` preserving an order of items.
+  **/
+  return rest ? slice(arguments, 1).reduce(append1, left) :
+                append1(left, right)
+}
+exports.append = append
+
