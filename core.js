@@ -166,3 +166,15 @@ function append(left, right, rest) {
 }
 exports.append = append
 
+function capture(source, recover) {
+  return convert(source, function(self, next, initial) {
+    accumulate(source, function(value, result) {
+      if (value && value.is === error) {
+        accumulate(recover(value.value, result), next, result)
+      } else {
+        next(value, result)
+      }
+    }, initial)
+  })
+}
+exports.capture = capture
