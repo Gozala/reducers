@@ -5,7 +5,8 @@
 
 var sequence = require('./sequence'),
     isEmpty = sequence.isEmpty, count = sequence.count,
-    first = sequence.first, rest = sequence.rest
+    first = sequence.first, rest = sequence.rest,
+    cons = sequence.cons, make = sequence.make, empty = sequence.empty
 
 function List() {}
 List.prototype.length = 0
@@ -19,21 +20,15 @@ List.prototype.toString = function() {
   return '(' + value.substr(1) + ')'
 }
 
-isEmpty.define(List, function(list) { return count(list) === 0 })
 count.define(List, function(list) { return list.length })
 first.define(List, function(list) { return list.head })
 rest.define(List, function(list) { return list.tail })
-
-function empty() {
-  return new List()
-}
-exports.empty = empty
 make.define(List, function(tail, head) { return new List(head, tail) })
 
 function list() {
-  var items = arguments, count = items.length, tail = empty()
+  var items = arguments, count = items.length, tail = empty
   while (count--) tail = cons(items[count], tail)
-  return tail;
+  return tail
 }
 exports.list = list
 
