@@ -82,3 +82,7 @@ function drop(source, n) {
 }
 exports.drop = drop
 
+
+function append(left, right) {
+  return binoid(length, right)
+}
