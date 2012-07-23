@@ -11,8 +11,7 @@ var Method = require('method')
 var core = require('./core'),
     convert = core.convert, accumulate = core.accumulate, append = core.append
 
-var channels = require('./channel'),
-    enqueue = channels.enqueue
+var emit = require('./signal').emit
 
 var queued = Name()
 var output = Name()
@@ -23,14 +22,14 @@ function isDrained(queue) {
 
 function queue(target) {
   var value = convert(target, queue.accumulate)
-  enqueue.implement(value, queue.enqueue)
+  emit.implement(value, queue.emit)
   value[output] = target
   value[queued] = []
   return value
 }
-queue.enqueue = function(queue, value) {
+queue.emit = function(queue, value) {
   if (isDrained(queue))
-    enqueue(queue[output], value)
+    emit(queue[output], value)
   else queue[queued].push(value)
   return queue
 }

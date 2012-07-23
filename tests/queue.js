@@ -7,9 +7,9 @@ var core = require('../core'),
     flatten = core.flatten, take = core.take
 var accumulators = require('../accumulator'),
     reduce = accumulators.reduce, into = accumulators.into
-var channels = require('../channel'),
-    channel = channels.channel, enqueue = channels.enqueue,
-    close = channels.close
+var signals = require('../signal'),
+    signal = signals.signal, emit = signals.emit,
+    close = signals.close
 var hubs = require('../hub'),
     hub = hubs.hub
 var queue = require('../queue')
@@ -18,17 +18,17 @@ var eventuals = require('eventual/eventual'),
     await = eventuals.await
 
 exports['test queue before open'] = function(assert, done) {
-  var c = channel()
+  var c = signal()
   var q = queue(c)
 
-  assert.ok(!channel.isOpen(q), 'queue is not open')
+  assert.ok(!signal.isOpen(q), 'queue is not open')
 
-  enqueue(q, 1)
-  enqueue(q, 2)
+  emit(q, 1)
+  emit(q, 2)
 
   var p = into(q)
 
-  enqueue(q, 3)
+  emit(q, 3)
   close(q, 4)
 
   await(p, function(actual) {

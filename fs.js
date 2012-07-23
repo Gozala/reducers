@@ -30,7 +30,6 @@ var accumulators = require('./accumulator'),
 
 var Box = require('./box')
 
-var channel = require('./channel').channel
 var queue = require('./queue')
 var cache = require('./cache')
 

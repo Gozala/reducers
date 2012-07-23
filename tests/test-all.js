@@ -13,7 +13,7 @@ exports['test into'] = require('./into')
 exports['test append'] = require('./append')
 exports['test flatten'] = require('./flatten')
 
-exports['test channel'] = require('./channel')
+exports['test signal'] = require('./signal')
 exports['test hub'] = require('./hub')
 exports['test queue'] = require('./queue')
 

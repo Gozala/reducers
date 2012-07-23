@@ -7,32 +7,28 @@ var core = require('../core'),
     into = core.into, flatten = core.flatten, take = core.take
 var accumulators = require('../accumulator'),
     reduce = accumulators.reduce
-var channels = require('../channel'),
-    channel = channels.channel, enqueue = channels.enqueue,
-    close = channels.close, isClosed = channels.isClosed,
-    isOpen = channels.isOpen,
-    sequential = channels.sequential,
-    parallel = channels.parallel
+var signals = require('../signal'),
+    signal = signals.signal, emit = signals.emit, close = signals.close
 var buffer = require('../buffer')
 
 var eventuals = require('eventual/eventual'),
     await = eventuals.await
 
-exports['test channel bufferring'] = function(assert, done) {
-  var c = channel()
+exports['test signal bufferring'] = function(assert, done) {
+  var c = signal()
   var b = buffer(c)
 
-  assert.ok(isOpen(c), 'buffer opens a channel')
+  assert.ok(signal.isOpen(c), 'buffer opens a signal')
 
-  enqueue(c, 1)
-  enqueue(b, 2)
+  emit(c, 1)
+  emit(b, 2)
 
   var p = reduce(b, function(result, value) {
     result.push(value)
     return result
   }, [])
 
-  enqueue(c, 3)
+  emit(c, 3)
   close(c, 4)
 
   await(p, function(actual) {
