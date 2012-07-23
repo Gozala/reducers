@@ -35,7 +35,11 @@ function reducible(source, f) {
     var result = f(source, function forward(result, value) {
       return next(value, result)
     }, initial)
-    when(result, function(value) { next(end(), value) })
+    when(result, function(value) {
+      next(end(), value)
+    }, function(e) {
+      next(error(e))
+    })
   })
 }
 
