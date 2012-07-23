@@ -13,6 +13,7 @@ var core = require('./core'),
 
 var eventuals = require('eventual/eventual'),
     defer = eventuals.defer, deliver = eventuals.deliver, when = eventuals.when
+var eventual = require('eventual/core').eventual
 
 function reduce(source, f, state) {
   var promise = defer()
@@ -85,3 +86,12 @@ function into(source, buffer) {
   }, buffer || [])
 }
 exports.into = into
+
+function sequential(source) {
+  return reducible(source, function(_, next, initial) {
+    return reduce(source, eventual(function(result, value) {
+      return next(result, value)
+    }), initial)
+  })
+}
+exports.sequential = sequential
