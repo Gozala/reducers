@@ -12,10 +12,8 @@ var core = require('./core'),
     accumulated = core.accumulated, end = core.end
 
 var emit = Method()
-exports.emit = emit
 
 var close = Method()
-exports.close = close
 
 var accumulator = Name()
 var state = Name()
@@ -61,7 +59,11 @@ close.define(Signal, function(signal, value) {
 })
 
 function signal() { return new Signal() }
+signal.type = Signal
 signal.isOpen = isOpen
 signal.isClosed = isClosed
-exports.signal = signal
+signal.emit = emit
+signal.close = close
+
+module.exports = signal
 

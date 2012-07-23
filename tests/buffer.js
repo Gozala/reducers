@@ -7,8 +7,8 @@ var core = require('../core'),
     into = core.into, flatten = core.flatten, take = core.take
 var accumulators = require('../accumulator'),
     reduce = accumulators.reduce
-var signals = require('../signal'),
-    signal = signals.signal, emit = signals.emit, close = signals.close
+var signal = require('../signal'),
+    emit = signal.emit, close = signal.close
 var buffer = require('../buffer')
 
 var eventuals = require('eventual/eventual'),

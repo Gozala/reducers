@@ -7,12 +7,9 @@ var core = require('../core'),
     flatten = core.flatten, take = core.take
 var accumulators = require('../accumulator'),
     reduce = accumulators.reduce, into = accumulators.into
-var signals = require('../signal'),
-    signal = signals.signal, emit = signals.emit,
-    close = signals.close, isClosed = signals.isClosed,
-    isOpen = signals.isOpen,
-    sequential = signals.sequential,
-    parallel = signals.parallel
+var signal = require('../signal'),
+    emit = signal.emit, close = signal.close,
+    isClosed = signal.isClosed, isOpen = signal.isOpen
 
 var eventuals = require('eventual/eventual'),
     await = eventuals.await
