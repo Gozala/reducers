@@ -28,6 +28,7 @@ function empty() {
   return new List()
 }
 exports.empty = empty
+make.define(List, function(tail, head) { return new List(head, tail) })
 
 function list() {
   var items = arguments, count = items.length, tail = empty()
@@ -35,15 +36,6 @@ function list() {
   return tail;
 }
 exports.list = list
-
-function cons(head, tail) {
-  var list = new List()
-  list.head = head
-  list.tail = tail
-  list.length = count(tail) + 1
-  return list
-}
-exports.cons = cons
 
 function filter(source, f) {
   return f(first(source)) ? cons(first(source), filter(rest(source)), f) :

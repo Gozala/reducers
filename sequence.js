@@ -14,10 +14,18 @@ exports.first = first
 var rest = Method()
 exports.rest = rest
 
+var make = Method()
+exports.make = make
+
 var isEmpty = Method(function(sequence) {
   return count(sequence) === 0
 })
 exports.isEmpty = isEmpty
+
+function cons(head, tail) {
+  return make(tail, head)
+}
+exports.cons = cons
 
 function next(source) {
   return rest(source)
