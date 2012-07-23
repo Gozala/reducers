@@ -8,7 +8,11 @@ var sequence = require('./sequence'),
     first = sequence.first, rest = sequence.rest,
     cons = sequence.cons, make = sequence.make, empty = sequence.empty
 
-function List() {}
+function List(head, tail) {
+  this.head = head
+  this.tail = tail || empty
+  this.length = count(tail) + 1
+}
 List.prototype.length = 0
 List.prototype.toString = function() {
   var value = '', tail = this;
@@ -19,6 +23,7 @@ List.prototype.toString = function() {
 
   return '(' + value.substr(1) + ')'
 }
+exports.List = List
 
 count.define(List, function(list) { return list.length })
 first.define(List, function(list) { return list.head })
