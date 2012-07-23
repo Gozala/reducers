@@ -31,6 +31,14 @@ make.define(Array, function(tail, head) { return [ head ].concat(tail) })
 count.define(Array, function(array) { return array.length })
 first.define(Array, function(array) { return array[0] })
 rest.define(Array, function(array) { return array.slice(1) })
+
+var empty = { toString: function() { return '()' } }
+isEmpty.implement(empty, function() { return true })
+count.implement(empty, function() { return 0 })
+first.implement(empty, function() { return null })
+rest.implement(empty, function() { return empty })
+exports.empty = empty
+
 function cons(head, tail) {
   return make(tail, head)
 }
