@@ -16,12 +16,12 @@ function print(source) {
   }, false)
   when(promise, function() {
     if (!open) process.stdout.write('<stream ')
-    process.stdout.write('/>\n')
+    process.stdout.write('/>\n> ')
   }, function(error) {
     if (!open) process.stdout.write('<stream ')
     process.stdout.write('/Error: ')
     process.stdout.write(error + ' ' + JSON.stringify(error, 2, 2))
-    process.stdout.write('>\n')
+    process.stdout.write('>\n> ')
   })
 }
 exports.print = print
