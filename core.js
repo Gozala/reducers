@@ -22,7 +22,9 @@ exports.accumulated = accumulated
 var error = Box('error')
 exports.error = error
 
-var accumulate = Method()
+var accumulate = Method(function(self, next, start) {
+  next(end(), next(self, start))
+})
 exports.accumulate = accumulate
 
 function accumulateEmpty(_, f, start) { f(end(), start) }
