@@ -58,3 +58,27 @@ function third(source) {
   return first(rest(rest(source)))
 }
 exports.third = third
+
+function filter(source, f) {
+  return f(first(source)) ? cons(first(source), filter(rest(source)), f) :
+                            filter(rest(source), f)
+}
+exports.filter = filter
+
+function map(source, f) {
+  return cons(f(first(source)), map(rest(source), f))
+}
+exports.map = map
+
+function take(source, n) {
+  return n <= 0 ? null :
+                  cons(first(source), take(rest(source), n - 1))
+}
+exports.take = take
+
+function drop(source, n) {
+  return n <= 0 ? source :
+                  drop(rest(source), n - 1)
+}
+exports.drop = drop
+

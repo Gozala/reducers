@@ -31,16 +31,3 @@ function list() {
   return tail
 }
 exports.list = list
-
-function filter(source, f) {
-  return f(first(source)) ? cons(first(source), filter(rest(source)), f) :
-                            filter(rest(source), f)
-}
-exports.filter = filter
-
-function map(source, f) {
-  return cons(f(first(source)), map(rest(source), f))
-}
-exports.map = map
-
-
