@@ -5,9 +5,6 @@
 
 var Method = require('method')
 
-var isEmpty = Method()
-exports.isEmpty = isEmpty
-
 var count = Method()
 exports.count = count
 
@@ -16,6 +13,11 @@ exports.first = first
 
 var rest = Method()
 exports.rest = rest
+
+var isEmpty = Method(function(sequence) {
+  return count(sequence) === 0
+})
+exports.isEmpty = isEmpty
 
 function next(source) {
   return rest(source)
