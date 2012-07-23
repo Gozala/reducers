@@ -22,6 +22,15 @@ var isEmpty = Method(function(sequence) {
 })
 exports.isEmpty = isEmpty
 
+make.define(null, function(_, head) { return [head] })
+count.define(null, function() { return 0 })
+first.define(null, function() { return null })
+rest.define(null, function() { return [] })
+
+make.define(Array, function(tail, head) { return [ head ].concat(tail) })
+count.define(Array, function(array) { return array.length })
+first.define(Array, function(array) { return array[0] })
+rest.define(Array, function(array) { return array.slice(1) })
 function cons(head, tail) {
   return make(tail, head)
 }
