@@ -168,3 +168,14 @@ function readBody(request) {
   return drop(read(request), 1)
 }
 exports.readBody = readBody
+
+
+/**
+## Usage
+
+var content = http.read('http://localhost:8080/')
+
+reduce(content, function(_, data) {
+  console.log(data)
+}, 0)
+**/
