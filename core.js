@@ -180,3 +180,24 @@ function capture(source, recover) {
   })
 }
 exports.capture = capture
+
+function reductions(source, f, initial) {
+  /**
+  Returns `reducible` collection of the intermediate values of the reduction
+  (as per reduce) of coll by `f`, starting with `initial` value.
+
+  ## Example
+
+  reductions([1 1 1 1], function(x, y) { return x + y }, 0)
+  // => [ 1, 2, 3, 4 ]
+  **/
+  return convert(source, function(self, next, result) {
+    var state = initial
+    accumulate(source, function(value, result) {
+      state = value && value.isBoxed ? next(value, result) : f(state, value)
+      return next(state, result)
+    }, result)
+  })
+}
+exports.reductions = reductions
+
