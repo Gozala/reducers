@@ -13,7 +13,7 @@ var core = require('reducers/core'),
 
 var Method = require('method')
 
-var read = Method()
+var connect = Method()
 
 var keys = Object.keys
 var isArray = Array.isArray
@@ -94,7 +94,7 @@ function Request(options) {
   this.timeout = options.timeout || null
   this.uri = options.uri || url.format(options)
 }
-read.define(Request, function(request) {
+connect.define(Request, function(request) {
   var uri = request.uri
   var method = request.method
   var type = request.type
@@ -151,11 +151,11 @@ read.define(Request, function(request) {
 function request(options) { return new Request(options) }
 exports.request = request
 
-read.define(String, function(uri) { return read(request({ uri: uri })) })
-exports.read = read
+connect.define(String, function(uri) { return connect(request({ uri: uri })) })
+exports.connect = connect
 
 function readHead(request) {
-  return take(read(request), 1)
+  return take(connect(request), 1)
 }
 exports.readHead = readHead
 
@@ -164,16 +164,16 @@ function readHeaders(request) {
 }
 exports.readHeaders = readHeaders
 
-function readBody(request) {
-  return drop(read(request), 1)
+function read(request) {
+  return drop(connect(request), 1)
 }
-exports.readBody = readBody
+exports.read = read
 
 
 /**
 ## Usage
 
-var content = http.read('http://localhost:8080/')
+var content = http.content('http://localhost:8080/')
 
 reduce(content, function(_, data) {
   console.log(data)
