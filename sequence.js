@@ -14,35 +14,86 @@ exports.first = first
 var rest = Method()
 exports.rest = rest
 
-var make = Method()
-exports.make = make
-
-var isEmpty = Method(function(sequence) {
-  return count(sequence) === 0
-})
+var isEmpty = Method()
 exports.isEmpty = isEmpty
 
-make.define(null, function(_, head) { return [head] })
-count.define(null, function() { return 0 })
-first.define(null, function() { return null })
-rest.define(null, function() { return [] })
-
-make.define(Array, function(tail, head) { return [ head ].concat(tail) })
+isEmpty.define(Array, function(array) { return array.length === 0 })
 count.define(Array, function(array) { return array.length })
 first.define(Array, function(array) { return array[0] })
 rest.define(Array, function(array) { return array.slice(1) })
 
-var empty = { toString: function() { return '()' } }
-isEmpty.implement(empty, function() { return true })
-count.implement(empty, function() { return 0 })
-first.implement(empty, function() { return null })
-rest.implement(empty, function() { return empty })
-exports.empty = empty
 
-function cons(head, tail) {
-  return make(tail, head)
+function expand(form) {
+  return form.operation.apply(form, form.body)
+}
+
+function Sequence(head, tail) {
+  this.head = head
+  this.tail = tail
+}
+Sequence.prototype.toString = function() {
+  var value = '', tail = this;
+  while (!isEmpty(tail)) {
+    value = value + ' ' + first(tail)
+    tail = rest(tail)
+  }
+
+  return '(' + value.substr(1) + ')'
+}
+Sequence.head = function head(sequence) {
+  return sequence.head
+}
+Sequence.tail = function tail(sequence) {
+  var form = sequence.tail
+  return form.isExpandable ? (sequence.tail = expand(form)) :
+                             form.tail
+}
+
+first.define(Sequence, Sequence.head)
+rest.define(Sequence, Sequence.tail)
+isEmpty.define(Sequence, function() { return false })
+count.define(Sequence, function(sequence) {
+  return count(rest(sequence)) + 1
+})
+
+function LazySequence(operation, body) {
+  this.operation = operation
+  this.body = body
+  this.isExpandable = true
+}
+LazySequence.prototype = Object.create(Sequence.prototype)
+
+;[ first, rest, count, isEmpty ].forEach(function(method) {
+  method.define(LazySequence, function(form) {
+    var sequence = expand(form)
+    delete form.isExpandable
+    delete form.operation
+    delete form.body
+
+    if (isEmpty(sequence)) {
+      isEmpty.implement(form, function() { return true })
+    } else {
+      form.head = sequence.head
+      form.tail = sequence.tail
+      first.implement(form, Sequence.head)
+      rest.implement(form, Sequence.tail)
+    }
+
+    return method(sequence)
+  })
+})
+
+function cons(head, rest) {
+  return new Sequence(head, rest)
 }
 exports.cons = cons
+
+function lazy(operation) {
+  return function transform() {
+    return new LazySequence(operation, arguments)
+  }
+}
+exports.lazy = lazy
 
 function next(source) {
   return rest(source)
@@ -59,30 +110,45 @@ function third(source) {
 }
 exports.third = third
 
-function filter(source, f) {
-  return f(first(source)) ? cons(first(source), filter(rest(source)), f) :
+var filter = lazy(function(source, f) {
+  return isEmpty(source) ? source :
+         f(first(source)) ? cons(first(source), filter(rest(source), f)) :
                             filter(rest(source), f)
-}
+})
 exports.filter = filter
 
-function map(source, f) {
-  return cons(f(first(source)), map(rest(source), f))
-}
+var map = lazy(function(source, f) {
+  return isEmpty(source) ? source :
+                           cons(f(first(source)), map(rest(source), f))
+})
 exports.map = map
 
-function take(source, n) {
-  return n <= 0 ? null :
-                  cons(first(source), take(rest(source), n - 1))
-}
+var take = lazy(function(source, n) {
+  return isEmpty(source) ? source :
+          n <= 0 ? [] :
+          cons(first(source), take(rest(source), n - 1))
+})
 exports.take = take
 
-function drop(source, n) {
-  return n <= 0 ? source :
-                  drop(rest(source), n - 1)
-}
+var drop = lazy(function(source, n) {
+  return isEmpty(source) ? source :
+         n <= 0 ? source :
+         drop(rest(source), n - 1)
+})
 exports.drop = drop
 
+var takeWhile = lazy(function(source, predicate) {
+  var head = first(source)
+  return isEmpty(source) ? source :
+         predicate(head) ? cons(head, takeWhile(rest(source), predicate)) :
+         []
+})
+exports.takeWhile = takeWhile
 
-function append(left, right) {
-  return binoid(length, right)
-}
+var dropWhile = lazy(function dropWhile(source, predicate) {
+  var head = first(source)
+  return isEmpty(source) ? source :
+         predicate(head) ? dropWhile(rest(source), predicate) :
+         rest(source)
+})
+exports.dropWhile = dropWhile

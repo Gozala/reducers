@@ -27,7 +27,6 @@ Binoid.prototype.toString = function toString() {
   }
 
   return '(' + value.substr(1) + ')'
- 
 }
 
 first.define(Binoid, function(self) {
@@ -46,6 +45,7 @@ count.define(Binoid, function(self) {
   return count(self.left) + count(self.right)
 })
 
-exports.concat = function concat(left, right) {
+function concat(left, right) {
   return new Binoid(left, right)
 }
+exports.concat = concat

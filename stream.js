@@ -5,16 +5,10 @@
 
 var List = require('./list').List
 
-var eventuals = require('eventual/eventual'),
-    defer = eventuals.defer, deliver = eventuals.deliver, when = eventuals.when
-
 var sequence = require('./sequence'),
     count = sequence.count,
     first = sequence.first, rest = sequence.rest, cons = cons
 
-
-function head(stream) { return stream.head }
-function identity(value) { return value }
 function Stream(head, rest) {
   this.head = head
   this.rest = rest
@@ -24,14 +18,13 @@ Stream.prototype = Object.create(List.prototype)
 Stream.prototype.length = Infinity
 
 rest.define(Stream, function(stream) {
-  return when(stream.tail || (stream.tail = stream.rest(stream)), identity)
+  return stream.tail || (stream.tail = stream.rest(stream))
 })
 
 function stream(head, rest) {
   return new Stream(head, rest)
 }
 exports.stream = stream
-
 
 function iterate(f, value) {
   return stream(value, function(self) {
