@@ -9,8 +9,9 @@ var create = Object.create
 var Method = require('method')
 var Box = require('./box')
 
-// Define a shortcut for `Array.prototype.slice.call`.
 var unbind = Function.call.bind(Function.bind, Function.call)
+
+// Define a shortcut for `Array.prototype.slice.call`.
 var slice = Array.slice || unbind(Array.prototype.slice)
 
 var end = Box('end of the sequence')
