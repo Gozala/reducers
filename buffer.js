@@ -27,6 +27,19 @@ function isDrained(buffer) {
 }
 
 function buffer(source) {
+  /**
+  Buffer a reducible, saving items from reducible in-memory until a consumer
+  reduces the buffer.
+
+  Reducibles are not required to expose a data container for the sequence they
+  represent, meaning items in the reducible may not be represented in-memory
+  at all. This is great for representing potentially infinite data structures
+  like "mouse clicks over time", or "data streamed from server". However,
+  sometimes it's important to reduce all items in the reducible, even if the
+  item was emitted at a point in the past. This is where buffer comes in handy.
+  It stores a backlog of previously emitted items in-memory until you're
+  ready to consume.
+  **/
   var self = convert(source, buffer.accumulate)
   self[state] = null
   self[input] = source
