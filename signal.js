@@ -19,6 +19,14 @@ var accumulator = Name()
 var state = Name()
 var closed = Name()
 
+// Define a `Signal` data-type. A signal is a sequence of "events over time".
+// If you're familiar with libraries like Node EventEmitter, you might have
+// an easy time thinking of Signal as a single event channel. The key difference
+// is that signal represents events-over-time as a reducible value. This means
+// the events-over-time can be transformed, filtered forked and joined just like
+// an array.
+function Signal() {}
+
 // Signals can be either open or closed. An open signal may `emit` new values.
 // A signal that is not open may not emit.
 // 
@@ -29,8 +37,6 @@ function isClosed(signal) {
 function isOpen(signal) {
   return !!signal[accumulator]
 }
-
-function Signal() {}
 
 // Implement accumulate protocol on signals, making them reducible.
 accumulate.define(Signal, function(signal, next, initial) {
@@ -43,6 +49,7 @@ accumulate.define(Signal, function(signal, next, initial) {
   return signal
 })
 
+// Implement emit protocol for Signal
 emit.define(Signal, function(signal, value) {
   if (isClosed(signal)) throw Error('Signal is already closed')
   if (!isOpen(signal)) throw Error('Signal is not open')
