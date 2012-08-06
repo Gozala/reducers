@@ -35,6 +35,8 @@ function accumulateEmpty(_, f, start) { f(end(), start) }
 accumulate.define(undefined, accumulateEmpty)
 accumulate.define(null, accumulateEmpty)
 
+// Implement accumulation method for native arrays, making arrays compatible
+// with reducer methods and other reducible values.
 accumulate.define(Array, function(array, next, initial) {
   var state = initial, index = 0, count = array.length
   while (index < count) {
