@@ -53,8 +53,13 @@ function buffer(source) {
   return self
 }
 buffer.accumulate = function(buffer, next, initial) {
+  // If buffer has already been drained accumulate from the original source.
   if (isDrained(buffer)) return accumulate(buffer[input], next, initial)
+  // Otherwise, drain the buffer, passing items to the accumulating function.
   buffer[state] = drain(buffer, next, initial)
+  // Overshadow forward function, insuring that
+  // future values are not buffered, and are instead passed directly to the
+  // accumulation function.
   buffer[forward] = next
   return buffer
 }
