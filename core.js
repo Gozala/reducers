@@ -183,6 +183,13 @@ function append(left, right, rest) {
 exports.append = append
 
 function capture(source, recover) {
+  /**
+  Capture any boxed errors that occur while reducing a given `source` and
+  `recover` reduction using the provided function.
+
+  Allows you to bake error handling and recovery into your reductions -- crucial
+  for live data sources like XHR or Sockets.
+  **/
   return convert(source, function(self, next, initial) {
     accumulate(source, function(value, result) {
       if (value && value.is === error) {
