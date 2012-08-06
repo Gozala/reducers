@@ -20,6 +20,9 @@ var state = Name()
 var closed = Name()
 
 // Define a `Signal` data-type. A signal is a sequence of "events over time".
+// 
+// Signals are a building block for creating Reactive event-driven programs.
+// 
 // If you're familiar with libraries like Node EventEmitter, you might have
 // an easy time thinking of Signal as a single event channel. The key difference
 // is that signal represents events-over-time as a reducible value. This means
