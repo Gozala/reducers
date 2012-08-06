@@ -49,8 +49,11 @@ accumulate.define(Signal, function(signal, next, initial) {
   return signal
 })
 
-// Implement emit protocol for Signal
 emit.define(Signal, function(signal, value) {
+  /**
+  Emit a new value for signal.
+  Throws an exception if the signal is not open for emitting.
+  **/
   if (isClosed(signal)) throw Error('Signal is already closed')
   if (!isOpen(signal)) throw Error('Signal is not open')
   var result = signal[accumulator](value, signal[state])
@@ -63,6 +66,10 @@ emit.define(Signal, function(signal, value) {
 })
 
 close.define(Signal, function(signal, value) {
+  /**
+  Close a signal, preventing new values from being emitted.
+  Throws an exception if the signal is already closed.
+  **/
   if (isClosed(signal)) throw Error('Signal is already closed')
   if (value !== undefined) emit(signal, value)
   var result = signal[state]
