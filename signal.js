@@ -31,13 +31,18 @@ function isOpen(signal) {
 }
 
 function Signal() {}
+
+// Implement accumulate protocol on signals, making them reducible.
 accumulate.define(Signal, function(signal, next, initial) {
+  // Signals may only be reduced by one consumer function.
+  // Other data types built on top of signal may allow for more consumers.
   if (isOpen(signal)) throw Error('Signal is being consumed')
   if (isClosed(signal)) return next(end(), initial)
   signal[accumulator] = next
   signal[state] = initial
   return signal
 })
+
 emit.define(Signal, function(signal, value) {
   if (isClosed(signal)) throw Error('Signal is already closed')
   if (!isOpen(signal)) throw Error('Signal is not open')
@@ -49,6 +54,7 @@ emit.define(Signal, function(signal, value) {
   }
   return signal
 })
+
 close.define(Signal, function(signal, value) {
   if (isClosed(signal)) throw Error('Signal is already closed')
   if (value !== undefined) emit(signal, value)
