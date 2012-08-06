@@ -174,8 +174,8 @@ function append1(left, right) {
 }
 function append(left, right, rest) {
   /**
-  Joins given `reducible`s into `reducible` of items
-  of all the `reducibles` preserving an order of items.
+  Concatenate multiple `reducible`s, returning a single `reducible` containing
+  all the items from the original `reducibles`, in order.
   **/
   return rest ? slice(arguments, 1).reduce(append1, left) :
                 append1(left, right)
