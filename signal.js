@@ -19,6 +19,10 @@ var accumulator = Name()
 var state = Name()
 var closed = Name()
 
+// Signals can be either open or closed. An open signal may `emit` new values.
+// A signal that is not open may not emit.
+// 
+// Define helper that allow you to test the state of a signal.
 function isClosed(signal) {
   return !!signal[closed]
 }
@@ -58,6 +62,9 @@ close.define(Signal, function(signal, value) {
   return signal
 })
 
+// Define a factory function for the `Signal` constructor.
+// Assign other signal functions to the factory function object and export
+// the result.
 function signal() { return new Signal() }
 signal.type = Signal
 signal.isOpen = isOpen
