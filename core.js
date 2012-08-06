@@ -50,6 +50,11 @@ function transformer(source, transform) {
 exports.transformer = transformer
 
 function convert(source, method) {
+  /**
+  Make a `source` object accumulatable by creating a prototypal copy and
+  implementing the `accumulate` protocol on it with the given `method`.
+  Returns an accumulatable/reducible object.
+  **/
   return accumulate.implement(create(source), method)
 }
 exports.convert = convert
