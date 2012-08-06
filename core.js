@@ -28,8 +28,10 @@ var accumulate = Method(function(self, next, start) {
 })
 exports.accumulate = accumulate
 
+// Implement accumulation for undefined and null values.
+// Reducing/accumulating a null value will pass the initial start value to
+// the accumulating function, then end.
 function accumulateEmpty(_, f, start) { f(end(), start) }
-
 accumulate.define(undefined, accumulateEmpty)
 accumulate.define(null, accumulateEmpty)
 
