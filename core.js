@@ -113,7 +113,7 @@ exports.take = take
 
 function drop(source, n) {
   /**
-  Reduces given `reducible` to a firs `n` items.
+  Reduces given `reducible` to first `n` items.
   **/
   return transformer(source, function(source) {
     var count = n >= 0 ? n : 1
