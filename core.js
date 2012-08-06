@@ -152,6 +152,10 @@ function dropWhile(source, predicate) {
 exports.dropWhile = dropWhile
 
 function tail(source) {
+  /**
+  Get the last value of a reducible.
+  Reduces a reducible to it's tailing value.
+  **/
   return drop(source, 1)
 }
 exports.tail = tail
