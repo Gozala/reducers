@@ -5,7 +5,6 @@
 'use strict';
 
 var XHR = require('./xhr')
-var url = require('url')
 var core = require('reducers/core'),
     convert = core.convert,
     accumulated = core.accumulated, end = core.end, error = core.error,
@@ -79,20 +78,18 @@ function readChunk(xhr, position) {
 }
 
 function Request(options) {
+  if (!options.uri) throw new Error('Requests require a url');
+  this.uri = options.uri;
+
   this.method = options.method ? options.method.toUpperCase() : 'GET'
-  this.headers = options.headers || null
-  this.protocol = options.protocol || 'http:'
-  this.host = options.host
-  this.port = options.port || null
-  this.path = options.path || '/'
-  this.hash = options.hash || ''
-  this.query = options.query || ''
-  this.body = options.body || ''
-  this.type = options.type || null
-  this.mimeType = options.mimeType || null
-  this.credentials = options.credentials || null
-  this.timeout = options.timeout || null
-  this.uri = options.uri || url.format(options)
+
+  var keys = [
+    'type', 'headers', 'mimeType', 'credentials', 'timeout', 'body'
+  ]
+
+  for (var i = 0; i < keys.length; i++) {
+    this[keys[i]] = (options[keys[i]] || null)    
+  }
 }
 connect.define(Request, function(request) {
   var uri = request.uri
