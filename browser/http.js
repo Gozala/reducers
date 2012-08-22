@@ -5,7 +5,6 @@
 'use strict';
 
 var XHR = require('./xhr')
-var url = require('url')
 var core = require('reducers/core'),
     convert = core.convert,
     accumulated = core.accumulated, end = core.end, error = core.error,
@@ -79,23 +78,21 @@ function readChunk(xhr, position) {
 }
 
 function Request(options) {
+  if (!options.url) throw new Error('Requests require a url');
+  this.url = options.url;
+
   this.method = options.method ? options.method.toUpperCase() : 'GET'
-  this.headers = options.headers || null
-  this.protocol = options.protocol || 'http:'
-  this.host = options.host
-  this.port = options.port || null
-  this.path = options.path || '/'
-  this.hash = options.hash || ''
-  this.query = options.query || ''
-  this.body = options.body || ''
-  this.type = options.type || null
-  this.mimeType = options.mimeType || null
-  this.credentials = options.credentials || null
-  this.timeout = options.timeout || null
-  this.uri = options.uri || url.format(options)
+
+  var keys = [
+    'type', 'headers', 'mimeType', 'credentials', 'timeout', 'body'
+  ]
+
+  for (var i = 0; i < keys.length; i++) {
+    this[keys[i]] = (options[keys[i]] || null)    
+  }
 }
 connect.define(Request, function(request) {
-  var uri = request.uri
+  var url = request.url
   var method = request.method
   var type = request.type
   var headers = request.headers
@@ -107,9 +104,9 @@ connect.define(Request, function(request) {
   return convert(request, function(self, next, state) {
     var xhr = new XHR()
     if (credentials)
-      xhr.open(method, uri, true, credentials.user, credentials.password)
+      xhr.open(method, url, true, credentials.user, credentials.password)
     else
-      xhr.open(request.method, request.uri, true)
+      xhr.open(request.method, request.url, true)
 
     if (type) xhr.responseType = type
     if (headers) setHeaders(xhr, headers)
@@ -151,7 +148,7 @@ connect.define(Request, function(request) {
 function request(options) { return new Request(options) }
 exports.request = request
 
-connect.define(String, function(uri) { return connect(request({ uri: uri })) })
+connect.define(String, function(url) { return connect(request({ url: url })) })
 exports.connect = connect
 
 function readHead(request) {
