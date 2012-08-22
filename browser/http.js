@@ -78,8 +78,8 @@ function readChunk(xhr, position) {
 }
 
 function Request(options) {
-  if (!options.uri) throw new Error('Requests require a url');
-  this.uri = options.uri;
+  if (!options.url) throw new Error('Requests require a url');
+  this.url = options.url;
 
   this.method = options.method ? options.method.toUpperCase() : 'GET'
 
@@ -92,7 +92,7 @@ function Request(options) {
   }
 }
 connect.define(Request, function(request) {
-  var uri = request.uri
+  var url = request.url
   var method = request.method
   var type = request.type
   var headers = request.headers
@@ -104,9 +104,9 @@ connect.define(Request, function(request) {
   return convert(request, function(self, next, state) {
     var xhr = new XHR()
     if (credentials)
-      xhr.open(method, uri, true, credentials.user, credentials.password)
+      xhr.open(method, url, true, credentials.user, credentials.password)
     else
-      xhr.open(request.method, request.uri, true)
+      xhr.open(request.method, request.url, true)
 
     if (type) xhr.responseType = type
     if (headers) setHeaders(xhr, headers)
@@ -148,7 +148,7 @@ connect.define(Request, function(request) {
 function request(options) { return new Request(options) }
 exports.request = request
 
-connect.define(String, function(uri) { return connect(request({ uri: uri })) })
+connect.define(String, function(url) { return connect(request({ url: url })) })
 exports.connect = connect
 
 function readHead(request) {
