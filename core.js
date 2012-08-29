@@ -165,6 +165,9 @@ exports.tail = tail
 //
 
 function append1(left, right) {
+  /**
+  The reducing function for append (below). Not public.
+  **/
   return convert({}, function(self, next, initial) {
     accumulate(left, function(value, result) {
       return value && value.is === end ? accumulate(right, next, result) :
