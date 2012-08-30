@@ -155,16 +155,34 @@ connect.define(String, function(uri) { return connect(request({ uri: uri })) })
 exports.connect = connect
 
 function readHead(request) {
+  /** 
+  Read the head data for a single request.
+  Returns a reducible.
+  **/
   return take(connect(request), 1)
 }
 exports.readHead = readHead
 
 function readHeaders(request) {
+  /**
+  Read the headers for a single request.
+  Returns a reducible.
+  **/
   return map(readHead(request), function(head) { return head.headers })
 }
 exports.readHeaders = readHeaders
 
 function read(request) {
+  /**
+  Read the request body for a single request.
+  Returns a reducible.
+
+  Example:
+
+      var body = http.read('http://example.com');
+      reduce(body, writeBodyToDOM);
+      
+  **/
   return drop(connect(request), 1)
 }
 exports.read = read
