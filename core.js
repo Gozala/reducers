@@ -16,7 +16,7 @@ var slice = Array.slice || unbind(Array.prototype.slice)
 var end = Box('end of the sequence')
 exports.end = end
 
-var accumulated = Box('Indicator that source has being accumulateed')
+var accumulated = Box('Indicator that source has been accumulated')
 exports.accumulated = accumulated
 
 var error = Box('error')
