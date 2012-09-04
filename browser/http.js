@@ -33,7 +33,7 @@ function isHeaderSupported(name) {
 
 function setHeaders(xhr, headers) {
   keys(headers).forEach(function (name) {
-    if (!isHeaderSupported(name)) {
+    if (isHeaderSupported(name)) {
       var value = headers[name]
         if (isArray(value))
           value.forEach(function(value) { xhr.setRequestHeader(name, value) })
