@@ -83,8 +83,9 @@ function Request(options) {
   this.headers = options.headers || null
   this.protocol = options.protocol || 'http:'
   this.host = options.host
+  this.hostname = options.hostname
   this.port = options.port || null
-  this.path = options.path || '/'
+  this.pathname = options.pathname || '/'
   this.hash = options.hash || ''
   this.query = options.query || ''
   this.body = options.body || ''
@@ -92,7 +93,7 @@ function Request(options) {
   this.mimeType = options.mimeType || null
   this.credentials = options.credentials || null
   this.timeout = options.timeout || null
-  this.uri = options.uri || url.format(options)
+  this.uri = options.uri || url.format(this)
 }
 connect.define(Request, function(request) {
   var uri = request.uri
