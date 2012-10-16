@@ -10,9 +10,7 @@ var accumulators = require('../accumulator'),
 var signal = require('../signal'),
     emit = signal.emit, close = signal.close,
     isClosed = signal.isClosed, isOpen = signal.isOpen
-
-var eventuals = require('eventual/eventual'),
-    await = eventuals.await
+var await = require('pending/await')
 
 exports['test signal basics'] = function(assert, done) {
   var c = signal()

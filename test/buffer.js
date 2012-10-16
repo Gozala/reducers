@@ -11,8 +11,7 @@ var signal = require('../signal'),
     emit = signal.emit, close = signal.close
 var buffer = require('../buffer')
 
-var eventuals = require('eventual/eventual'),
-    await = eventuals.await
+var await = require('pending/await')
 
 exports['test signal bufferring'] = function(assert, done) {
   var c = signal()

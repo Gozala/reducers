@@ -12,9 +12,7 @@ var signal = require('../signal'),
 var hubs = require('../hub'),
     hub = hubs.hub
 var queue = require('../queue')
-
-var eventuals = require('eventual/eventual'),
-    await = eventuals.await
+var await = require('pending/await')
 
 exports['test queue before open'] = function(assert, done) {
   var c = signal()
