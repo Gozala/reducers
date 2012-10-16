@@ -12,7 +12,6 @@ var core = require('./core'),
     accumulated = core.accumulated, end = core.end
 
 var emit = Method()
-
 var close = Method()
 
 var accumulator = Name()

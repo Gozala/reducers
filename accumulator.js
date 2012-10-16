@@ -4,16 +4,14 @@
 
 'use strict';
 
-var Name = require('name')
-var Method = require('method')
-var Box = require('./box')
 var core = require('./core'),
     accumulate = core.accumulate, end = core.end, error = core.error,
     convert = core.convert, map = core.map
 
-var eventuals = require('eventual/eventual'),
-    defer = eventuals.defer, deliver = eventuals.deliver, when = eventuals.when
-var eventual = require('eventual/core').eventual
+var defer = require("eventual/defer")
+var when = require("eventual/when")
+var eventual = require("eventual/decorate")
+var deliver = require("pending/deliver")
 
 function reduce(source, f, state) {
   var promise = defer()

@@ -4,13 +4,9 @@
 'use strict';
 
 var Name = require('name')
-var Method = require('method')
-
-
 var core = require('./core'),
     convert = core.convert, accumulate = core.accumulate,
     append = core.append, end = core.end
-
 var hub = require('./hub')
 
 var cached = Name()
