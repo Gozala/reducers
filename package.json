@@ -1,7 +1,7 @@
 {
   "name": "reducers",
   "id": "reducers",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A library for collection processing",
   "keywords": [ "reducers" ],
   "author": "Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)",
