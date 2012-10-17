@@ -4,9 +4,6 @@
 'use strict';
 
 var Name = require('name')
-var Method = require('method')
-
-
 var core = require('./core'),
     accumulate = core.accumulate, accumulated = core.accumulated,
     end = core.end, convert = core.convert

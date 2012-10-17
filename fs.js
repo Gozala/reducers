@@ -19,10 +19,10 @@ var core = require('./core'),
     append = core.append, transform = core.transform,
     accumulated = core.accumulated, drop = core.drop
 
-var eventuals = require('eventual/eventual'),
-    defer = eventuals.defer, deliver = eventuals.deliver,
-    when = eventuals.when
-var eventual = require('eventual/core').eventual
+var defer = require("eventual/defer")
+var when = require("eventual/when")
+var eventual = require("eventual/decorator")
+var deliver require("pending/deliver")
 
 var accumulators = require('./accumulator'),
     expand = accumulators.expand, reduce = accumulators.reduce,

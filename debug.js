@@ -5,7 +5,7 @@
 'use strict';
 
 var reduce = require('./accumulator').reduce;
-var when = require('eventual/eventual').when;
+var when = require("eventual/when")
 
 function print(source) {
   var open = false

@@ -1,7 +1,7 @@
 {
   "name": "reducers",
   "id": "reducers",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A library for collection processing",
   "keywords": [ "reducers" ],
   "author": "Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)",
@@ -15,20 +15,19 @@
     "url": "http://github.com/Gozala/reducers/issues/"
   },
   "dependencies": {
-    "method": ">=0.0.3",
+    "method": ">=0.1.1",
+    "pending": ">=0.0.3",
     "name": ">=0.0.2",
-    "eventual": ">=0.0.2"
+    "eventual": ">=0.3.0"
   },
   "devDependencies": {
     "test": ">=0.4.4",
     "repl-utils": ">=1.0.0",
-    "swank-js": ">=0.0.1",
     "benchmark": ">=0.3.0"
   },
   "scripts": {
-    "test": "node tests/test-all.js",
+    "test": "node test/test-all.js",
     "repl": "node node_modules/repl-utils",
-    "swank": "node node_modules/swank-js",
     "benchmark": "node tests/benchmark.js"
   },
   "licenses": [{

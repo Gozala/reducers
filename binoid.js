@@ -3,12 +3,10 @@
          forin: true latedef: false globalstrict: true */
 'use strict';
 
-var List = require('./list').List
-
 var sequence = require('./sequence'),
     count = sequence.count,
-    first = sequence.first, rest = sequence.rest, cons = cons,
-    isEmpty = sequence.isEmpty, empty = sequence.empty
+    first = sequence.first, rest = sequence.rest,
+    isEmpty = sequence.isEmpty
 
 function Binoid(left, right) {
   this.left = left || null

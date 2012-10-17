@@ -11,8 +11,7 @@ var signal = require('../signal'),
     emit = signal.emit, close = signal.close
 var hub = require('../hub')
 
-var eventuals = require('eventual/eventual'),
-    await = eventuals.await
+var await = require('pending/await')
 
 exports['test hub open / close propagate'] = function(assert, done) {
   var c = signal()
