@@ -9,14 +9,15 @@ var create = Object.create
 var Method = require('method')
 var Box = require('./box')
 
-// Define a shortcut for `Array.prototype.slice.call`.
 var unbind = Function.call.bind(Function.bind, Function.call)
+
+// Define a shortcut for `Array.prototype.slice.call`.
 var slice = Array.slice || unbind(Array.prototype.slice)
 
 var end = Box('end of the sequence')
 exports.end = end
 
-var accumulated = Box('Indicator that source has being accumulateed')
+var accumulated = Box('Indicator that source has been accumulated')
 exports.accumulated = accumulated
 
 var error = Box('error')
@@ -27,11 +28,15 @@ var accumulate = Method(function(self, next, start) {
 })
 exports.accumulate = accumulate
 
+// Implement accumulation for undefined and null values.
+// Reducing/accumulating a null value will pass the initial start value to
+// the accumulating function, then end.
 function accumulateEmpty(_, f, start) { f(end(), start) }
-
 accumulate.define(undefined, accumulateEmpty)
 accumulate.define(null, accumulateEmpty)
 
+// Implement accumulation method for native arrays, making arrays compatible
+// with reducer methods and other reducible values.
 accumulate.define(Array, function(array, next, initial) {
   var state = initial, index = 0, count = array.length
   while (index < count) {
@@ -49,6 +54,11 @@ function transformer(source, transform) {
 exports.transformer = transformer
 
 function convert(source, method) {
+  /**
+  Make a `source` object accumulatable by creating a prototypal copy and
+  implementing the `accumulate` protocol on it with the given `method`.
+  Returns an accumulatable/reducible object.
+  **/
   return accumulate.implement(create(source), method)
 }
 exports.convert = convert
@@ -103,7 +113,7 @@ exports.take = take
 
 function drop(source, n) {
   /**
-  Reduces given `reducible` to a firs `n` items.
+  Reduces given `reducible` to first `n` items.
   **/
   return transformer(source, function(source) {
     var count = n >= 0 ? n : 1
@@ -142,6 +152,10 @@ function dropWhile(source, predicate) {
 exports.dropWhile = dropWhile
 
 function tail(source) {
+  /**
+  Get the last value of a reducible.
+  Reduces a reducible to it's tailing value.
+  **/
   return drop(source, 1)
 }
 exports.tail = tail
@@ -151,6 +165,9 @@ exports.tail = tail
 //
 
 function append1(left, right) {
+  /**
+  The reducing function for append (below). Not public.
+  **/
   return convert({}, function(self, next, initial) {
     accumulate(left, function(value, result) {
       return value && value.is === end ? accumulate(right, next, result) :
@@ -160,8 +177,8 @@ function append1(left, right) {
 }
 function append(left, right, rest) {
   /**
-  Joins given `reducible`s into `reducible` of items
-  of all the `reducibles` preserving an order of items.
+  Concatenate multiple `reducible`s, returning a single `reducible` containing
+  all the items from the original `reducibles`, in order.
   **/
   return rest ? slice(arguments, 1).reduce(append1, left) :
                 append1(left, right)
@@ -169,6 +186,13 @@ function append(left, right, rest) {
 exports.append = append
 
 function capture(source, recover) {
+  /**
+  Capture any boxed errors that occur while reducing a given `source` and
+  `recover` reduction using the provided function.
+
+  Allows you to bake error handling and recovery into your reductions -- crucial
+  for live data sources like XHR or Sockets.
+  **/
   return convert(source, function(self, next, initial) {
     accumulate(source, function(value, result) {
       if (value && value.is === error) {
