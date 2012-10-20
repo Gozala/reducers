@@ -50,6 +50,11 @@ function isOpen(hub) {
 }
 
 function hub(source) {
+  /**
+  Take a reducible `source`, such as a `signal` and return a reducible that can
+  be consumed by many reducers.
+  **/
+
   // If source is already a hub avoid just return.
   if (isHub(source)) return source
   var value = convert(source, hub.accumulate)
