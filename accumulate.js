@@ -9,29 +9,41 @@ var accumulated = require("./accumulated")
 
 var accumulate = Method()
 
-// Implementation of accumulate for the empty sequences.
-function accumulateEmpty(_, f, start) { f(end(), start) }
-
-// Both undefined and null are treated as empty collections,
-// so the reduce accordingly.
-accumulate.define(void(0), accumulateEmpty)
-accumulate.define(null, accumulateEmpty)
-
-// All other data structures that do not implement `accumulate`
-// for their type are treated as sequences of single value.
-accumulate.define(function(value, next, start) {
+// Implementation of accumulate for the empty sequences, that immediately
+// signals end of sequence.
+accumulate.empty = function accumulateEmpty(empty, next, start) {
+  next(end(), start)
+}
+// Implementation of accumulate for the singular values which are treated
+// as sequences with single element. Yields the given value and signals
+// the end of sequence.
+accumulate.singular = function accumulateSingular(value, next, start) {
   next(end(), next(value, start))
-})
-
-// Unlike all other data built-in data structures in JS Arrays, do
-// represent sequences, there for they implement `accumulate` differently.
-accumulate.define(Array, function(array, next, initial) {
-  var state = initial, index = 0, count = array.length
+}
+// Implementation accumulate for the array (and alike) values, such that it
+// will call accumulator function `next` each time with next item and
+// accumulated state until it's exhausted or `next` returns marked value
+// indicating that it's done accumulating. Either way signals end to
+// an accumulator.
+accumulate.indexed = function accumulateIndexed(indexed, next, initial) {
+  var state = initial, index = 0, count = indexed.length
   while (index < count) {
-    state = next(array[index++], state)
+    state = next(indexed[index++], state)
     if (state && state.is === accumulated) break
   }
   next(end(), state)
-})
+}
+
+// Both `undefined` and `null` implement accumulate for empty sequences.
+accumulate.define(void(0), accumulate.empty)
+accumulate.define(null, accumulate.empty)
+
+// Array and arguments implement accumulate for indexed sequences.
+accumulate.define(Array, accumulate.indexed)
+accumulate.define((function() { return arguments })(), accumulate.indexed)
+
+// All other built-in data structures are treated as single value sequences
+// by default. Of course individual types may choose to override that.
+accumulate.define(accumulate.singular)
 
 module.exports = accumulate
