@@ -14,64 +14,21 @@ var unbind = Function.call.bind(Function.bind, Function.call)
 // Define a shortcut for `Array.prototype.slice.call`.
 var slice = Array.slice || unbind(Array.prototype.slice)
 
-var end = Box('end of the sequence')
+var end = require("./end")
+var accumulated = require("./accumulated")
+var error = require("./error")
+var accumulate = require("./accumulate")
+var transformer = require("./transformer")
+var transform = require("./transform")
+var convert = require("./convert")
+
 exports.end = end
-
-var accumulated = Box('Indicator that source has been accumulated')
 exports.accumulated = accumulated
-
-var error = Box('error')
 exports.error = error
-
-var accumulate = Method(function(self, next, start) {
-  next(end(), next(self, start))
-})
 exports.accumulate = accumulate
-
-// Implement accumulation for undefined and null values.
-// Reducing/accumulating a null value will pass the initial start value to
-// the accumulating function, then end.
-function accumulateEmpty(_, f, start) { f(end(), start) }
-accumulate.define(undefined, accumulateEmpty)
-accumulate.define(null, accumulateEmpty)
-
-// Implement accumulation method for native arrays, making arrays compatible
-// with reducer methods and other reducible values.
-accumulate.define(Array, function(array, next, initial) {
-  var state = initial, index = 0, count = array.length
-  while (index < count) {
-    state = next(array[index++], state)
-    if (state && state.is === accumulated) break
-  }
-  next(end(), state)
-})
-
-function transformer(source, transform) {
-  return convert(source, function(self, next, initial) {
-    return accumulate(transform(source), next, initial)
-  })
-}
-exports.transformer = transformer
-
-function convert(source, method) {
-  /**
-  Make a `source` object accumulatable by creating a prototypal copy and
-  implementing the `accumulate` protocol on it with the given `method`.
-  Returns an accumulatable/reducible object.
-  **/
-  return accumulate.implement(create(source), method)
-}
-exports.convert = convert
-
-function transform(source, f) {
-  return convert(source, function(self, next, initial) {
-    accumulate(source, function(value, result) {
-      return value && value.isBoxed ? next(value, result)
-                                    : f(next, value, result)
-    }, initial)
-  })
-}
+exports.transform = transformer
 exports.transform = transform
+exports.convert = convert
 
 function filter(source, predicate) {
   /**
