@@ -3,10 +3,9 @@
          forin: true latedef: false globalstrict: true*/
 'use strict';
 
-var core = require('../core'),
-    take = core.take
-var accumulators = require('../accumulator'),
-    reduce = accumulators.reduce, into = accumulators.into
+var take = require("../take")
+var reduce = require("../reduce")
+var into = require("../into")
 var signal = require('../signal'),
     emit = signal.emit, close = signal.close
 var hub = require('../hub')

@@ -4,7 +4,7 @@
 
 'use strict';
 
-var reduce = require('./accumulator').reduce;
+var reduce = require("../reduce");
 var when = require("eventual/when")
 
 function print(source) {
@@ -24,4 +24,5 @@ function print(source) {
     process.stdout.write('>\n> ')
   })
 }
-exports.print = print
+
+module.exports = print

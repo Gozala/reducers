@@ -2,7 +2,7 @@
 /*jshint asi: true undef: true es5: true node: true browser: true devel: true
          forin: true latedef: false globalstrict: true */
 
-'use strict';
+"use strict";
 
 module.exports = function Box(description) {
   /**
@@ -15,7 +15,7 @@ module.exports = function Box(description) {
   
   Returns a box object.
   **/
-  description = description || 'Boxed value'
+  description = description || "Boxed value"
   return function box(value) {
     return {
       isBoxed: true,

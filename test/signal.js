@@ -1,32 +1,34 @@
 /* vim:set ts=2 sw=2 sts=2 expandtab */
-/*jshint asi: true undef: true es5: true node: true browser: true devel: true
+/*jshint asi: true undef: true es5: true node: true devel: true
          forin: true latedef: false globalstrict: true*/
 'use strict';
 
-var core = require('../core'),
-    flatten = core.flatten, take = core.take
-var accumulators = require('../accumulator'),
-    reduce = accumulators.reduce, into = accumulators.into
-var signal = require('../signal'),
-    emit = signal.emit, close = signal.close,
-    isClosed = signal.isClosed, isOpen = signal.isOpen
-var await = require('pending/await')
+var flatten = require("../flatten")
+var take = require("../take")
+var reduce = require("../reduce")
+var into = require("../into")
+var signal = require("../signal")
+var emit = require("../emit")
+var close = require("../close")
+var isClosed = signal.isClosed
+var isOpen = signal.isOpen
+var await = require("pending/await")
 
-exports['test signal basics'] = function(assert, done) {
+exports["test signal basics"] = function(assert, done) {
   var c = signal()
 
-  assert.ok(!signal.isOpen(c), 'signal is not open')
-  assert.ok(!signal.isClosed(c), 'signal is not closed')
+  assert.ok(!signal.isOpen(c), "signal is not open")
+  assert.ok(!signal.isClosed(c), "signal is not closed")
 
   var p = into(c)
 
-  assert.ok(signal.isOpen(c), 'signal is open after reduce is called')
-  assert.ok(!signal.isClosed(c), 'signal is not closed until close is called')
+  assert.ok(signal.isOpen(c), "signal is open after reduce is called")
+  assert.ok(!signal.isClosed(c), "signal is not closed until close is called")
 
   await(p, function(actual) {
     assert.deepEqual(actual, [ 1, 2, 3, 4 ],
-                     'All queued values were accumulated')
-    assert.ok(signal.isClosed(c), 'signal is closed after it is closed')
+                     "All queued values were accumulated")
+    assert.ok(signal.isClosed(c), "signal is closed after it is closed")
     done()
   })
 
@@ -36,54 +38,54 @@ exports['test signal basics'] = function(assert, done) {
   close(c, 4)
 }
 
-exports['test signal auto-close'] = function(assert, done) {
+exports["test signal auto-close"] = function(assert, done) {
   var c = signal()
 
-  assert.ok(!signal.isOpen(c), 'signal is not open')
-  assert.ok(!signal.isClosed(c), 'signal is not closed')
+  assert.ok(!signal.isOpen(c), "signal is not open")
+  assert.ok(!signal.isClosed(c), "signal is not closed")
 
   var t = take(c, 3)
 
-  assert.ok(!signal.isOpen(c), 'signal is not open on take')
-  assert.ok(!signal.isClosed(c), 'signal is not closed on take')
+  assert.ok(!signal.isOpen(c), "signal is not open on take")
+  assert.ok(!signal.isClosed(c), "signal is not closed on take")
 
   var p = into(t)
 
-  assert.ok(signal.isOpen(c), 'signal is open after reduce is called')
-  assert.ok(!signal.isClosed(c), 'signal is not closed until close is called')
+  assert.ok(signal.isOpen(c), "signal is open after reduce is called")
+  assert.ok(!signal.isClosed(c), "signal is not closed until close is called")
 
   emit(c, 1)
   emit(c, 2)
   emit(c, 3)
 
-  assert.ok(signal.isClosed(c), 'signal is closed once consumption is complete')
+  assert.ok(signal.isClosed(c), "signal is closed once consumption is complete")
 
   assert.throws(function() {
     emit(c, 4)
-  }, 'Error is thrown if queued to closed signal')
+  }, "Error is thrown if queued to closed signal")
   assert.throws(function() {
     close(c)
-  }, 'Error is thrown on close of closed signal')
+  }, "Error is thrown on close of closed signal")
 
   await(p, function(actual) {
     assert.deepEqual(actual, [ 1, 2, 3 ],
-                     'All queued values were accumulated')
-    assert.ok(signal.isClosed(c), 'signal is closed after it is closed')
+                     "All queued values were accumulated")
+    assert.ok(signal.isClosed(c), "signal is closed after it is closed")
     done()
   })
 }
 
-exports['test signal can have single consumer'] = function(assert, done) {
+exports["test signal can have single consumer"] = function(assert, done) {
   var c = signal()
   var p = into(c)
 
   assert.throws(function() {
     reduce(c, function() { })
-  }, 'signal can be consumed by a single reader only')
+  }, "signal can be consumed by a single reader only")
 
   close(c, 0)
   await(p, function(actual) {
-    assert.deepEqual(actual, [ 0 ], 'items were accumulated')
+    assert.deepEqual(actual, [ 0 ], "items were accumulated")
     done()
   })
 }
@@ -187,4 +189,4 @@ exports['test auto close of signal of signals'] = function(assert, done) {
 */
 
 if (module == require.main)
-  require('test').run(exports)
+  require("test").run(exports)

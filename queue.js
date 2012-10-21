@@ -2,16 +2,15 @@
 /*jshint asi: true undef: true es5: true node: true browser: true devel: true
          forin: true latedef: false globalstrict: true */
 
-'use strict';
+"use strict";
 
-var Name = require('name')
-var core = require('./core'),
-    convert = core.convert, accumulate = core.accumulate, append = core.append
+var convert = require("./convert")
+var accumulate = require("./accumulate")
+var concat = require("./concat")
+var emit = require("./emit")
 
-var emit = require('./signal').emit
-
-var queued = Name()
-var output = Name()
+var queued = "queued@" + module.id
+var output = "output@" + module.id
 
 function isDrained(queue) {
   return !queue[queued]
@@ -31,7 +30,7 @@ queue.emit = function(queue, value) {
   return queue
 }
 queue.accumulate = function(queue, next, initial) {
-  accumulate(append(queue[queued], queue[output]), next, initial)
+  accumulate(concat(queue[queued], queue[output]), next, initial)
   queued = null
 }
 

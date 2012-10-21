@@ -1,16 +1,15 @@
 /* vim:set ts=2 sw=2 sts=2 expandtab */
-/*jshint asi: true undef: true es5: true node: true browser: true devel: true
+/*jshint asi: true undef: true es5: true node: true devel: true
          forin: true latedef: false globalstrict: true*/
 'use strict';
 
-var core = require('../core'),
-    flatten = core.flatten, take = core.take
-var accumulators = require('../accumulator'),
-    reduce = accumulators.reduce, into = accumulators.into
-var signal = require('../signal'),
-    emit = signal.emit, close = signal.close
-var hubs = require('../hub'),
-    hub = hubs.hub
+var flatten = require("../flatten")
+var take = require("../take")
+var reduce = require("../reduce")
+var into = require("../into")
+var signal = require('../signal')
+var emit = require("../emit")
+var close = require("../close")
 var queue = require('../queue')
 var await = require('pending/await')
 

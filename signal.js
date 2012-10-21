@@ -1,22 +1,19 @@
 /* vim:set ts=2 sw=2 sts=2 expandtab */
-/*jshint asi: true undef: true es5: true node: true browser: true devel: true
+/*jshint asi: true undef: true es5: true node: true devel: true
          forin: true latedef: false globalstrict: true */
 
 'use strict';
 
-var Name = require('name')
-var Method = require('method')
+var Method = require("method")
+var accumulate = require("./accumulate")
+var end = require("./end")
+var accumulated = require("./accumulated")
+var emit = require("./emit")
+var close = require("./close")
 
-var core = require('./core'),
-    accumulate = core.accumulate,
-    accumulated = core.accumulated, end = core.end
-
-var emit = Method()
-var close = Method()
-
-var accumulator = Name()
-var state = Name()
-var closed = Name()
+var accumulator = "accumulator@" + module.id
+var state = "state@" + module.id
+var closed = "closed@" + module.id
 
 // Define a `Signal` data-type. A signal is a sequence of "events over time".
 // 

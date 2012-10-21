@@ -3,13 +3,13 @@
          forin: true latedef: false globalstrict: true */
 'use strict';
 
-var Name = require('name')
-var core = require('./core'),
-    accumulate = core.accumulate, accumulated = core.accumulated,
-    end = core.end, convert = core.convert
+var accumulate = require("./accumulate")
+var convert = require("./convert")
+var accumulated = require("./accumulated")
+var end = require("./end")
 
-var input = Name()
-var consumers = Name()
+var input = "input@" + module.id
+var consumers = "consumers@" + module.id
 
 function open(hub) {
   var source = hub[input]

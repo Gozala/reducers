@@ -3,14 +3,14 @@
          forin: true latedef: false globalstrict: true */
 'use strict';
 
-var Name = require('name')
-var core = require('./core'),
-    convert = core.convert, accumulate = core.accumulate,
-    append = core.append, end = core.end
+var convert = require("./convert")
+var accumulate = require("./accumulate")
+var concat = require("./concat")
+var end = require("./end")
 var hub = require('./hub')
 
-var cached = Name()
-var input = Name()
+var cached = "cached@" + module.id
+var input = "input@" + module.id
 
 function isBuffering(cache) {
   return cache[cached] !== null
@@ -19,7 +19,7 @@ function isBuffering(cache) {
 function buffer(cache) {
   var source = cache[input]
   var buffered = []
-  cache[cached] = append(buffered, source)
+  cache[cached] = concat(buffered, source)
   accumulate(source, function(value) {
     buffered.push(value)
     // If source is ended remove reference to the input

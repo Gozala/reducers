@@ -2,16 +2,15 @@
 /*jshint asi: true undef: true es5: true node: true browser: true devel: true
          forin: true latedef: false globalstrict: true */
 
-'use strict';
+"use strict";
 
-var Name = require('name')
-var core = require('./core'),
-    convert = core.convert, accumulate = core.accumulate
+var convert = require("./convert")
+var accumulate = require("./accumulate")
 
-var queued = Name()
-var input = Name()
-var forward = Name()
-var state = Name()
+var queued = "queued@" + module.id
+var input = "input@" + module.id
+var forward = "forward@" + module.id
+var state = "state@" + module.id
 
 function drain(buffer, next, result) {
   var values = buffer[queued]

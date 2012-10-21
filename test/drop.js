@@ -3,28 +3,28 @@
          forin: true latedef: false globalstrict: true*/
 'use strict';
 
-var into = require('../accumulator').into
-var drop = require('../core').drop
+var into = require("../into")
+var drop = require("../drop")
 
-exports['test drop'] = function(assert) {
+exports["test drop"] = function(assert) {
   var actual = drop([ 1, 2, 3, 4 ], 2)
 
-  assert.deepEqual(into(actual), [ 3, 4 ], 'skipped two items')
-  assert.deepEqual(into(actual), [ 3, 4 ], 'can be re-reduced same')
+  assert.deepEqual(into(actual), [ 3, 4 ], "skipped two items")
+  assert.deepEqual(into(actual), [ 3, 4 ], "can be re-reduced same")
 }
 
-exports['test drop none'] = function(assert) {
+exports["test drop none"] = function(assert) {
   var actual = drop([ 1, 2, 3, 4 ], 0)
 
-  assert.deepEqual(into(actual), [ 1, 2, 3, 4 ], 'skips none on 0')
+  assert.deepEqual(into(actual), [ 1, 2, 3, 4 ], "skips none on 0")
 }
 
-exports['test drop all'] = function(assert) {
+exports["test drop all"] = function(assert) {
   var actual = drop([ 1, 2, 3, 4 ], 100)
 
   assert.deepEqual(into(actual), [],
-                   'skips all if has less than requested')
+                   "skips all if has less than requested")
 }
 
 if (module == require.main)
-  require('test').run(exports)
+  require("test").run(exports)

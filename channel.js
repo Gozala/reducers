@@ -5,8 +5,7 @@
 'use strict';
 
 var hub = require('./hub')
-var signal = require('./signal'),
-    emit = signal.emit, close = signal.close
+var signal = require('./signal')
 
 function channel() {
   /**
@@ -18,7 +17,5 @@ function channel() {
   **/
   return hub(signal())
 }
-channel.enqueue = emit
-channel.close = close
 
 module.exports = channel
