@@ -6,6 +6,9 @@
 var Method = require("method")
 var end = require("./end")
 var accumulated = require("./accumulated")
+var Eventual = require("eventual/type")
+var when = require("eventual/when")
+var error = require("./error")
 
 var accumulate = Method()
 
@@ -45,5 +48,16 @@ accumulate.define((function() { return arguments })(), accumulate.indexed)
 // All other built-in data structures are treated as single value sequences
 // by default. Of course individual types may choose to override that.
 accumulate.define(accumulate.singular)
+
+// All eventual values are treated as a single value of sequences, of
+// the value they realize to.
+accumulate.define(Eventual, function(eventual, next, initial) {
+  function onfail(failure) { next(error(failure)) }
+  return when(eventual, function delivered(value) {
+    return when(next(value, initial), function(result) {
+      next(end(), result)
+    }, onfail)
+  }, onfail)
+})
 
 module.exports = accumulate
