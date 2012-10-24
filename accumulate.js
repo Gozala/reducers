@@ -52,12 +52,11 @@ accumulate.define(accumulate.singular)
 // All eventual values are treated as a single value of sequences, of
 // the value they realize to.
 accumulate.define(Eventual, function(eventual, next, initial) {
-  function onfail(failure) { next(error(failure)) }
   return when(eventual, function delivered(value) {
-    return when(next(value, initial), function(result) {
-      next(end(), result)
-    }, onfail)
-  }, onfail)
+    return accumulate(value, next, initial)
+  }, function failed(failure) {
+    next(end(), next(error(failure), initial))
+  })
 })
 
 module.exports = accumulate
