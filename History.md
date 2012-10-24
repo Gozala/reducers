@@ -1,5 +1,9 @@
 # Changes
 
+## 0.1.2 / 2012-10-24
+
+  - Make `reduce` API on eventuals equivalent of API on values they resolve to.
+
 ## 0.1.1 / 2012-10-23
 
   - Define implementation of `accumulate` for eventual data types.
