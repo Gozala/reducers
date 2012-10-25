@@ -1,6 +1,3 @@
-/*jshint asi: true undef: true es5: true node: true browser: true devel: true
-         forin: true latedef: false globalstrict: true */
-
 "use strict";
 
 var convert = require("./convert")

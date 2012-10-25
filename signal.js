@@ -1,8 +1,4 @@
-/* vim:set ts=2 sw=2 sts=2 expandtab */
-/*jshint asi: true undef: true es5: true node: true devel: true
-         forin: true latedef: false globalstrict: true */
-
-'use strict';
+"use strict";
 
 var Method = require("method")
 var accumulate = require("./accumulate")
@@ -41,7 +37,7 @@ function isOpen(signal) {
 accumulate.define(Signal, function(signal, next, initial) {
   // Signals may only be reduced by one consumer function.
   // Other data types built on top of signal may allow for more consumers.
-  if (isOpen(signal)) throw Error('Signal is being consumed')
+  if (isOpen(signal)) throw Error("Signal is being consumed")
   if (isClosed(signal)) return next(end(), initial)
   signal[accumulator] = next
   signal[state] = initial
@@ -53,8 +49,8 @@ emit.define(Signal, function(signal, value) {
   Emit a new value for signal.
   Throws an exception if the signal is not open for emitting.
   **/
-  if (isClosed(signal)) throw Error('Signal is already closed')
-  if (!isOpen(signal)) throw Error('Signal is not open')
+  if (isClosed(signal)) throw Error("Signal is already closed")
+  if (!isOpen(signal)) throw Error("Signal is not open")
   var result = signal[accumulator](value, signal[state])
   if (result && result.is === accumulated) {
     close(signal)
@@ -69,7 +65,7 @@ close.define(Signal, function(signal, value) {
   Close a signal, preventing new values from being emitted.
   Throws an exception if the signal is already closed.
   **/
-  if (isClosed(signal)) throw Error('Signal is already closed')
+  if (isClosed(signal)) throw Error("Signal is already closed")
   if (value !== undefined) emit(signal, value)
   var result = signal[state]
   var next = signal[accumulator]
@@ -92,4 +88,3 @@ signal.emit = emit
 signal.close = close
 
 module.exports = signal
-

@@ -1,12 +1,9 @@
-/*jshint asi: true undef: true es5: true node: true browser: true devel: true
-         forin: true latedef: false globalstrict: true */
+"use strict";
 
-'use strict';
-
-var accumulate = require("./accumulate")
-var deliver = require("pending/deliver")
+var deliver = require("eventual/deliver")
 var defer = require("eventual/defer")
 var when = require("eventual/when")
+var accumulate = require("./accumulate")
 var end = require("./end")
 var error = require("./error")
 

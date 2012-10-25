@@ -1,12 +1,8 @@
-/* vim:set ts=2 sw=2 sts=2 expandtab */
-/*jshint asi: true undef: true es5: true node: true browser: true devel: true
-         forin: true latedef: false */
-/*global define: true, Cu: true, __URI__: true */
-'use strict';
+"use strict";
 
-var reducers = require('../core'),
+var reducers = require("../core"),
     map = reducers.map, filter = reducers.filter, reduce = reducers.reduce
-var Benchmark = require('benchmark/benchmark')
+var Benchmark = require("benchmark/benchmark")
 var suite = Benchmark.Suite()
 
 // Some helper functions we'll use
@@ -23,12 +19,12 @@ function sum(a, b) {
 
 var numbers = range(0, 100000)
 
-suite.add('standard array', function() {
+suite.add("standard array", function() {
   numbers.filter(isOdd).map(increment).reduce(sum)
-}).add('arguments', function() {
+}).add("arguments", function() {
   reduce(sum, map(increment, filter(isOdd, numbers)))
-}).on('cycle', function(event, bench) {
+}).on("cycle", function(event, bench) {
   console.log(String(bench))
-}).on('complete', function() {
-  console.log('Fastest is ' + this.filter('fastest').pluck('name'))
-}).run({ 'async': true })
+}).on("complete", function() {
+  console.log("Fastest is " + this.filter("fastest").pluck("name"))
+}).run({ "async": true })
