@@ -14,6 +14,7 @@ exports["test signal"] = require("./signal")
 exports["test hub"] = require("./hub")
 exports["test queue"] = require("./queue")
 exports["test buffer"] = require("./buffer")
+exports["test zip"] = require("./zip")
 
 if (module == require.main)
   require("test").run(exports)
