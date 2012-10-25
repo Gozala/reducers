@@ -28,29 +28,33 @@ function makeAccumulator(side) {
         state.result = accumulated(result)
       }
     }
-    // If any other meta item, just propagate it through.
-    else if (value && value.isBoxed) dispatch(value, state.result)
-    // Otherwise enqueue the value.
     else {
       queue.push(value)
       // If there is a buffered value on both streams shift and dispatch.
       if (buffer.length) {
-        var result = dispatch([
-          state.left.shift(),
-          state.right.shift()
-        ], state.result)
-        // If consumer is done consumption or if buffer is empty and closed
-        // dispatch end, and mark stream ended to stop streams and queueing
-        // values too.
-        if ((result && result.is === accumulated) ||
-            (buffer.closed && !buffer.length)) {
-          // Dispatch end of stream and cleanup state attributes.
-          dispatch(end(), result)
-          state.left = state.right = state.next = null
-          state.closed = true
-          state.result = accumulated(result)
-        } else {
-          state.result = result
+        if (buffer[0] && buffer[0].isBoxed)
+          dispatch(buffer.shift(), state.result)
+        else if (queue[0] && queue[0].isBoxed)
+          dispatch(queue.shift(), state.result)
+
+        if (buffer.length && queue.length) {
+          var result = dispatch([
+            state.left.shift(),
+            state.right.shift()
+          ], state.result)
+          // If consumer is done consumption or if buffer is empty and closed
+          // dispatch end, and mark stream ended to stop streams and queueing
+          // values too.
+          if ((result && result.is === accumulated) ||
+              (buffer.closed && !buffer.length)) {
+            // Dispatch end of stream and cleanup state attributes.
+            dispatch(end(), result)
+            state.left = state.right = state.next = null
+            state.closed = true
+            state.result = accumulated(result)
+          } else {
+            state.result = result
+          }
         }
       }
     }
