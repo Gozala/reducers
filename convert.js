@@ -27,7 +27,8 @@ function convert(source, method) {
   }
   into(increment([ 1, 2, 3 ])) => [ 2, 3, 4 ]
   **/
-  return accumulate.implement(make(source), method)
+  var base = typeof(source) === "object" ? make(source) : {}
+  return accumulate.implement(base, method)
 }
 
 module.exports = convert
