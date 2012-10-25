@@ -1,5 +1,9 @@
 # Changes
 
+## 0.1.4 / 2012-10-24
+
+  - Add transformation support for primitive types.
+
 ## 0.1.3 / 2012-10-24
 
   - Removed JSHint comments.
