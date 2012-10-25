@@ -3,7 +3,10 @@
   "id": "reducers",
   "version": "0.1.2",
   "description": "A library for collection processing",
-  "keywords": [ "reducers" ],
+  "keywords": [
+    "reducers", "reducible", "reduce", "data", "sequence", "stream",
+    "transformation", "composable", "async"
+  ],
   "author": "Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)",
   "homepage": "https://github.com/Gozala/reducers",
   "repository": {
@@ -16,7 +19,7 @@
   },
   "dependencies": {
     "method": ">=0.1.1",
-    "eventual": ">=0.3.0"
+    "eventual": ">=0.3.1"
   },
   "devDependencies": {
     "test": ">=0.4.4",
@@ -28,8 +31,10 @@
     "repl": "node node_modules/repl-utils",
     "benchmark": "node tests/benchmark.js"
   },
-  "licenses": [{
-    "type" : "MIT",
-    "url" : "https://github.com/Gozala/reducers/License.md"
-  }]
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/Gozala/reducers/License.md"
+    }
+  ]
 }
