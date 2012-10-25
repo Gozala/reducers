@@ -1,5 +1,12 @@
 # Changes
 
+## 0.1.3 / 2012-10-24
+
+  - Removed JSHint comments.
+  - Remove experimental modules.
+  - Implement `zip` function.
+  - Remove dependency on zip package.
+
 ## 0.1.2 / 2012-10-24
 
   - Make `reduce` API on eventuals equivalent of API on values they resolve to.
