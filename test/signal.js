@@ -7,9 +7,9 @@ var into = require("../into")
 var signal = require("../signal")
 var emit = require("../emit")
 var close = require("../close")
+var when = require("eventual/when")
 var isClosed = signal.isClosed
 var isOpen = signal.isOpen
-var await = require("pending/await")
 
 exports["test signal basics"] = function(assert, done) {
   var c = signal()
@@ -22,7 +22,7 @@ exports["test signal basics"] = function(assert, done) {
   assert.ok(signal.isOpen(c), "signal is open after reduce is called")
   assert.ok(!signal.isClosed(c), "signal is not closed until close is called")
 
-  await(p, function(actual) {
+  when(p, function(actual) {
     assert.deepEqual(actual, [ 1, 2, 3, 4 ],
                      "All queued values were accumulated")
     assert.ok(signal.isClosed(c), "signal is closed after it is closed")
@@ -64,7 +64,7 @@ exports["test signal auto-close"] = function(assert, done) {
     close(c)
   }, "Error is thrown on close of closed signal")
 
-  await(p, function(actual) {
+  when(p, function(actual) {
     assert.deepEqual(actual, [ 1, 2, 3 ],
                      "All queued values were accumulated")
     assert.ok(signal.isClosed(c), "signal is closed after it is closed")
@@ -81,7 +81,7 @@ exports["test signal can have single consumer"] = function(assert, done) {
   }, "signal can be consumed by a single reader only")
 
   close(c, 0)
-  await(p, function(actual) {
+  when(p, function(actual) {
     assert.deepEqual(actual, [ 0 ], "items were accumulated")
     done()
   })

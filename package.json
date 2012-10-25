@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "method": ">=0.1.1",
-    "pending": ">=0.0.3",
     "eventual": ">=0.3.0"
   },
   "devDependencies": {

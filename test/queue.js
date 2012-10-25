@@ -8,7 +8,7 @@ var signal = require("../signal")
 var emit = require("../emit")
 var close = require("../close")
 var queue = require("../queue")
-var await = require("pending/await")
+var when = require("eventual/when")
 
 exports["test queue before open"] = function(assert, done) {
   var c = signal()
@@ -24,7 +24,7 @@ exports["test queue before open"] = function(assert, done) {
   emit(q, 3)
   close(q, 4)
 
-  await(p, function(actual) {
+  when(p, function(actual) {
     assert.deepEqual(actual, [ 1, 2, 3, 4 ],
                      "queued values were consumed")
     done()

@@ -2,12 +2,12 @@
 
 var into = require("../into")
 var reduce = require("../reduce")
-var signal = require('../signal')
+var signal = require("../signal")
 var emit = require("../emit")
 var close = require("../close")
-var buffer = require('../buffer')
+var buffer = require("../buffer")
 
-var await = require('pending/await')
+var when = require("eventual/when")
 
 exports["test signal bufferring"] = function(assert, done) {
   var c = signal()
@@ -26,7 +26,7 @@ exports["test signal bufferring"] = function(assert, done) {
   emit(c, 3)
   close(c, 4)
 
-  await(p, function(actual) {
+  when(p, function(actual) {
     assert.deepEqual(actual, [ 1, 2, 3, 4 ],
                      "values have being buffered")
     done()
