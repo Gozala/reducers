@@ -1,6 +1,8 @@
 "use strict";
 
 var test = require("./util/test")
+var lazy = require("./util/lazy")
+
 var concat = require("../concat")
 var into = require("../into")
 var delay = require("../delay")
@@ -9,7 +11,6 @@ var capture = require("../capture")
 var map = require("../map")
 var expand = require("../expand")
 var take = require("../take")
-var lazy = require("./util/lazy")
 var flatten = require("../flatten")
 var into = require("../into")
 var sequential = require("../sequential")
