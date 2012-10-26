@@ -39,5 +39,5 @@ exports.close = require("./close")
 exports.queue = require("./queue")
 
 // development
-exports.print = require("./dubg/print")
+exports.print = require("./debug/print")
 exports.into = require("./into")
