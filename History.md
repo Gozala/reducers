@@ -1,5 +1,12 @@
 # Changes
 
+## 0.1.5 / 2012-10-25
+
+  - Fix bug in implementation of `capture` that caused multiple ends.
+  - Implement `delay` utility module.
+  - Fix flatten that in edge cases leaked end of stream before it actually ended.
+  - Implement lot's of new tests.
+
 ## 0.1.4 / 2012-10-24
 
   - Add transformation support for primitive types.
