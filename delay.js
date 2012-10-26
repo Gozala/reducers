@@ -2,20 +2,17 @@
 
 var convert = require("./convert")
 var accumulate = require("./accumulate")
-var eventual = require("eventual/decorate")
-var defer = require("eventual/defer")
-var deliver = require("eventual/deliver")
-var when = require("eventual/when")
 
 function delay(source, ms) {
-  ms = ms || 1
+  ms = ms || 10 // Set minimum of 10ms, otherwise tests are unreliable
   return convert(source, function(_, next, result) {
-    var forward = eventual(next)
-    accumulate(source, eventual(function(value, result) {
-      var deferred = defer()
-      setTimeout(deliver, ms, deferred, value)
-      return forward(deferred, result)
-    }), result)
+    var timeout = 0
+    accumulate(source, function(value) {
+      setTimeout(function() {
+        timeout = timeout - ms
+        result = next(value, result)
+      }, timeout = timeout + ms)
+    })
   })
 }
 
