@@ -9,10 +9,7 @@ var capture = require("../capture")
 var map = require("../map")
 var expand = require("../expand")
 var take = require("../take")
-
-function lazy(f) {
-  return map(1, function() { return f() })
-}
+var lazy = require("./util/lazy")
 
 exports["test capture empty stream"] = test(function(assert) {
   var called = 0
