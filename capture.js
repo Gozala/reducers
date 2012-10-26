@@ -2,6 +2,7 @@
 
 var convert = require("./convert")
 var accumulate = require("./accumulate")
+var accumulated = require("./accumulated")
 var error = require("./error")
 
 function capture(source, recover) {
@@ -13,12 +14,19 @@ function capture(source, recover) {
   may occur.
   **/
   return convert(source, function(self, next, initial) {
+    var failure = void(0)
     accumulate(source, function(value, result) {
-      if (value && value.is === error) {
+      // If error has already being captured then return
+      if (failure) return failure
+      // If value is an error then continue accumulation of recovered
+      // sequence.
+      else if (value && value.is === error) {
+        failure = accumulated(result)
         accumulate(recover(value.value, result), next, result)
-      } else {
-        next(value, result)
+        return failure
       }
+      // Otherwise just forward messages.
+      else return next(value, result)
     }, initial)
   })
 }
