@@ -16,5 +16,7 @@ exports["test queue"] = require("./queue")
 exports["test buffer"] = require("./buffer")
 exports["test zip"] = require("./zip")
 
+exports["test delay"] = require("./delay")
+
 if (module == require.main)
   require("test").run(exports)
