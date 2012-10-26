@@ -2,6 +2,9 @@
 
 var reduce = require("./reduce")
 var reducible = require("./reducible")
+var eventual = require("eventual/decorate")
+
+var group = eventual(Array)
 
 function flatten(source) {
   /**
@@ -18,9 +21,11 @@ function flatten(source) {
   **/
   return reducible(source, function(_, next, initial) {
     return reduce(source, function(result, nested) {
-      return reduce(nested, function(result, value) {
+      // we group results to make sure flattened stream won't finish until
+      // all the streams are finished.
+      return group(result, reduce(nested, function(result, value) {
         return next(result, value)
-      }, result)
+      }, result))
     }, initial)
   })
 }
