@@ -8,9 +8,10 @@ var error = require("../error")
 var capture = require("../capture")
 var map = require("../map")
 var expand = require("../expand")
+var take = require("../take")
 
 function lazy(f) {
-  return expand(1, function() { return f() })
+  return map(1, function() { return f() })
 }
 
 exports["test capture empty stream"] = test(function(assert) {
@@ -33,10 +34,10 @@ exports["test capture with a non-empty stream"] = test(function(assert) {
 exports["test error recovery"] = test(function(assert) {
   var boom = Error("Boom!")
   var actual = capture(error(boom), function catcher(e) {
-    return [ "catch", e ]
+    return [ "catch", e.message ]
   })
 
-  assert(actual, ["catch", boom ], "error handler is called")
+  assert(actual, ["catch", boom.message ], "error handler is called")
 })
 
 exports["test errors can be ignored"] = test(function(assert) {
@@ -44,14 +45,67 @@ exports["test errors can be ignored"] = test(function(assert) {
   var brax = Error("brax")
   var source = concat(["h", "i"], error(boom))
   var captured = capture(source, function cacher(e) {
-    return [e, error(brax)]
+    return [e.message, error(brax)]
   })
   var actual = capture(captured, function(e) {
-    return e
+    return e.message
   })
 
 
-  assert(actual, ["h", "i", boom, brax], "recovery code still may leak errors")
+  assert(actual, ["h", "i", boom.message, brax.message],
+                  "recovery code still may leak errors")
+})
+
+
+exports["test capture error every time"] = test(function(assert) {
+  var boom = Error("Boom!!")
+  var calls = 0
+  var reason
+  var captured = capture(error(boom), function(error) {
+    calls = calls + 1
+    reason = error
+    return
+  })
+
+  var actual = concat(captured,
+                      lazy(function() { return calls }),
+                      lazy(function() { return reason.message }),
+                      captured,
+                      lazy(function() { return calls }),
+                      lazy(function() { return reason.message }))
+
+
+  assert(actual, [1, boom.message, 2, boom.message],
+         "error handler is called each time")
+})
+
+exports["test substitution is lazy"] = test(function(assert) {
+  var calls = 0
+  var boom = Error("boom")
+  var captured = capture([1, 2, 3, 4, error(boom)], function(error) {
+    calls = calls + 1
+    return [5, 6, 7]
+  })
+
+  var actual = concat(take(captured, 1),
+                      lazy(function() { return calls }),
+                      captured,
+                      lazy(function() { return calls }))
+
+  assert(actual, [
+    1,
+    0,
+    1, 2, 3, 4, 5, 6, 7,
+    1
+  ], "error handlers only called if that associated section is read")
+})
+
+
+exports["test ignore error"] = test(function(assert) {
+  var boom = Error("Boom!")
+  var actual = capture([1, 2, 3, error(boom)], function() {})
+
+  assert(actual, [1, 2, 3], "if nothing returned stream is done")
 })
 
 if (require.main === module)
