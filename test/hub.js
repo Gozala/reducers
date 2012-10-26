@@ -1,13 +1,24 @@
 "use strict";
 
+var test = require("./util/test")
+
 var take = require("../take")
 var reduce = require("../reduce")
+var expand = require("../expand")
 var into = require("../into")
-var signal = require("../signal"),
-    emit = signal.emit, close = signal.close
+var signal = require("../signal")
+var emit = require("../emit")
+var close = require("../close")
 var hub = require("../hub")
+var concat = require("../concat")
+var delay = require("../delay")
+var error = require("../error")
+var flatten = require("../flatten")
+var capture = require("../capture")
 
 var when = require("eventual/when")
+
+function lazy(f) { return expand(1, f) }
 
 exports["test hub open / close propagate"] = function(assert, done) {
   var c = signal()
@@ -85,7 +96,7 @@ exports["test source is closed on end"] = function(assert, done) {
   emit(c, 1)
   emit(c, 2)
 
-  assert.ok(signal.isClosed(h), "signal is closed once consumer is done")
+  assert.ok(signal.isClosed(c), "signal is closed once consumer is done")
 
   when(p, function(actual) {
     assert.deepEqual(actual, [ 1, 2 ], "value propagated")
@@ -160,6 +171,74 @@ exports["test hub with non signals"] = function(assert) {
   assert.deepEqual(p2, [ 1, 2, 3 ], "second reduce got all items")
 }
 
+exports["test hub with sync steam"] = test(function(assert) {
+  var source = hub([ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 ])
+
+  var s1_3 = take(source, 3)
+  var s4_8 = take(source, 5)
+  var s9_$ = source
+
+  var actual = concat(s1_3, [ "-" ], s4_8, [ "-" ], s9_$)
+
+  assert(actual, [ 1, 2, 3, "-", 4, 5, 6, 7, 8, "-", 9, 10, 11, 12, 13, 14 ],
+         "hub took items in parts")
+})
+
+exports["test hub with async stream"] = test(function(assert) {
+  var source = hub(delay([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 ]))
+
+  var actual = concat(take(source, 3),
+                      "-",
+                      lazy(function() {
+                        return flatten([take(source, 5), take(source, 8)])
+                      }),
+                      "-",
+                      lazy(function() {
+                        return source
+                      }),
+                      "-",
+                      lazy(function() {
+                        return source
+                      }))
+
+  assert(actual, [
+    1, 2, 3, "-",
+    4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 10, 11, "-",
+    12, 13, 14, "-"
+  ], "reads in the same turn share head")
+})
+
+exports["test hub with broken stream"] = test(function(assert) {
+  var boom = Error("boom!")
+  var source = hub(concat(delay([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 ]),
+                   error(boom)))
+
+  var transformed = concat(take(source, 3),
+                      "-",
+                      lazy(function() {
+                        return flatten([take(source, 5), take(source, 8)])
+                      }),
+                      "-",
+                      lazy(function() {
+                        return source
+                      }),
+                      "-",
+                      lazy(function() {
+                        return source
+                      }))
+  var actual = capture(transformed, function(error) {
+    return error.message
+  })
+
+
+  assert(actual, [
+    1, 2, 3, "-",
+    4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 10, 11, "-",
+    12, 13, 14,
+    boom.message
+  ], "reads in the same turn share head")
+
+})
 
 if (module == require.main)
   require("test").run(exports)

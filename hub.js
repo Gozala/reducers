@@ -8,32 +8,60 @@ var end = require("./end")
 var input = "input@" + module.id
 var consumers = "consumers@" + module.id
 
+function close(consumers, end) {
+  while (consumers.length) {
+    var count = consumers.length
+    var index = 0
+    while (index < count) {
+      var consumer = consumers[index]
+      consumer.next(end, consumer.state)
+      index = index + 1
+    }
+    consumers.splice(0, count)
+  }
+}
+
+function dispatch(consumers, value) {
+  var count = consumers.length
+  var index = 0
+  while (index < count) {
+    var consumer = consumers[index]
+    var state = consumer.next(value, consumer.state)
+    // If consumer has finished accumulation remove it from the consumers
+    // list. And dispatch end of stream on it (maybe that should not be
+    // necessary).
+    if (state && state.is === accumulated) {
+      consumers.splice(index, 1)
+      consumer.next(end(), state.value)
+      // If consumer is removed than we decrease count as consumers array
+      // will contain less elements (unless of course more elements were
+      // added but we would like to ignore those).
+      count = count - 1
+    } else {
+      consumer.state = state
+      index = index + 1
+    }
+  }
+}
+
 function open(hub) {
   var source = hub[input]
-  var hubConsumers = hub[consumers]
+  var reducers = hub[consumers]
   hub[input] = null         // mark hub as open
   accumulate(source, function distribute(value) {
-    var activeConsumers = hubConsumers.slice(0)
-    var count = activeConsumers.length, index = 0
-    while (index < count) {
-      var consumer = activeConsumers[index++]
-      var state = consumer.next(value, consumer.state)
-      if (state && state.is === accumulated) {
-        var position = hubConsumers.indexOf(consumer)
-        if (position >= 0) hubConsumers.splice(position, 1)
-        consumer.next(end(), consumer.state)
-      } else {
-        consumer.state = state
-      }
-    }
+    // If it's end of the source we close all the reducers including
+    // ones that subscribe as side effect.
+    if (value && value.is === end) close(reducers, value)
+    // otherwise we dispatch value to all the registered reducers.
+    else dispatch(reducers, value)
 
-    if (value && value.is === end) {
-      hubConsumers.splice(0)
+    // reducers will be empty if either source is drained or if all the
+    // reducers finished reductions. Either way we reset input back to
+    // source and return `accumulated` marker to stop the reduction of
+    // source.
+    if (reducers.length === 0) {
       hub[input] = source
-    }
-    if (!hubConsumers.length) {
-      hub[input] = source       // mark hub as not open.
-      return accumulated()      // will notify source consumption is complete.
+      return accumulated()
     }
   })
 }
@@ -62,7 +90,11 @@ function hub(source) {
 hub.isHub = isHub
 hub.isOpen = isOpen
 hub.accumulate = function accumulate(hub, next, initial) {
+  // Enqueue new consumer into consumers array so that new
+  // values will be delegated to it.
   hub[consumers].push({ next: next, state: initial })
+  // If source is not in the process of consumption than
+  // start it up.
   if (!isOpen(hub)) open(hub)
 }
 module.exports = hub
