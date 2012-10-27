@@ -1,5 +1,12 @@
 # Changes
 
+## 0.1.6 / 2012-10-26
+
+  - Add a lot more tests.
+  - Create index with all end user functions.
+  - Fix subtle bug in `hub` implementation.
+  - Fix bug in `delay` implementation.
+
 ## 0.1.5 / 2012-10-25
 
   - Fix bug in implementation of `capture` that caused multiple ends.
