@@ -6,7 +6,7 @@ var accumulated = require("./accumulated")
 var end = require("./end")
 
 function delay(source, ms) {
-  ms = ms || 10 // Set minimum of 10ms, otherwise tests are unreliable
+  ms = ms || 3 // Minimum 3ms, as on less dispatch order becomes unreliable
   return convert(source, function(_, next, result) {
     var timeout = 0
     var ended = false
