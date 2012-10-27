@@ -2,7 +2,8 @@
 
 var accumulate = require("./accumulate")
 var convert = require("./convert")
-var accumulated = require("./accumulated")
+var reduced = require("./reduced")
+var isReduced = require("./is-reduced")
 
 var input = "input@" + module.id
 var consumers = "consumers@" + module.id
@@ -29,7 +30,7 @@ function dispatch(consumers, value) {
     // If consumer has finished accumulation remove it from the consumers
     // list. And dispatch end of stream on it (maybe that should not be
     // necessary).
-    if (state && state.is === accumulated) {
+    if (isReduced(state)) {
       consumers.splice(index, 1)
       consumer.next(null, state.value)
       // If consumer is removed than we decrease count as consumers array
@@ -56,11 +57,11 @@ function open(hub) {
 
     // reducers will be empty if either source is drained or if all the
     // reducers finished reductions. Either way we reset input back to
-    // source and return `accumulated` marker to stop the reduction of
+    // source and return `reduced` marker to stop the reduction of
     // source.
     if (reducers.length === 0) {
       hub[input] = source
-      return accumulated()
+      return reduced()
     }
   })
 }

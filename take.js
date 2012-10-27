@@ -1,6 +1,6 @@
 "use strict";
 
-var accumulated = require("./accumulated")
+var reduced = require("./reduced")
 var transformer = require("./transformer")
 var transform = require("./transform")
 
@@ -20,9 +20,9 @@ function take(source, n) {
     var count = n >= 0 ? n : Infinity
     return transform(source, function(next, value, result) {
       count = count - 1
-      return count === 0 ? next(accumulated(), next(value, result)) :
+      return count === 0 ? next(reduced(), next(value, result)) :
              count > 0 ? next(value, result) :
-                         next(accumulated(), result)
+                         next(reduced(), result)
     })
   })
 }

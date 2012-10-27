@@ -1,6 +1,6 @@
 "use strict";
 
-var accumulated = require("./accumulated")
+var reduced = require("./reduced")
 var transform = require("./transform")
 
 
@@ -18,7 +18,7 @@ function takeWhile(source, predicate) {
   **/
   return transform(source, function(next, value, state) {
     return predicate(value) ? next(value, state) :
-                              next(accumulated(), state)
+                              next(reduced(), state)
   })
 }
 

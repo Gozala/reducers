@@ -5,18 +5,15 @@ var defer = require("eventual/defer")
 var when = require("eventual/when")
 var accumulate = require("./accumulate")
 var isError = require("./is-error")
+var isReduced = require("./is-reduced")
 
 function reduce(source, f, state) {
   var promise = defer()
   accumulate(source, function(value) {
     if (value === null) deliver(promise, state)
     else if (isError(value)) deliver(promise, value)
-    else if (value && value.isBoxed) {
-      return value
-    } else {
-      state = f(state, value)
-      return state
-    }
+    else if (isReduced(value)) return value
+    else return (state = f(state, value))
   }, state)
   return when(promise)
 }

@@ -1,7 +1,7 @@
 "use strict";
 
 var Method = require("method")
-var accumulated = require("./accumulated")
+var isReduced = require("./is-reduced")
 var Eventual = require("eventual/type")
 var when = require("eventual/when")
 
@@ -31,7 +31,7 @@ accumulate.indexed = function accumulateIndexed(indexed, next, initial) {
     var value = indexed[index++]
     if (value === null) break
     state = next(value, state)
-    if (state && state.is === accumulated) break
+    if (isReduced(state)) break
   }
   next(null, state)
 }

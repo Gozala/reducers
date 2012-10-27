@@ -2,7 +2,7 @@
 
 var convert = require("./convert")
 var accumulate = require("./accumulate")
-var accumulated = require("./accumulated")
+var isReduced = require("./is-reduced")
 
 function delay(source, ms) {
   ms = ms || 3 // Minimum 3ms, as on less dispatch order becomes unreliable
@@ -14,7 +14,7 @@ function delay(source, ms) {
         if (!ended) {
           timeout = timeout - ms
           result = next(value, result)
-          if (result && result.is === accumulated) {
+          if (isReduced(result)) {
             ended = true
             next(null, result.value)
           }

@@ -2,7 +2,7 @@
 
 var convert = require("./convert")
 var accumulate = require("./accumulate")
-var accumulated = require("./accumulated")
+var reduced = require("./reduced")
 var isError = require("./is-error")
 
 function capture(source, recover) {
@@ -21,7 +21,7 @@ function capture(source, recover) {
       // If value is an error then continue accumulation of recovered
       // sequence.
       else if (isError(value)) {
-        failure = accumulated(result)
+        failure = reduced(result)
         accumulate(recover(value, result), next, result)
         return failure
       }

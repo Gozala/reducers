@@ -2,6 +2,7 @@
 
 var accumulate = require("../../accumulate")
 var isError = require("../../is-error")
+var isReduced = require("../../is-reduced")
 
 function test(f) {
   return function(assert, done) {
@@ -14,7 +15,7 @@ function test(f) {
         } else if (actual === null) {
           assert.deepEqual(values, expected, comment)
           done()
-        } else if (actual && actual.isBoxed) {
+        } else if (isReduced(actual)) {
           return actual
         } else {
           values.push(actual)

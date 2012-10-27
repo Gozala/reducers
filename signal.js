@@ -2,7 +2,8 @@
 
 var Method = require("method")
 var accumulate = require("./accumulate")
-var accumulated = require("./accumulated")
+var reduced = require("./reduced")
+var isReduced = require("./is-reduced")
 var emit = require("./emit")
 var close = require("./close")
 
@@ -51,7 +52,7 @@ emit.define(Signal, function(signal, value) {
   if (isClosed(signal)) throw Error("Signal is already closed")
   if (!isOpen(signal)) throw Error("Signal is not open")
   var result = signal[accumulator](value, signal[state])
-  if (result && result.is === accumulated) {
+  if (isReduced(result)) {
     close(signal)
   } else {
     signal[state] = result

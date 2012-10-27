@@ -1,7 +1,8 @@
 "use strict";
 
 var accumulate = require("./accumulate")
-var accumulated = require("./accumulated")
+var reduced = require("./reduced")
+var isReduced = require("./is-reduced")
 var map = require("./map")
 var isError = require("./is-error")
 
@@ -18,14 +19,14 @@ function makeAccumulator(side) {
     // If this is an end of this stream, close a queue to indicate
     // no other value will be queued.
     else if (value === null) {
-      if (state && state.is === accumulated) return state
+      if (isReduced(state)) return state
       queue.closed = true
       // If queue is empty, dispatch end of stream.
       if (!queue.length) {
         dispatch(value, state.result)
         state.left = state.right = state.next = null
         state.closed = true
-        state.result = accumulated(result)
+        state.result = reduced(result)
       }
     }
     else {
@@ -45,13 +46,12 @@ function makeAccumulator(side) {
           // If consumer is done consumption or if buffer is empty and closed
           // dispatch end, and mark stream ended to stop streams and queueing
           // values too.
-          if ((result && result.is === accumulated) ||
-              (buffer.closed && !buffer.length)) {
+          if (isReduced(result) || (buffer.closed && !buffer.length)) {
             // Dispatch end of stream and cleanup state attributes.
             dispatch(null, result)
             state.left = state.right = state.next = null
             state.closed = true
-            state.result = accumulated(result)
+            state.result = reduced(result)
           } else {
             state.result = result
           }
