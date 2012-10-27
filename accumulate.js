@@ -4,7 +4,6 @@ var Method = require("method")
 var accumulated = require("./accumulated")
 var Eventual = require("eventual/type")
 var when = require("eventual/when")
-var error = require("./error")
 
 var accumulate = Method()
 
@@ -54,8 +53,8 @@ accumulate.define(accumulate.singular)
 accumulate.define(Eventual, function(eventual, next, initial) {
   return when(eventual, function delivered(value) {
     return accumulate(value, next, initial)
-  }, function failed(failure) {
-    next(null, next(error(failure), initial))
+  }, function failed(error) {
+    next(null, next(error, initial))
   })
 })
 

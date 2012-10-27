@@ -3,6 +3,7 @@
 var accumulate = require("./accumulate")
 var accumulated = require("./accumulated")
 var map = require("./map")
+var isError = require("./is-error")
 
 var slicer = Array.prototype.slice
 
@@ -31,9 +32,9 @@ function makeAccumulator(side) {
       queue.push(value)
       // If there is a buffered value on both streams shift and dispatch.
       if (buffer.length) {
-        if (buffer[0] && buffer[0].isBoxed)
+        if (isError(buffer[0]))
           dispatch(buffer.shift(), state.result)
-        else if (queue[0] && queue[0].isBoxed)
+        else if (isError(queue[0]))
           dispatch(queue.shift(), state.result)
 
         if (buffer.length && queue.length) {

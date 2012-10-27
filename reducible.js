@@ -2,17 +2,16 @@
 
 var convert = require("./convert")
 var when = require("eventual/when")
-var error = require("./error")
 
 function reducible(source, f) {
   return convert(source, function(source, next, initial) {
     var result = f(source, function forward(result, value) {
       return next(value, result)
     }, initial)
-    when(result, function(value) {
+    when(result, function ondeliver(value) {
       next(null, value)
-    }, function(e) {
-      next(error(e))
+    }, function onfailure(error) {
+      next(error)
     })
   })
 }

@@ -4,7 +4,6 @@ var test = require("./util/test")
 var concat = require("../concat")
 var into = require("../into")
 var delay = require("../delay")
-var error = require("../error")
 var capture = require("../capture")
 
 exports["test concat"] = function(assert) {
@@ -61,11 +60,11 @@ exports["test concat & reconcat"] = test(function(assert) {
 
 exports["test map broken stream"] = test(function(assert) {
   var boom = Error("Boom!")
-  var async = delay(concat([3, 2, 1], error(boom)))
+  var async = delay(concat([3, 2, 1], boom))
   var concated = concat([">"], async, [1, 2], async)
-  var actual = capture(concated, function(error) { return error })
+  var actual = capture(concated, function(error) { return error.message })
 
-  assert(actual, [">", 3, 2, 1, boom], "test concat on broken stream")
+  assert(actual, [">", 3, 2, 1, boom.message], "test concat on broken stream")
 })
 
 

@@ -4,7 +4,6 @@ var test = require("./util/test")
 var concat = require("../concat")
 var delay = require("../delay")
 var capture = require("../capture")
-var error = require("../error")
 
 var into = require("../into")
 var take = require("../take")
@@ -63,7 +62,7 @@ exports["test take on async stream"] = test(function(assert) {
 
 exports["test take before error"] = test(function(assert) {
   var boom = Error("Boom!")
-  var delayed = delay(concat([3, 2, 1], error(boom)))
+  var delayed = delay(concat([3, 2, 1], boom))
   var recovered = capture(delayed, function(e) { return e.message })
   var actual = take(recovered, 3)
 
@@ -72,7 +71,7 @@ exports["test take before error"] = test(function(assert) {
 
 exports["test error propagation"] = test(function(assert) {
   var boom = Error("Boom!")
-  var delayed = delay(concat([3, 2, 1], error(boom)))
+  var delayed = delay(concat([3, 2, 1], boom))
   var recovered = capture(delayed, function(e) { return e.message })
   var actual = take(recovered, 5)
 

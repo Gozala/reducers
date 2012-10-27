@@ -3,7 +3,7 @@
 var convert = require("./convert")
 var accumulate = require("./accumulate")
 var accumulated = require("./accumulated")
-var error = require("./error")
+var isError = require("./is-error")
 
 function capture(source, recover) {
   /**
@@ -20,9 +20,9 @@ function capture(source, recover) {
       if (failure) return failure
       // If value is an error then continue accumulation of recovered
       // sequence.
-      else if (value && value.is === error) {
+      else if (isError(value)) {
         failure = accumulated(result)
-        accumulate(recover(value.value, result), next, result)
+        accumulate(recover(value, result), next, result)
         return failure
       }
       // Otherwise just forward messages.

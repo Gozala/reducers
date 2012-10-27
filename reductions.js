@@ -2,6 +2,7 @@
 
 var convert = require("./convert")
 var accumulate = require("./accumulate")
+var isError = require("./is-error")
 
 function reductions(source, f, initial) {
   /**
@@ -18,7 +19,9 @@ function reductions(source, f, initial) {
   return convert(source, function(self, next, result) {
     var state = initial
     accumulate(source, function(value, result) {
-      state = value && value.isBoxed ? next(value, result) : f(state, value)
+      state = value === null ? next(null, result) :   // propagate end of stream
+              isError(value) ? next(value, result) :  // propagate errors
+              f(state, value)                         // dispatch otherwise
       return next(state, result)
     }, result)
   })

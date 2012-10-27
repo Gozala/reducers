@@ -2,6 +2,7 @@
 
 var convert = require("./convert")
 var accumulate = require("./accumulate")
+var isError = require("./is-error")
 
 function transform(source, f) {
   /**
@@ -24,8 +25,8 @@ function transform(source, f) {
   return convert(source, function(self, next, initial) {
     accumulate(source, function(value, result) {
       return value === null ? next(null, result) :
-             value && value.isBoxed ? next(value, result) :
-                                      f(next, value, result)
+             isError(value) ? next(value, result) :
+             f(next, value, result)
     }, initial)
   })
 }

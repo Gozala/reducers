@@ -2,6 +2,7 @@
 
 var accumulate = require("./accumulate")
 var convert = require("./convert")
+var isError = require("./is-error")
 
 // THIS IS EXPERIMENTAL FUNCTION THAT MY GO AWAY IN A FUTURE
 
@@ -33,7 +34,9 @@ function adjust(source, f, initial) {
   return convert(source, function(self, next, result) {
     var state = initial
     accumulate(source, function(value, result) {
-      if (value === null || value && value.isBoxed) return next(value, result)
+      // If value is either end of stream (null) or an error skip
+      // `f` transformer, just propagate.
+      if (value === null || isError(value)) return next(value, result)
       var pair = f(value, state)
       state = pair[1]
       return next(pair[0], result)

@@ -4,7 +4,6 @@ var test = require("./util/test")
 var concat = require("../concat")
 var into = require("../into")
 var delay = require("../delay")
-var error = require("../error")
 var capture = require("../capture")
 var lazy = require("./util/lazy")
 

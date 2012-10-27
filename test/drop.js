@@ -7,7 +7,6 @@ var into = require("../into")
 var drop = require("../drop")
 var delay = require("../delay")
 var concat = require("../concat")
-var error = require("../error")
 var capture = require("../capture")
 
 
@@ -71,7 +70,7 @@ exports["test drop of async stream"] = test(function(assert) {
 
 exports["test drop on stream with error"] = test(function(assert) {
   var boom = Error("Boom!")
-  var dropped = drop(delay(concat([4, 3, 2, 1], error(boom))), 2)
+  var dropped = drop(delay(concat([4, 3, 2, 1], boom)), 2)
   var actual = capture(dropped, function(error) { return error.message })
 
   assert(actual, [2, 1, boom.message], "dropped on broken stream")
@@ -79,7 +78,7 @@ exports["test drop on stream with error"] = test(function(assert) {
 
 exports["test drop on stream with error in head"] = test(function(assert) {
   var boom = Error("Boom!")
-  var dropped = drop(delay(concat(error(boom), [4, 3, 2, 1])), 2)
+  var dropped = drop(delay(concat(boom, [4, 3, 2, 1])), 2)
   var actual = capture(dropped, function(error) { return error.message })
 
   assert(actual, [boom.message], "attempt to drop on early errors")

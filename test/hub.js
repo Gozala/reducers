@@ -12,7 +12,6 @@ var close = require("../close")
 var hub = require("../hub")
 var concat = require("../concat")
 var delay = require("../delay")
-var error = require("../error")
 var flatten = require("../flatten")
 var capture = require("../capture")
 
@@ -211,7 +210,7 @@ exports["test hub with async stream"] = test(function(assert) {
 exports["test hub with broken stream"] = test(function(assert) {
   var boom = Error("boom!")
   var source = hub(concat(delay([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 ]),
-                   error(boom)))
+                   boom))
 
   var transformed = concat(take(source, 3),
                       "-",

@@ -1,15 +1,15 @@
 "use strict";
 
 var accumulate = require("../../accumulate")
-var error = require("../../error")
+var isError = require("../../is-error")
 
 function test(f) {
   return function(assert, done) {
     f(function(actual, expected, comment) {
       var values = []
       accumulate(actual, function(actual) {
-        if (actual && actual.is === error) {
-          assert.fail(actual.value)
+        if (isError(actual)) {
+          assert.fail(actual)
           done()
         } else if (actual === null) {
           assert.deepEqual(values, expected, comment)
