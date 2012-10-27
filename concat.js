@@ -2,7 +2,6 @@
 
 var convert = require("./convert")
 var accumulate = require("./accumulate")
-var end = require("./end")
 
 var slicer = Array.prototype.slice
 
@@ -13,8 +12,8 @@ function append(left, right) {
   **/
   return convert({}, function(self, next, initial) {
     accumulate(left, function(value, result) {
-      return value && value.is === end ? accumulate(right, next, result) :
-                                         next(value, result)
+      return value === null ? accumulate(right, next, result) :
+                              next(value, result)
     }, initial)
   })
 }

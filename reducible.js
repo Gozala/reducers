@@ -2,7 +2,6 @@
 
 var convert = require("./convert")
 var when = require("eventual/when")
-var end = require("./end")
 var error = require("./error")
 
 function reducible(source, f) {
@@ -11,7 +10,7 @@ function reducible(source, f) {
       return next(value, result)
     }, initial)
     when(result, function(value) {
-      next(end(), value)
+      next(null, value)
     }, function(e) {
       next(error(e))
     })

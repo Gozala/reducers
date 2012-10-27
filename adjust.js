@@ -33,7 +33,7 @@ function adjust(source, f, initial) {
   return convert(source, function(self, next, result) {
     var state = initial
     accumulate(source, function(value, result) {
-      if (value && value.isBoxed) return next(value, result)
+      if (value === null || value && value.isBoxed) return next(value, result)
       var pair = f(value, state)
       state = pair[1]
       return next(pair[0], result)

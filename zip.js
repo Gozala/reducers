@@ -3,7 +3,6 @@
 var accumulate = require("./accumulate")
 var accumulated = require("./accumulated")
 var map = require("./map")
-var end = require("./end")
 
 var slicer = Array.prototype.slice
 
@@ -17,7 +16,7 @@ function makeAccumulator(side) {
     if (state.closed)  return state.result
     // If this is an end of this stream, close a queue to indicate
     // no other value will be queued.
-    else if (value && value.is === end) {
+    else if (value === null) {
       if (state && state.is === accumulated) return state
       queue.closed = true
       // If queue is empty, dispatch end of stream.
@@ -48,7 +47,7 @@ function makeAccumulator(side) {
           if ((result && result.is === accumulated) ||
               (buffer.closed && !buffer.length)) {
             // Dispatch end of stream and cleanup state attributes.
-            dispatch(end(), result)
+            dispatch(null, result)
             state.left = state.right = state.next = null
             state.closed = true
             state.result = accumulated(result)

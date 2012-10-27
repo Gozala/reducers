@@ -1,7 +1,6 @@
 "use strict";
 
 var accumulate = require("../../accumulate")
-var end = require("../../end")
 var error = require("../../error")
 
 function test(f) {
@@ -12,7 +11,7 @@ function test(f) {
         if (actual && actual.is === error) {
           assert.fail(actual.value)
           done()
-        } else if (actual && actual.is === end) {
+        } else if (actual === null) {
           assert.deepEqual(values, expected, comment)
           done()
         } else if (actual && actual.isBoxed) {

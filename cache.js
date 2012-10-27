@@ -3,7 +3,6 @@
 var convert = require("./convert")
 var accumulate = require("./accumulate")
 var concat = require("./concat")
-var end = require("./end")
 var hub = require('./hub')
 
 var cached = "cached@" + module.id
@@ -21,7 +20,7 @@ function buffer(cache) {
     buffered.push(value)
     // If source is ended remove reference to the input
     // and replace internal cache with a simple buffered array.
-    if (value && value.is === end) {
+    if (value === null) {
       cache[input] = null
       cache[cached] = buffered
     }

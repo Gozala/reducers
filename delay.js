@@ -3,7 +3,6 @@
 var convert = require("./convert")
 var accumulate = require("./accumulate")
 var accumulated = require("./accumulated")
-var end = require("./end")
 
 function delay(source, ms) {
   ms = ms || 3 // Minimum 3ms, as on less dispatch order becomes unreliable
@@ -17,7 +16,7 @@ function delay(source, ms) {
           result = next(value, result)
           if (result && result.is === accumulated) {
             ended = true
-            next(end(), result.value)
+            next(null, result.value)
           }
         }
       }, timeout = timeout + ms)

@@ -23,8 +23,9 @@ function transform(source, f) {
   **/
   return convert(source, function(self, next, initial) {
     accumulate(source, function(value, result) {
-      return value && value.isBoxed ? next(value, result)
-                                    : f(next, value, result)
+      return value === null ? next(null, result) :
+             value && value.isBoxed ? next(value, result) :
+                                      f(next, value, result)
     }, initial)
   })
 }

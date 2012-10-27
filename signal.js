@@ -2,7 +2,6 @@
 
 var Method = require("method")
 var accumulate = require("./accumulate")
-var end = require("./end")
 var accumulated = require("./accumulated")
 var emit = require("./emit")
 var close = require("./close")
@@ -38,7 +37,7 @@ accumulate.define(Signal, function(signal, next, initial) {
   // Signals may only be reduced by one consumer function.
   // Other data types built on top of signal may allow for more consumers.
   if (isOpen(signal)) throw Error("Signal is being consumed")
-  if (isClosed(signal)) return next(end(), initial)
+  if (isClosed(signal)) return next(null, initial)
   signal[accumulator] = next
   signal[state] = initial
   return signal
@@ -72,7 +71,7 @@ close.define(Signal, function(signal, value) {
   signal[closed] = true
   signal[accumulator] = null
   signal[state] = null
-  next(end(), result)
+  next(null, result)
 
   return signal
 })
