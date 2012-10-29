@@ -1,5 +1,13 @@
 # Changes
 
+## 0.2.0 / 2012-10-28
+
+  - Break API change for [signal](./signal.js) / [channel](./channel.js).
+    They no longer throw exceptions on attempts to close or emit more data
+    instead they return `accumulated` boxed value to signal they're closed.
+  - Implement [pipe](./pipe.js) that can be used to pipe input right to an
+    output (signal / channel / whatever implements [emit](./emit.js)).
+
 ## 0.1.6 / 2012-10-26
 
   - Add a lot more tests.
