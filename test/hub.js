@@ -15,6 +15,7 @@ var delay = require("../delay")
 var error = require("../error")
 var flatten = require("../flatten")
 var capture = require("../capture")
+var map = require("../map")
 
 var when = require("eventual/when")
 
@@ -238,6 +239,30 @@ exports["test hub with broken stream"] = test(function(assert) {
     boom.message
   ], "reads in the same turn share head")
 
+})
+
+exports["test map hub"] = test(function(assert) {
+  var called = 0
+  var s = signal()
+  var h1 = hub(s)
+  var m = map(h1, function(x) {
+    called = called + 1
+    return x
+  })
+  var h2 = hub(m)
+
+  var actual = concat(into(h2),
+                      into(h2),
+                      "x",
+                      lazy(function() { return called }))
+
+  emit(s, 1)
+  emit(s, 2)
+  emit(s, 3)
+  emit(s, null)
+
+  assert(actual, [ 1, 2, 3, 1, 2, 3, "x", 3 ],
+         "hub dispatches on consumers")
 })
 
 if (module == require.main)

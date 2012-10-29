@@ -66,10 +66,6 @@ function open(hub) {
   })
 }
 
-function isHub(value) {
-  return !value || (input in value && consumers in value)
-}
-
 function isOpen(hub) {
   return hub[input] === null
 }
@@ -79,15 +75,13 @@ function hub(source) {
   Take a reducible `source`, such as a `signal` and return a reducible that can
   be consumed by many reducers.
   **/
-
-  // If source is already a hub avoid just return.
-  if (isHub(source)) return source
+  if (source === null) return null
+  if (source === void(0)) return null
   var value = convert(source, hub.accumulate)
   value[input] = source
   value[consumers] = []
   return value
 }
-hub.isHub = isHub
 hub.isOpen = isOpen
 hub.accumulate = function accumulate(hub, next, initial) {
   // Enqueue new consumer into consumers array so that new
