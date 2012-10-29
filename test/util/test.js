@@ -4,9 +4,9 @@ var accumulate = require("../../accumulate")
 var isError = require("../../is-error")
 var isReduced = require("../../is-reduced")
 
-function test(f) {
-  return function(assert, done) {
-    f(function(actual, expected, comment) {
+function test(unit) {
+  return function(assertions, done) {
+    function assert(actual, expected, comment) {
       var values = []
       accumulate(actual, function(actual) {
         if (isError(actual)) {
@@ -22,7 +22,11 @@ function test(f) {
         }
         return actual
       })
-    })
+    }
+
+    for (var key in assertions) assert[key] = assertions[key].bind(assertions)
+
+    unit(assert)
   }
 }
 
