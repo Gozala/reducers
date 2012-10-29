@@ -15,7 +15,7 @@ exports["test signal"] = require("./signal")
 exports["test hub"] = require("./hub")
 exports["test queue"] = require("./queue")
 exports["test buffer"] = require("./buffer")
-exports["test cache"] = require("./buffer")
+exports["test cache"] = require("./cache")
 
 exports["test delay"] = require("./delay")
 exports["test reductions"] = require("./reductions")
