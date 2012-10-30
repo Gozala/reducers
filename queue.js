@@ -13,7 +13,7 @@ function isDrained(queue) {
 }
 
 function queue(target) {
-  var value = convert(target, queue.accumulate)
+  var value = convert(null, queue.accumulate)
   emit.implement(value, queue.emit)
   value[output] = target
   value[queued] = []

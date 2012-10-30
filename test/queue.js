@@ -14,15 +14,14 @@ exports["test queue before open"] = function(assert, done) {
   var c = signal()
   var q = queue(c)
 
-  assert.ok(!signal.isOpen(q), "queue is not open")
-
   emit(q, 1)
   emit(q, 2)
 
   var p = into(q)
 
   emit(q, 3)
-  close(q, 4)
+  emit(q, 4)
+  emit(q, null)
 
   when(p, function(actual) {
     assert.deepEqual(actual, [ 1, 2, 3, 4 ],

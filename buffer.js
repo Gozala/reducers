@@ -1,60 +1,38 @@
 "use strict";
 
-var convert = require("./convert")
+var concat = require("./concat")
+var hub = require("./hub")
+var reducible = require("./reducible")
+var reduce = require("./reduce")
 var accumulate = require("./accumulate")
 
-var queued = "queued@" + module.id
-var input = "input@" + module.id
-var forward = "forward@" + module.id
-var state = "state@" + module.id
-
-function drain(buffer, next, result) {
-  var values = buffer[queued]
-  while (values.length) result = next(values.shift(), result)
-  buffer[queued] = null
-  return result
+function push(value, array) {
+  array.push(value)
+  return array
 }
 
-function isDrained(buffer) {
-  return buffer[queued] === null
-}
-
-function buffer(source) {
+function buffer(input) {
   /**
-  Buffer a reducible, saving items from reducible in-memory until a consumer
-  reduces the buffer.
-
-  Reducibles are not required to expose a data container for the sequence they
-  represent, meaning items in the reducible may not be represented in-memory
-  at all. This is great for representing potentially infinite data structures
-  like "mouse clicks over time", or "data streamed from server". However,
-  sometimes it's important to reduce all items in the reducible, even if the
-  item was emitted at a point in the past. This is where buffer comes in handy.
-  It stores a backlog of previously emitted items in-memory until you're
-  ready to consume.
+  Function takes `input` sequence and returns equivalent sequence but buffered.
+  So if `input` stream represents result of expensive computation it can be
+  buffered to do it only once. Also note that `buffer` is not lazy, it will
+  start buffering `input` immediately. For lazy buffering use `cache` instead.
   **/
-  var self = convert(source, buffer.accumulate)
-  self[state] = null
-  self[input] = source
-  self[queued] = []
-  self[forward] = function(value) {
-    self[queued].push(value)
-  }
-  accumulate(source, function(value) {
-    self[state] = self[forward](value, self[state])
+
+  // Wrap `input` into the hub, just to be sure that it can be consumed
+  // by multiple sources.
+  var source = hub(input)
+  // Create an array of already buffered values and accumulate source in it.
+  var buffered = []
+  accumulate(source, push, buffered)
+  // Result is a concatenation of buffered values with rest of the source.
+  var result = concat(buffered, source)
+  return reducible(function reduceReducible(next, initial) {
+    // If end of stream `null` is already in a buffer, then just reduce it,
+    // otherwise reduce concatenation of buffered values and rest of the source.
+    return buffered.indexOf(null) >= 0 ? reduce(buffered, next, initial)
+                                       : reduce(result, next, initial)
   })
-  return self
-}
-buffer.accumulate = function(buffer, next, initial) {
-  // If buffer has already been drained accumulate from the original source.
-  if (isDrained(buffer)) return accumulate(buffer[input], next, initial)
-  // Otherwise, drain the buffer, passing items to the accumulating function.
-  buffer[state] = drain(buffer, next, initial)
-  // Overshadow forward function, insuring that
-  // future values are not buffered, and are instead passed directly to the
-  // accumulation function.
-  buffer[forward] = next
-  return buffer
 }
 
 module.exports = buffer

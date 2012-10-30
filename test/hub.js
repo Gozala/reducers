@@ -26,22 +26,17 @@ exports["test hub open / close propagate"] = function(assert, done) {
 
   assert.ok(!signal.isOpen(c), "signal is not open")
   assert.ok(!signal.isClosed(c), "signal is not closed")
-  assert.ok(!signal.isClosed(h), "hub is not closed")
-  assert.ok(!signal.isOpen(h), "hub is not opened")
 
   var p = into(h)
 
   assert.ok(signal.isOpen(c), "signal is open after reduce is called")
   assert.ok(!signal.isClosed(c), "signal is not closed until close is called")
-  assert.ok(signal.isOpen(h), "hub is open after reduce is called")
-  assert.ok(!signal.isClosed(h), "hub is not closed until close is called")
 
   emit(c, 1)
   emit(c, 2)
   close(c, 3)
 
   assert.ok(signal.isClosed(c), "signal closed")
-  assert.ok(signal.isClosed(h), "hub is closed")
 
   when(p, function(actual) {
     assert.deepEqual(actual, [ 1, 2, 3 ], "all value were propagated")
@@ -123,7 +118,7 @@ exports["test source is closed on last end"] = function(assert, done) {
   emit(c, 3)
   emit(c, 4)
 
-  assert.ok(signal.isClosed(h), "signal is closed once consumer is done")
+  assert.ok(signal.isClosed(c), "signal is closed once consumer is done")
 
   when(p1, function(actual) {
     assert.deepEqual(actual, [ 1 ], "#1 took 1 item")
@@ -144,7 +139,6 @@ exports["test reducing closed"] = function(assert, done) {
   var p1 = into(h)
 
   close(c, 0)
-  assert.ok(signal.isClosed(h), "hub is closed")
   assert.ok(signal.isClosed(c), "signal is closed")
 
   var p2 = into(h)

@@ -6,7 +6,7 @@ var isReduced = require("./is-reduced")
 
 function delay(source, ms) {
   ms = ms || 3 // Minimum 3ms, as on less dispatch order becomes unreliable
-  return convert(source, function(_, next, result) {
+  return convert(null, function(_, next, result) {
     var timeout = 0
     var ended = false
     accumulate(source, function(value) {

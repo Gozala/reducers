@@ -1,8 +1,7 @@
 "use strict";
 
-var transformer = require("./transformer")
-var transform = require("./transform")
-
+var reducible = require("./reducible")
+var reduce = require("./reduce")
 
 function drop(source, n) {
   /**
@@ -14,12 +13,13 @@ function drop(source, n) {
   print(drop([ 1, 2, 3, 4 ], 2))  // => <stream 3 4 />
   print(drop([ 1, 2, 3 ], 5))     // => <stream />
   **/
-  return transformer(source, function(source) {
+  return reducible(function(next, initial) {
     var count = n >= 0 ? n : 1
-    return transform(source, function(next, value, result) {
-      return count -- > 0 ? result :
-                            next(value, result)
-    })
+    return reduce(source, function(result, value) {
+      count = count - 1
+      return count < 0 ? next(result, value) :
+                         result
+    }, initial)
   })
 }
 

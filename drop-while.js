@@ -1,7 +1,7 @@
 "use strict";
 
-var transform = require("./transform")
-var transformer = require("./transformer")
+var reducible = require("./reducible")
+var reduce = require("./reduce")
 
 function dropWhile(source, predicate) {
   /**
@@ -15,12 +15,13 @@ function dropWhile(source, predicate) {
   })
   print(numbers)   // => <stream 10 23 />
   **/
-  return transformer(source, function(source) {
-    var active = true
-    return transform(source, function(next, value, result) {
-      return active && (active = predicate(value)) ? result :
-                                                     next(value, result)
-    })
+  return reducible(function reduceReducible(next, initial) {
+    var dropping = true
+    return reduce(source, function reduceSource(result, value) {
+      dropping = dropping && (dropping = predicate(value))
+      return dropping ? result :
+                        next(result, value)
+    }, initial)
   })
 }
 

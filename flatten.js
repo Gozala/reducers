@@ -19,7 +19,7 @@ function flatten(source) {
 
   print(flatten([ [1, 2], [ 3, 4 ] ]))  // => <stream 1 2 3 4 />
   **/
-  return reducible(source, function(_, next, initial) {
+  return reducible(function(next, initial) {
     return reduce(source, function(result, nested) {
       // we group results to make sure flattened stream won't finish until
       // all the streams are finished.

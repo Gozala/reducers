@@ -1,8 +1,7 @@
 "use strict";
 
-var convert = require("./convert")
-var accumulate = require("./accumulate")
-var isError = require("./is-error")
+var reducible = require("./reducible")
+var reduce = require("./reduce")
 
 function reductions(source, f, initial) {
   /**
@@ -16,14 +15,12 @@ function reductions(source, f, initial) {
   }, 0)
   print(numbers) // => <stream 1 2 3 4 />
   **/
-  return convert(source, function(self, next, result) {
+  return reducible(function reduceReducible(next, start) {
     var state = initial
-    accumulate(source, function(value, result) {
-      state = value === null ? next(null, result) :   // propagate end of stream
-              isError(value) ? next(value, result) :  // propagate errors
-              f(state, value)                         // dispatch otherwise
-      return next(state, result)
-    }, result)
+    return reduce(source, function reduceSource(result, value) {
+      state = f(state, value)
+      return next(result, state)
+    }, start)
   })
 }
 

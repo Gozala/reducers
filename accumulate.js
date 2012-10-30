@@ -18,6 +18,7 @@ accumulate.empty = function accumulateEmpty(empty, next, start) {
 accumulate.singular = function accumulateSingular(value, next, start) {
   next(null, next(value, start))
 }
+
 // Implementation accumulate for the array (and alike) values, such that it
 // will call accumulator function `next` each time with next item and
 // accumulated state until it's exhausted or `next` returns marked value
@@ -55,6 +56,7 @@ accumulate.define(Eventual, function(eventual, next, initial) {
     return accumulate(value, next, initial)
   }, function failed(error) {
     next(null, next(error, initial))
+    return error
   })
 })
 

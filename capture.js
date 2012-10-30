@@ -13,7 +13,7 @@ function capture(source, recover) {
   that representing IO operations like (XHR / WebSockets etc...) where errors
   may occur.
   **/
-  return convert(source, function(self, next, initial) {
+  return convert(null, function(self, next, initial) {
     var failure = void(0)
     accumulate(source, function(value, result) {
       // If error has already being captured then return

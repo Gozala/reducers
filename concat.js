@@ -10,7 +10,7 @@ function append(left, right) {
   Returns sequences of items in the `left` sequence followed by the
   items in the `right` sequence.
   **/
-  return convert({}, function(self, next, initial) {
+  return convert(null, function(self, next, initial) {
     accumulate(left, function(value, result) {
       return value === null ? accumulate(right, next, result) :
                               next(value, result)

@@ -14,10 +14,8 @@ function sequential(source) {
   will buffer items that are delivered earlier then their order so keep
   that in mind and use it with extra care.
   **/
-  return reducible(source, function(_, next, initial) {
-    return reduce(source, eventual(function(result, value) {
-      return next(result, value)
-    }), initial)
+  return reducible(function reduceReducible(next, initial) {
+    return reduce(source, eventual(next), initial)
   })
 }
 

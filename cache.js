@@ -1,43 +1,15 @@
 "use strict";
 
-var convert = require("./convert")
-var accumulate = require("./accumulate")
-var concat = require("./concat")
-var hub = require('./hub')
+var buffer = require("./buffer")
+var reducible = require("./reducible")
+var reduce = require("./reduce")
 
-var cached = "cached@" + module.id
-var input = "input@" + module.id
-
-function isBuffering(cache) {
-  return cache[cached] !== null
-}
-
-function buffer(cache) {
-  var source = cache[input]
-  var buffered = []
-  cache[cached] = concat(buffered, source)
-  accumulate(source, function(value) {
-    buffered.push(value)
-    // If source is ended remove reference to the input
-    // and replace internal cache with a simple buffered array.
-    if (value === null) {
-      cache[input] = null
-      cache[cached] = buffered
-    }
+function cache(input) {
+  var result
+  return reducible(function(next, initial) {
+    return result ? reduce(result, next, initial) :
+                    reduce(result = buffer(input), next, initial)
   })
-}
-
-function cache(source) {
-  var self = convert(source, cache.accumulate)
-  self[input] = hub(source)
-  self[cached] = null
-  return self
-}
-cache.accumulate = function(cache, next, initial) {
-  // If input is not being buffered start buffering.
-  if (!isBuffering(cache)) buffer(cache)
-  // Forward all cached and upcoming values to a consumer.
-  accumulate(cache[cached], next, initial)
 }
 
 module.exports = cache
