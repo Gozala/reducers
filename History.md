@@ -1,5 +1,10 @@
 # Changes
 
+## 0.2.1 / 2012-10-30
+
+  - Fix bug in [hub](./hub.js) implementation that was not multiplexing on
+    values that have derived from it like [channel](./channel.js) for example.
+
 ## 0.2.0 / 2012-10-28
 
   - Break API change for [signal](./signal.js) / [channel](./channel.js).
