@@ -1,13 +1,30 @@
 "use strict";
 
 var accumulate = require("./accumulate")
-var convert = require("./convert")
 var reduced = require("./reduced")
 var isReduced = require("./is-reduced")
 var end = require("./end")
 
 var input = "input@" + module.id
 var consumers = "consumers@" + module.id
+
+
+var isArray = Array.isArray
+
+function Hub(source) {
+  this[input] = source
+  this[consumers] = []
+}
+
+accumulate.define(Hub, function accumulate(hub, next, initial) {
+  // Enqueue new consumer into consumers array so that new
+  // values will be delegated to it.
+  hub[consumers].push({ next: next, state: initial })
+  // If source is not in the process of consumption than
+  // start it up.
+  if (!isOpen(hub)) open(hub)
+})
+
 
 function drain(consumers) {
   while (consumers.length) {
@@ -67,10 +84,6 @@ function open(hub) {
   })
 }
 
-function isHub(value) {
-  return !value || (input in value && consumers in value)
-}
-
 function isOpen(hub) {
   return hub[input] === null
 }
@@ -82,19 +95,9 @@ function hub(source) {
   **/
   if (source === null) return null
   if (source === void(0)) return null
-  var value = convert(null, hub.accumulate)
-  value[input] = source
-  value[consumers] = []
-  return value
+  return new Hub(source)
 }
-hub.isHub = isHub
 hub.isOpen = isOpen
-hub.accumulate = function accumulate(hub, next, initial) {
-  // Enqueue new consumer into consumers array so that new
-  // values will be delegated to it.
-  hub[consumers].push({ next: next, state: initial })
-  // If source is not in the process of consumption than
-  // start it up.
-  if (!isOpen(hub)) open(hub)
-}
+hub.type = Hub
+
 module.exports = hub
