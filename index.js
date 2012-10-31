@@ -38,6 +38,7 @@ exports.signal = require("./signal")
 exports.channel = require("./channel")
 exports.emit = require("./emit")
 exports.close = require("./close")
+exports.pipe = require("./pipe")
 
 // helpers
 
