@@ -2,6 +2,7 @@
 
 var accumulate = require("../../accumulate")
 var isError = require("../../is-error")
+var end = require("../../end")
 var isReduced = require("../../is-reduced")
 
 function test(unit) {
@@ -9,11 +10,11 @@ function test(unit) {
     function assert(actual, expected, comment) {
       var values = []
       accumulate(actual, function(actual) {
-        if (isError(actual)) {
-          assert.fail(actual)
-          done()
-        } else if (actual === null) {
+        if (actual === end) {
           assert.deepEqual(values, expected, comment)
+          done()
+        } else if (isError(actual)) {
+          assert.fail(actual)
           done()
         } else if (isReduced(actual)) {
           return actual
