@@ -1,7 +1,11 @@
 "use strict";
 
 var Method = require("method")
+
 var isReduced = require("./is-reduced")
+var isError = require("./is-error")
+var end = require("./end")
+
 var Eventual = require("eventual/type")
 var when = require("eventual/when")
 
@@ -9,14 +13,14 @@ var accumulate = Method()
 
 // Implementation of accumulate for the empty sequences, that immediately
 // signals end of sequence.
-accumulate.empty = function accumulateEmpty(empty, next, start) {
-  next(null, start)
+accumulate.empty = function accumulateEmpty(empty, next, initial) {
+  next(end, initial)
 }
 // Implementation of accumulate for the singular values which are treated
 // as sequences with single element. Yields the given value and signals
 // the end of sequence.
-accumulate.singular = function accumulateSingular(value, next, start) {
-  next(null, next(value, start))
+accumulate.singular = function accumulateSingular(value, next, initial) {
+  next(end, next(value, initial))
 }
 
 // Implementation accumulate for the array (and alike) values, such that it
@@ -29,12 +33,13 @@ accumulate.indexed = function accumulateIndexed(indexed, next, initial) {
   var index = 0
   var count = indexed.length
   while (index < count) {
-    var value = indexed[index++]
-    if (value === null) break
+    var value = indexed[index]
     state = next(value, state)
-    if (isReduced(state)) break
+    index = index + 1
+    if (isError(value)) return state
+    if (isReduced(state)) return state.value
   }
-  next(null, state)
+  next(end, state)
 }
 
 // Both `undefined` and `null` implement accumulate for empty sequences.
@@ -55,7 +60,7 @@ accumulate.define(Eventual, function(eventual, next, initial) {
   return when(eventual, function delivered(value) {
     return accumulate(value, next, initial)
   }, function failed(error) {
-    next(null, next(error, initial))
+    next(error, initial)
     return error
   })
 })
