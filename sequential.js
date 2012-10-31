@@ -1,8 +1,11 @@
 "use strict";
 
 var reducible = require("./reducible")
+var accumulate = require("./accumulate")
 var reduce = require("./reduce")
 var eventual = require("eventual/decorate")
+var when = require("eventual/when")
+var end = require("./end")
 
 function sequential(source) {
   /**
@@ -15,7 +18,10 @@ function sequential(source) {
   that in mind and use it with extra care.
   **/
   return reducible(function reduceReducible(next, initial) {
-    return reduce(source, eventual(next), initial)
+    var result = reduce(source, eventual(function(value, result) {
+      return next(result, value)
+    }), initial)
+    when(result, function(result) { next(end, result) }, next)
   })
 }
 
