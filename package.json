@@ -27,7 +27,7 @@
     "benchmark": ">=0.3.0"
   },
   "scripts": {
-    "test": "node test/test-all.js",
+    "test": "node test/index.js",
     "repl": "node node_modules/repl-utils",
     "benchmark": "node tests/benchmark.js"
   },
