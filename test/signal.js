@@ -1,5 +1,6 @@
 "use strict";
 
+var accumulated = require("../accumulated")
 var flatten = require("../flatten")
 var take = require("../take")
 var reduce = require("../reduce")
@@ -57,12 +58,15 @@ exports["test signal auto-close"] = function(assert, done) {
 
   assert.ok(signal.isClosed(c), "signal is closed once consumption is complete")
 
-  assert.throws(function() {
-    emit(c, 4)
-  }, "Error is thrown if queued to closed signal")
-  assert.throws(function() {
-    close(c)
-  }, "Error is thrown on close of closed signal")
+  var emitresult = emit(c, 4)
+  assert.ok(emitresult && emitresult.is === accumulated,
+            "emit on closed signal returns accumulated")
+
+
+  var closeresult = close(c)
+  assert.ok(closeresult && closeresult.is === accumulated,
+            "close on closed signal returns accumulated")
+
 
   when(p, function(actual) {
     assert.deepEqual(actual, [ 1, 2, 3 ],

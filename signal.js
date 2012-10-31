@@ -50,7 +50,7 @@ emit.define(Signal, function(signal, value) {
   Emit a new value for signal.
   Throws an exception if the signal is not open for emitting.
   **/
-  if (isClosed(signal)) throw Error("Signal is already closed")
+  if (isClosed(signal)) return accumulated()
   if (!isOpen(signal)) throw Error("Signal is not open")
   var result = signal[accumulator](value, signal[state])
   if (isReduced(result)) {
@@ -66,7 +66,7 @@ close.define(Signal, function(signal, value) {
   Close a signal, preventing new values from being emitted.
   Throws an exception if the signal is already closed.
   **/
-  if (isClosed(signal)) throw Error("Signal is already closed")
+  if (isClosed(signal)) return accumulated()
   if (value !== undefined) emit(signal, value)
   var result = signal[state]
   var next = signal[accumulator]
