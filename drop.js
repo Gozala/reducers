@@ -1,7 +1,8 @@
 "use strict";
 
 var reducible = require("./reducible")
-var reduce = require("./reduce")
+var accumulate = require("./accumulate")
+var isError = require("./is-error")
 
 function drop(source, n) {
   /**
@@ -13,12 +14,22 @@ function drop(source, n) {
   print(drop([ 1, 2, 3, 4 ], 2))  // => <stream 3 4 />
   print(drop([ 1, 2, 3 ], 5))     // => <stream />
   **/
-  return reducible(function(next, initial) {
-    var count = n >= 0 ? n : 1
-    return reduce(source, function(result, value) {
+
+  // If drop `<= 0` then optimize by returning source itself. If `Infinity`
+  // return empty.
+  if (n <= 0) return source
+  if (n === Infinity) return void(0)
+  return reducible(function accumulateDrop(next, initial) {
+    var count = n
+    accumulate(source, function accumulateDropSource(value, result) {
+      // If value is an error (which also includes end of collection) just
+      // pass it through `reducible` will take care of everything.
+      if (isError(value)) return next(value, result)
+      // If count of items has reached `0` just keep on passing values.
+      if (count === 0) return next(value, result)
+      // Otherwise just decrement count and return `result`.
       count = count - 1
-      return count < 0 ? next(result, value) :
-                         result
+      return result
     }, initial)
   })
 }

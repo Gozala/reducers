@@ -1,9 +1,8 @@
 "use strict";
 
-var reduced = require("./reduced")
-var transformer = require("./transformer")
-var transform = require("./transform")
-
+var reducible = require("./reducible")
+var accumulate = require("./accumulate")
+var end = require("./end")
 
 function take(source, n) {
   /**
@@ -13,17 +12,28 @@ function take(source, n) {
 
   ## Example
 
-  print(take([ 1, 2, 3, 4, 5 ], 2))   // => <stream 1 2 />
-  print(take([ 1, 2, 3 ], 5))         // => <stream 1 2 3 />
+  print(take([ 1, 2, 3, 4, 5 ], 2))   // => < 1 2 >
+  print(take([ 1, 2, 3 ], 5))         // => < 1 2 3 >
   **/
-  return transformer(source, function(source) {
-    var count = n >= 0 ? n : Infinity
-    return transform(source, function(next, value, result) {
+
+  // If take `0` then optimize by returning an empty if less then `0`
+  // then just return `source` back.
+  if (n === 0) return void(0)
+  if (n < 0) return source
+  return reducible(function accumulateTake(next, initial) {
+    // Capture `n` into count, since modifying `n` directly will have side
+    // effects on subsequent calls.
+    var count = n
+    accumulate(source, function accumulateTakeSource(value, result) {
       count = count - 1
-      return count === 0 ? next(reduced(), next(value, result)) :
-             count > 0 ? next(value, result) :
-                         next(reduced(), result)
-    })
+      result = next(value, result)
+
+      // If we have not taken `n` items yet just pass result back. Otherwise
+      // pass `end` of stream to a consumer. Note `reducible` will return
+      // `reduced(result)` back signaling source it should stop.
+      return count > 0 ? result :
+             next(end)
+    }, initial)
   })
 }
 

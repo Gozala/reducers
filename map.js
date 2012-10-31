@@ -1,8 +1,8 @@
 "use strict";
 
-var transform = require("./transform")
+var reducer = require("./reducer")
 
-function map(source, f) {
+var map = reducer(function map(f, next, value, result) {
   /**
   Returns transformed version of given `source` where each item of it
   is mapped using `f`.
@@ -11,12 +11,9 @@ function map(source, f) {
 
   var data = [{ name: "foo" }, { name: "bar" }]
   var names = map(data, function(value) { return value.name })
-  print(names) // => <stream "foo" "bar" />
+  print(names) // => < "foo" "bar" >
   **/
-  return transform(source, function(next, value, accumulated) {
-    return next(f(value), accumulated)
-  })
-}
+  next(f(value), result)
+})
 
 module.exports = map
-
