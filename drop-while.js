@@ -3,6 +3,7 @@
 var reducible = require("./reducible")
 var accumulate = require("./accumulate")
 var isError = require("./is-error")
+var end = require("./end")
 
 function dropWhile(source, predicate) {
   /**
@@ -19,9 +20,12 @@ function dropWhile(source, predicate) {
   return reducible(function accumulateDropWhile(next, initial) {
     var dropped = false
     accumulate(source, function accumulateDropWhileSource(value, result) {
-      // If value is an error (which also includes end of collection) just
-      // pass it through `reducible` will take care of everything.
+      // If value is end of collection or is an error (which also includes
+      // end of collection) just pass it through, `reducible` will take care
+      // of everything.
+      if (value === end) return next(value, result)
       if (isError(value)) return next(value, result)
+
       // If already dropped all the intended items (if `dropped` is already
       // being set to `true` or if current predicate returns `false`). Then
       // just keep on passing values.

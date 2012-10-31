@@ -36,6 +36,7 @@ accumulate.indexed = function accumulateIndexed(indexed, next, initial) {
     var value = indexed[index]
     state = next(value, state)
     index = index + 1
+    if (value === end) return end
     if (isError(value)) return state
     if (isReduced(state)) return state.value
   }

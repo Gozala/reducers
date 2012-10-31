@@ -41,7 +41,7 @@ accumulate.define(Reducible, function accumulate(reducible, next, initial) {
 
       // If value is an `error` (that also includes `end` of stream) we just
       // throw and let `catch` block do the rest of the job.
-      if (isError(value)) throw value
+      if (value === end || isError(value)) throw value
 
       // Otherwise new `state` is accumulated `by` forwarding a `value` to an
       // actual `next` handler.

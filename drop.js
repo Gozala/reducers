@@ -3,6 +3,7 @@
 var reducible = require("./reducible")
 var accumulate = require("./accumulate")
 var isError = require("./is-error")
+var end = require("./end")
 
 function drop(source, n) {
   /**
@@ -22,8 +23,10 @@ function drop(source, n) {
   return reducible(function accumulateDrop(next, initial) {
     var count = n
     accumulate(source, function accumulateDropSource(value, result) {
-      // If value is an error (which also includes end of collection) just
-      // pass it through `reducible` will take care of everything.
+      // If value is end of collection or is an error (which also includes
+      // end of collection) just pass it through, `reducible` will take care
+      // of everything.
+      if (value === end) return next(value, result)
       if (isError(value)) return next(value, result)
       // If count of items has reached `0` just keep on passing values.
       if (count === 0) return next(value, result)

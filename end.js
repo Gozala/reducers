@@ -1,3 +1,3 @@
 "use strict";
 
-module.exports = Error("End of the collection")
+module.exports = String("End of the collection")
