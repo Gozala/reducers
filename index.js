@@ -2,6 +2,7 @@
 
 // Consumption
 exports.reduce = require("./reduce")
+exports.accumulate = require("./accumulate")
 
 // Transformation
 exports.filter = require("./filter")
@@ -27,6 +28,7 @@ exports.takeWhile = require("./take-while")
 exports.take = require("./take")
 
 // Buffering / caching / multiplexing
+exports.queue = require("./queue")
 exports.buffer = require("./buffer")
 exports.cache = require("./cache")
 exports.hub = require("./hub")
@@ -36,8 +38,18 @@ exports.signal = require("./signal")
 exports.channel = require("./channel")
 exports.emit = require("./emit")
 exports.close = require("./close")
-exports.queue = require("./queue")
+
+// helpers
+
+exports.end = require("./end")
+exports.reduced = require("./reduced")
+exports.isReduced = require("./is-reduced")
+exports.isError = require("./is-error")
 
 // development
 exports.print = require("./debug/print")
 exports.into = require("./into")
+
+// core
+exports.reducer = require("./reducer")
+exports.reducible = require("./reducible")
