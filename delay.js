@@ -1,12 +1,13 @@
 "use strict";
 
-var convert = require("./convert")
+var reducible = require("./reducible")
 var accumulate = require("./accumulate")
 var isReduced = require("./is-reduced")
+var end = require("./end")
 
 function delay(source, ms) {
   ms = ms || 3 // Minimum 3ms, as on less dispatch order becomes unreliable
-  return convert(null, function(_, next, result) {
+  return reducible(function(next, result) {
     var timeout = 0
     var ended = false
     accumulate(source, function(value) {
@@ -16,7 +17,7 @@ function delay(source, ms) {
           result = next(value, result)
           if (isReduced(result)) {
             ended = true
-            next(null, result.value)
+            next(end)
           }
         }
       }, timeout = timeout + ms)
