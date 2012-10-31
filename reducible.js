@@ -2,6 +2,10 @@
 
 var accumulate = require("./accumulate")
 var when = require("eventual/when")
+var end = require("./end")
+var isError = require("./is-error")
+var isReduced = require("./is-reduced")
+var reduced = require("./reduced")
 
 function Reducible(reduce) {
   /**
@@ -17,21 +21,65 @@ function Reducible(reduce) {
   // so we set it here.
   this.reduce = reduce
 }
+
 // Implementation of `accumulate` for reducible, which just delegates to it's
 // `reduce` attribute.
 accumulate.define(Reducible, function accumulate(reducible, next, initial) {
-  var result = reducible.reduce(function forward(state, value) {
-    // We actually just inverse order of arguments here.
-    return next(value, state)
-  }, initial)
+  var result
+  // State is intentionally accumulated in the outer variable, that way no
+  // matter if consumer is broken and passes in wrong accumulated state back
+  // this reducible will still behave as intended.
+  var state = initial
+  reducible.reduce(function forward(value) {
+    try {
+      // If reduce reduction has already being completed just return
+      // `result` that is last state boxed in `reduced`. That way anything
+      // trying to dispatch after it's closed or error-ed will just be handed
+      // a `reduced` `state` indicating last value and no intent of getting
+      // more values.
+      if (result) return result
 
-  // When result is ready dispatch end of stream and aggregated value.
-  // If result errors also forward that.
-  when(result, function ondeliver(value) { next(null, value) }, next)
+      // If value is an `error` (that also includes `end` of stream) we just
+      // throw and let `catch` block do the rest of the job.
+      if (isError(value)) throw value
+
+      // Otherwise new `state` is accumulated `by` forwarding a `value` to an
+      // actual `next` handler.
+      state = next(value, state)
+
+      // If new `state` is boxed in `reduced` than source should be stopped
+      // and no more values should be forwarded to a `next` handler. To do
+      // that we throw `end` and let `catch` block do the rest of the job.
+      if (isReduced(state)) throw end
+
+      // If code got that far then nothing special happened and `new` state is
+      // just returned back, to a consumer.
+      return state
+    }
+    // If `error` is thrown that may few things:
+    //
+    //  1. Last value dispatched was indicator of an error (that also includes
+    //     `end` of stream).
+    //  2. Provided `next` handler threw an exception causing stream failure.
+    //
+    // When this happens stream is either finished or error-ed, either way
+    // no new items should get through. There for last `state` is boxed with
+    // `reduced` and store as a `result` of this accumulation. Any subsequent
+    // attempts of providing values will just get it in return, hopefully
+    // causing source of value to get closed.
+    catch (error) {
+      result = reduced(state)
+      // Maybe we should console.error exceptions if such arise when calling
+      // `next` in the following line.
+      next(error, state)
+      return result
+    }
+  }, null)
 })
 
 function reducible(reduce) {
   return new Reducible(reduce)
 }
+reducible.type = Reducible
 
 module.exports = reducible
