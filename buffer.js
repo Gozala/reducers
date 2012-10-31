@@ -3,7 +3,7 @@
 var concat = require("./concat")
 var hub = require("./hub")
 var reducible = require("./reducible")
-var reduce = require("./reduce")
+var end = require("./end")
 var accumulate = require("./accumulate")
 
 function push(value, array) {
@@ -28,10 +28,11 @@ function buffer(input) {
   // Result is a concatenation of buffered values with rest of the source.
   var result = concat(buffered, source)
   return reducible(function reduceReducible(next, initial) {
-    // If end of stream `null` is already in a buffer, then just reduce it,
-    // otherwise reduce concatenation of buffered values and rest of the source.
-    return buffered.indexOf(null) >= 0 ? reduce(buffered, next, initial)
-                                       : reduce(result, next, initial)
+    // If `end` of stream is already in a buffer, then just reduce it,
+    // otherwise reduce concatenation of buffered values and rest of the
+    // source.
+    return buffered.indexOf(end) >= 0 ? accumulate(buffered, next, initial)
+                                      : accumulate(result, next, initial)
   })
 }
 

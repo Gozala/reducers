@@ -15,6 +15,7 @@ var delay = require("../delay")
 var flatten = require("../flatten")
 var capture = require("../capture")
 var map = require("../map")
+var end = require("../end")
 
 var when = require("eventual/when")
 
@@ -252,11 +253,11 @@ exports["test map hub"] = test(function(assert) {
   emit(s, 1)
   emit(s, 2)
   emit(s, 3)
-  emit(s, null)
+  emit(s, end)
 
   assert(actual, [ 1, 2, 3, 1, 2, 3, "x", 3 ],
          "hub dispatches on consumers")
 })
 
-if (module == require.main)
+if (require.main === module)
   require("test").run(exports)

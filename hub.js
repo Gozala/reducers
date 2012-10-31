@@ -4,17 +4,18 @@ var accumulate = require("./accumulate")
 var convert = require("./convert")
 var reduced = require("./reduced")
 var isReduced = require("./is-reduced")
+var end = require("./end")
 
 var input = "input@" + module.id
 var consumers = "consumers@" + module.id
 
-function end(consumers) {
+function drain(consumers) {
   while (consumers.length) {
     var count = consumers.length
     var index = 0
     while (index < count) {
       var consumer = consumers[index]
-      consumer.next(null, consumer.state)
+      consumer.next(end, consumer.state)
       index = index + 1
     }
     consumers.splice(0, count)
@@ -32,7 +33,7 @@ function dispatch(consumers, value) {
     // necessary).
     if (isReduced(state)) {
       consumers.splice(index, 1)
-      consumer.next(null, state.value)
+      consumer.next(end, state.value)
       // If consumer is removed than we decrease count as consumers array
       // will contain less elements (unless of course more elements were
       // added but we would like to ignore those).
@@ -51,7 +52,7 @@ function open(hub) {
   accumulate(source, function distribute(value) {
     // If it's end of the source we close all the reducers including
     // ones that subscribe as side effect.
-    if (value === null) end(reducers)
+    if (value === end) drain(reducers)
     // otherwise we dispatch value to all the registered reducers.
     else dispatch(reducers, value)
 

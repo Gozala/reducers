@@ -2,13 +2,13 @@
 
 var buffer = require("./buffer")
 var reducible = require("./reducible")
-var reduce = require("./reduce")
+var accumulate = require("./accumulate")
 
 function cache(input) {
   var result
   return reducible(function(next, initial) {
-    return result ? reduce(result, next, initial) :
-                    reduce(result = buffer(input), next, initial)
+    return result ? accumulate(result, next, initial) :
+                    accumulate(result = buffer(input), next, initial)
   })
 }
 

@@ -33,5 +33,5 @@ exports["test signal bufferring"] = function(assert, done) {
   })
 }
 
-if (module == require.main)
+if (require.main === module)
   require("test").run(exports)

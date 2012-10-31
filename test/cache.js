@@ -9,6 +9,7 @@ var signal = require("../signal")
 var emit = require("../emit")
 var cache = require("../cache")
 var delay = require("../delay")
+var end = require("../end")
 
 var when = require("eventual/when")
 
@@ -25,7 +26,7 @@ exports["test signal cacheing"] = test(function(assert) {
   emit(s, 2)
   emit(s, 3)
   emit(s, 4)
-  emit(s, null)
+  emit(s, end)
 
   assert.ok(signal.isClosed(s), "signal is closed")
   assert.deepEqual(into(value), [ 1, 2, 3, 4 ], "values are dispatched")

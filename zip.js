@@ -5,6 +5,7 @@ var reduced = require("./reduced")
 var isReduced = require("./is-reduced")
 var map = require("./map")
 var isError = require("./is-error")
+var end = require("./end")
 
 var slicer = Array.prototype.slice
 
@@ -18,7 +19,7 @@ function makeAccumulator(side) {
     if (state.closed)  return state.result
     // If this is an end of this stream, close a queue to indicate
     // no other value will be queued.
-    else if (value === null) {
+    else if (value === end) {
       if (isReduced(state)) return state
       queue.closed = true
       // If queue is empty, dispatch end of stream.
@@ -48,7 +49,7 @@ function makeAccumulator(side) {
           // values too.
           if (isReduced(result) || (buffer.closed && !buffer.length)) {
             // Dispatch end of stream and cleanup state attributes.
-            dispatch(null, result)
+            dispatch(end, result)
             state.left = state.right = state.next = null
             state.closed = true
             state.result = reduced(result)
