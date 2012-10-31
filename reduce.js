@@ -5,18 +5,18 @@ var defer = require("eventual/defer")
 var when = require("eventual/when")
 var accumulate = require("./accumulate")
 var isError = require("./is-error")
-var isReduced = require("./is-reduced")
-var reduced = require("./reduced")
+var end = require("./end")
 
-function reduce(source, f, state) {
+function reduce(source, next, initial) {
   var promise = defer()
-  accumulate(source, function reduce(value) {
-    if (value === null) return reduced(deliver(promise, state))
-    else if (isError(value)) return reduced(deliver(promise, value))
-    else if (isReduced(value)) return value
-    else return (state = f(state, value))
-  }, state)
-  return when(promise)
+  accumulate(source, function reduce(value, state) {
+    if (value === end) deliver(promise, state)
+    else if (isError(value)) deliver(promise, value)
+    else state = next(state, value)
+
+    return state
+  }, initial)
+  return when(promise, null, function(error) { return error })
 }
 
 module.exports = reduce
