@@ -68,7 +68,12 @@ accumulate.define(Reducible, function accumulate(reducible, next, initial) {
     // attempts of providing values will just get it in return, hopefully
     // causing source of value to get closed.
     catch (error) {
-      result = reduced(state)
+      if (isReduced(state)) {
+        result = state
+        state = result.value
+      } else {
+        result = reduced(state)
+      }
       // Maybe we should console.error exceptions if such arise when calling
       // `next` in the following line.
       next(error, state)

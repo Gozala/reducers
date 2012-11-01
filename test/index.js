@@ -23,4 +23,7 @@ exports["test pipe"] = require("./pipe")
 exports["test delay"] = require("./delay")
 exports["test reductions"] = require("./reductions")
 
+exports["test reduce"] = require("./reduce")
+
+
 require("test").run(exports)
