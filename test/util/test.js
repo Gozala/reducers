@@ -14,7 +14,7 @@ function test(unit) {
           assert.deepEqual(values, expected, comment)
           done()
         } else if (isError(actual)) {
-          assert.fail(actual)
+          assert.deepEqual({ values: values, error: actual }, expected, comment)
           done()
         } else if (isReduced(actual)) {
           return actual
