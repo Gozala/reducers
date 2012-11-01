@@ -23,5 +23,4 @@ exports["test pipe"] = require("./pipe")
 exports["test delay"] = require("./delay")
 exports["test reductions"] = require("./reductions")
 
-if (module == require.main)
-  require("test").run(exports)
+require("test").run(exports)
