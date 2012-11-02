@@ -24,10 +24,13 @@
   "devDependencies": {
     "test": ">=0.4.4",
     "repl-utils": ">=1.0.0",
-    "benchmark": ">=0.3.0"
+    "benchmark": ">=0.3.0",
+    "phantomify": "~0.x.0"
   },
   "scripts": {
-    "test": "node test/index.js",
+    "test": "npm run test-node && npm run test-browser",
+    "test-browser": "node ./node_modules/phantomify/bin/cmd.js ./test/index.js",
+    "test-node": "node ./test/index.js",
     "repl": "node node_modules/repl-utils",
     "benchmark": "node tests/benchmark.js"
   },
