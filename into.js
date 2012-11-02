@@ -7,7 +7,7 @@ function into(source, buffer) {
   Adds items of given `reducible` into
   given `array` or a new empty one if omitted.
   **/
-  return reduce(source, function(result, value) {
+  return reduce(source, function reduceInto(result, value) {
     result.push(value)
     return result
   }, buffer || [])

@@ -2,7 +2,6 @@
 
 var test = require("./util/test")
 var delay = require("../delay")
-var error = require("../error")
 var concat = require("../concat")
 var capture = require("../capture")
 var map = require("../map")
@@ -57,7 +56,7 @@ exports["test map with async stream"] = test(function(assert) {
 
 exports["test map broken stream"] = test(function(assert) {
   var boom = Error("Boom!")
-  var source = concat([3, 2, 1], error(boom))
+  var source = concat([3, 2, 1], boom)
   var mapped = map(delay(source), function(x) { return x * x })
   var actual = capture(mapped, function(error) { return error.message })
 

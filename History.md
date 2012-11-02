@@ -1,5 +1,31 @@
 # Changes
 
+## 0.5.0 / 2012-10-31
+
+  - Add integration for browser based testing using [phantomify][].
+  - Removed lots of low level APIs like `transform`, `trasformer`, `convert`
+    in favor of enhanced `reducible` that also takes care of collection
+    normalizations.
+  - Errors no longer require boxing, instances of `Error`-s are treated as
+    exceptions in a collection. Such collections are considered as broken &
+    after error no values will be dispatched. Also [emit](./emit.js)-ing
+    errors on [signal](./signal.js) / [channel](./channel.js) marks them
+    as broken.
+  - [End](./end.js) of stream no longer requires boxing, it's just a special
+    data value that indicates end of stream. Anything followed in a collection
+    passed that is ignored, also reducible's will ignore any subsequent values
+    and will return [reduced](./reduced.js) result to signal they've done
+    consuming.
+  - Adding missing test cases.
+  - Improvement to a `print` function that now also works in the browser.
+  - New low level utility function [reducer](./reducer.js) that is just a sugar
+    over [reducible](./reducible.js) that takes care of the boilerplate code
+    for stateless transformation functions.
+  - New [normalize](./normalize.js) utility function that can be used to wrap
+    collections that are not guaranteed to comply to API contracts. Resulting
+    collection is guaranteed to end or error only once and always pass in
+    accumulated value returned in a last iteration.
+
 ## 0.2.1 / 2012-10-30
 
   - Fix bug in [hub](./hub.js) implementation that was not multiplexing on
@@ -77,3 +103,5 @@
 
   - Initial release
 
+
+[phantomify]:https://github.com/Gozala/phantomify

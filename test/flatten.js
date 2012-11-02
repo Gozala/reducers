@@ -6,7 +6,6 @@ var lazy = require("./util/lazy")
 var concat = require("../concat")
 var into = require("../into")
 var delay = require("../delay")
-var error = require("../error")
 var capture = require("../capture")
 var map = require("../map")
 var expand = require("../expand")
@@ -55,7 +54,7 @@ exports["test flatten sync & async streams"] = test(function(assert) {
   assert(actual, ["|", "a", "b", 3, 3, 2, 2, 1, 1], "orders by time")
 })
 
-exports["test flatten sync & async streams"] = test(function(assert) {
+exports["test flatten sequential sync & async streams"] = test(function(assert) {
   var async = delay([3, 2, 1])
   var actual = flatten(sequential([async, ["|"], async, ["a", "b"], []]))
 
@@ -65,7 +64,7 @@ exports["test flatten sync & async streams"] = test(function(assert) {
 
 exports["test flatten with broken stream"] = test(function(assert) {
   var boom = Error("Boom!")
-  var async = delay(concat([3, 2, 1], error(boom)))
+  var async = delay(concat([3, 2, 1], boom))
   var flattened = flatten([[">"], async, [1, 2]])
   var actual = capture(flattened, function(error) {
     return error.message
@@ -76,7 +75,7 @@ exports["test flatten with broken stream"] = test(function(assert) {
 
 exports["test flatten with broken sequential stream"] = test(function(assert) {
   var boom = Error("Boom!")
-  var async = delay(concat([3, 2, 1], error(boom)))
+  var async = delay(concat([3, 2, 1], boom))
   var flattened = flatten(sequential([[">"], async, [1, 2]]))
   var actual = capture(flattened, function(error) {
     return error.message

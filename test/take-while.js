@@ -5,7 +5,6 @@ var lazy = require("./util/lazy")
 var concat = require("../concat")
 var delay = require("../delay")
 var capture = require("../capture")
-var error = require("../error")
 
 var takeWhile = require("../take-while")
 var into = require("../into")
@@ -115,7 +114,7 @@ exports["test take while on async stream"] = test(function(assert) {
 
 exports["test error propagation in to take while"] = test(function(assert) {
   var called = 0, boom = Error("boom!")
-  var source = concat([1, 2, 3, 4, 5], error(boom), [6, 7])
+  var source = concat([1, 2, 3, 4, 5], boom, [6, 7])
   var taken = takeWhile(source, function(n) {
     called = called + 1
     return n <= 9

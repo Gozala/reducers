@@ -1,6 +1,5 @@
 "use strict";
 
-var convert = require("./convert")
 var accumulate = require("./accumulate")
 var concat = require("./concat")
 var emit = require("./emit")
@@ -8,17 +7,19 @@ var emit = require("./emit")
 var queued = "queued@" + module.id
 var output = "output@" + module.id
 
+function Queue(target) {
+  this[output] = target
+  this[queued] = []
+}
+
 function isDrained(queue) {
   return !queue[queued]
 }
 
 function queue(target) {
-  var value = convert(target, queue.accumulate)
-  emit.implement(value, queue.emit)
-  value[output] = target
-  value[queued] = []
-  return value
+  return new Queue(target)
 }
+queue.type = Queue
 queue.emit = function(queue, value) {
   if (isDrained(queue))
     emit(queue[output], value)
@@ -27,7 +28,10 @@ queue.emit = function(queue, value) {
 }
 queue.accumulate = function(queue, next, initial) {
   accumulate(concat(queue[queued], queue[output]), next, initial)
-  queued = null
+  queue[queued] = null
 }
+
+accumulate.define(Queue, queue.accumulate)
+emit.define(Queue, queue.emit)
 
 module.exports = queue

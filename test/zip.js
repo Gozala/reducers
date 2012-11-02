@@ -3,7 +3,6 @@
 var zip = require("../zip")
 var into = require("../into")
 var concat = require("../concat")
-var error = require("../error")
 var capture = require("../capture")
 
 exports["test zip with empty"] = function(assert) {
@@ -35,7 +34,7 @@ exports["test zip sync stream with async stream"] = function(assert) {
 
 exports["test zip with late error"] = function(assert) {
   var boom = Error("boom")
-  var actual = zip(concat([3, 2, 1], error(boom)), ["a", "b", "c"])
+  var actual = zip(concat([3, 2, 1], boom), ["a", "b", "c"])
 
   assert.deepEqual(into(actual), [
     [ 3, "a" ],
@@ -46,7 +45,7 @@ exports["test zip with late error"] = function(assert) {
 
 exports["test zip with early error"] = function(assert) {
   var boom = Error("Boom!!")
-  var zipped = zip(concat([1, 2, 3], error(boom)), ["a", "b", "c", "d"])
+  var zipped = zip(concat([1, 2, 3], boom), ["a", "b", "c", "d"])
   var actual = capture(zipped, function(error) { return [ "error" ] })
 
   assert.deepEqual(into(actual), [
