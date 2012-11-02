@@ -1,7 +1,7 @@
 {
   "name": "reducers",
   "id": "reducers",
-  "version": "0.2.1",
+  "version": "0.5.0",
   "description": "A library for collection processing",
   "keywords": [
     "reducers", "reducible", "reduce", "data", "sequence", "stream",

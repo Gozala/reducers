@@ -2,6 +2,7 @@
 
 ## 0.5.0 / 2012-10-31
 
+  - Add integration for browser based testing using [phantomify][].
   - Removed lots of low level APIs like `transform`, `trasformer`, `convert`
     in favor of enhanced `reducible` that also takes care of collection
     normalizations.
@@ -102,3 +103,5 @@
 
   - Initial release
 
+
+[phantomify]:https://github.com/Gozala/phantomify
