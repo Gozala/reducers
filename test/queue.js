@@ -9,12 +9,11 @@ var emit = require("../emit")
 var close = require("../close")
 var queue = require("../queue")
 var when = require("eventual/when")
+var end = require("../end")
 
 exports["test queue before open"] = function(assert, done) {
   var c = signal()
   var q = queue(c)
-
-  assert.ok(!signal.isOpen(q), "queue is not open")
 
   emit(q, 1)
   emit(q, 2)
@@ -22,7 +21,8 @@ exports["test queue before open"] = function(assert, done) {
   var p = into(q)
 
   emit(q, 3)
-  close(q, 4)
+  emit(q, 4)
+  emit(q, end)
 
   when(p, function(actual) {
     assert.deepEqual(actual, [ 1, 2, 3, 4 ],
@@ -31,5 +31,5 @@ exports["test queue before open"] = function(assert, done) {
   })
 }
 
-if (module == require.main)
+if (require.main === module)
   require("test").run(exports)

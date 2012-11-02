@@ -16,7 +16,7 @@ exports["test signal bufferring"] = function(assert, done) {
   assert.ok(signal.isOpen(c), "buffer opens a signal")
 
   emit(c, 1)
-  emit(b, 2)
+  emit(c, 2)
 
   var p = reduce(b, function(result, value) {
     result.push(value)
@@ -33,5 +33,5 @@ exports["test signal bufferring"] = function(assert, done) {
   })
 }
 
-if (module == require.main)
+if (require.main === module)
   require("test").run(exports)

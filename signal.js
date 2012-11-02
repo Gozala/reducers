@@ -1,9 +1,9 @@
 "use strict";
 
-var Method = require("method")
 var accumulate = require("./accumulate")
+var reduced = require("./reduced")
+var isReduced = require("./is-reduced")
 var end = require("./end")
-var accumulated = require("./accumulated")
 var emit = require("./emit")
 var close = require("./close")
 
@@ -38,7 +38,7 @@ accumulate.define(Signal, function(signal, next, initial) {
   // Signals may only be reduced by one consumer function.
   // Other data types built on top of signal may allow for more consumers.
   if (isOpen(signal)) throw Error("Signal is being consumed")
-  if (isClosed(signal)) return next(end(), initial)
+  if (isClosed(signal)) return next(end, initial)
   signal[accumulator] = next
   signal[state] = initial
   return signal
@@ -49,10 +49,10 @@ emit.define(Signal, function(signal, value) {
   Emit a new value for signal.
   Throws an exception if the signal is not open for emitting.
   **/
-  if (isClosed(signal)) return accumulated()
+  if (isClosed(signal)) return reduced()
   if (!isOpen(signal)) throw Error("Signal is not open")
   var result = signal[accumulator](value, signal[state])
-  if (result && result.is === accumulated) {
+  if (isReduced(result)) {
     close(signal)
   } else {
     signal[state] = result
@@ -65,14 +65,14 @@ close.define(Signal, function(signal, value) {
   Close a signal, preventing new values from being emitted.
   Throws an exception if the signal is already closed.
   **/
-  if (isClosed(signal)) return accumulated()
+  if (isClosed(signal)) return reduced()
   if (value !== undefined) emit(signal, value)
   var result = signal[state]
   var next = signal[accumulator]
   signal[closed] = true
   signal[accumulator] = null
   signal[state] = null
-  next(end(), result)
+  next(end, result)
 
   return signal
 })

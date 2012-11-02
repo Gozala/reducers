@@ -1,10 +1,13 @@
 "use strict";
 
+var end = require("./end")
 var reduce = require("./reduce")
+var accumulate = require("./accumulate")
 var reducible = require("./reducible")
 var eventual = require("eventual/decorate")
+var when = require("eventual/when")
 
-var group = eventual(Array)
+var first = eventual(function(value) { return value })
 
 function flatten(source) {
   /**
@@ -17,16 +20,22 @@ function flatten(source) {
   sequential ordering by wrapping `source` into `sequential` before
   passing it to flatten.
 
-  print(flatten([ [1, 2], [ 3, 4 ] ]))  // => <stream 1 2 3 4 />
+  print(flatten([ [1, 2], [ 3, 4 ] ]))  // => < 1 2 3 4 />
   **/
-  return reducible(source, function(_, next, initial) {
-    return reduce(source, function(result, nested) {
+  return reducible(function(next, initial) {
+    // Result is accumulated into this outer variable as items from then
+    // nested collections can come in time based order so it won't be passed
+    // to in to reducer function.
+    var result = initial
+    var promise = reduce(source, function(promise, nested) {
       // we group results to make sure flattened stream won't finish until
       // all the streams are finished.
-      return group(result, reduce(nested, function(result, value) {
-        return next(result, value)
-      }, result))
-    }, initial)
+      return first(reduce(nested, function(_, value) {
+        result = next(value, result)
+        return result
+      }), promise)
+    }, source)
+    when(promise, function(value) { next(end, value) }, next)
   })
 }
 

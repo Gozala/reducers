@@ -4,7 +4,6 @@ var test = require("./util/test")
 var concat = require("../concat")
 var into = require("../into")
 var delay = require("../delay")
-var error = require("../error")
 var capture = require("../capture")
 var map = require("../map")
 var expand = require("../expand")
@@ -30,7 +29,7 @@ exports["test capture with a non-empty stream"] = test(function(assert) {
 
 exports["test error recovery"] = test(function(assert) {
   var boom = Error("Boom!")
-  var actual = capture(error(boom), function catcher(e) {
+  var actual = capture(boom, function catcher(e) {
     return [ "catch", e.message ]
   })
 
@@ -40,9 +39,9 @@ exports["test error recovery"] = test(function(assert) {
 exports["test errors can be ignored"] = test(function(assert) {
   var boom = Error("Boom!")
   var brax = Error("brax")
-  var source = concat(["h", "i"], error(boom))
+  var source = concat(["h", "i"], boom)
   var captured = capture(source, function cacher(e) {
-    return [e.message, error(brax)]
+    return [e.message, brax]
   })
   var actual = capture(captured, function(e) {
     return e.message
@@ -58,7 +57,7 @@ exports["test capture error every time"] = test(function(assert) {
   var boom = Error("Boom!!")
   var calls = 0
   var reason
-  var captured = capture(error(boom), function(error) {
+  var captured = capture(boom, function(error) {
     calls = calls + 1
     reason = error
     return
@@ -79,7 +78,7 @@ exports["test capture error every time"] = test(function(assert) {
 exports["test substitution is lazy"] = test(function(assert) {
   var calls = 0
   var boom = Error("boom")
-  var captured = capture([1, 2, 3, 4, error(boom)], function(error) {
+  var captured = capture([1, 2, 3, 4, boom], function(error) {
     calls = calls + 1
     return [5, 6, 7]
   })
@@ -100,7 +99,7 @@ exports["test substitution is lazy"] = test(function(assert) {
 
 exports["test ignore error"] = test(function(assert) {
   var boom = Error("Boom!")
-  var actual = capture([1, 2, 3, error(boom)], function() {})
+  var actual = capture([1, 2, 3, boom], function() {})
 
   assert(actual, [1, 2, 3], "if nothing returned stream is done")
 })

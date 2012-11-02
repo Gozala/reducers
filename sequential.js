@@ -1,8 +1,11 @@
 "use strict";
 
 var reducible = require("./reducible")
+var accumulate = require("./accumulate")
 var reduce = require("./reduce")
 var eventual = require("eventual/decorate")
+var when = require("eventual/when")
+var end = require("./end")
 
 function sequential(source) {
   /**
@@ -14,10 +17,11 @@ function sequential(source) {
   will buffer items that are delivered earlier then their order so keep
   that in mind and use it with extra care.
   **/
-  return reducible(source, function(_, next, initial) {
-    return reduce(source, eventual(function(result, value) {
+  return reducible(function reduceReducible(next, initial) {
+    var result = reduce(source, eventual(function(value, result) {
       return next(result, value)
     }), initial)
+    when(result, function(result) { next(end, result) }, next)
   })
 }
 

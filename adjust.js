@@ -1,7 +1,9 @@
 "use strict";
 
 var accumulate = require("./accumulate")
-var convert = require("./convert")
+var reducible = require("./reducible")
+var isError = require("./is-error")
+var end = require("./end")
 
 // THIS IS EXPERIMENTAL FUNCTION THAT MY GO AWAY IN A FUTURE
 
@@ -30,10 +32,12 @@ function adjust(source, f, initial) {
 
   // => [ 'Bite', 'my', 'shiny', 'metal', 'ass!' ]
   **/
-  return convert(source, function(self, next, result) {
+  return reducible(source, function(next, result) {
     var state = initial
     accumulate(source, function(value, result) {
-      if (value && value.isBoxed) return next(value, result)
+      // If value is either end of stream (null) or an error skip
+      // `f` transformer, just propagate.
+      if (value === end || isError(value)) return next(value, result)
       var pair = f(value, state)
       state = pair[1]
       return next(pair[0], result)

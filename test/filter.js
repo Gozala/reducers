@@ -6,7 +6,6 @@ var lazy = require("./util/lazy")
 var filter = require("../filter")
 var into = require("../into")
 var concat = require("../concat")
-var error = require("../error")
 var delay = require("../delay")
 var capture = require("../capture")
 
@@ -61,7 +60,7 @@ exports["test filter async stream"] = test(function(assert) {
 
 exports["test errors propagate"] = test(function(assert) {
   var boom = Error("Boom!")
-  var filtered = filter(delay(concat([3, 2, 1], error(boom))), function(n) {
+  var filtered = filter(delay(concat([3, 2, 1], boom)), function(n) {
     return n % 2
   })
   var actual = capture(filtered, function(e) { return e.message })

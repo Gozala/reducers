@@ -8,7 +8,6 @@ var dropWhile = require("../drop-while")
 var into = require("../into")
 var delay = require("../delay")
 var capture = require("../capture")
-var error = require("../error")
 
 
 exports["test drop while"] = function(assert) {
@@ -103,7 +102,7 @@ exports["test drop while on async stream"] = test(function(assert) {
 
 exports["test error propagation in drop.while"] = test(function(assert) {
   var called = 0, boom = Error("boom!")
-  var stream = concat([1, 2, 3, 4, 5], error(boom), [6, 7])
+  var stream = concat([1, 2, 3, 4, 5], boom, [6, 7])
   var dropped = dropWhile(stream, function(n) {
     called = called + 1
     return n <= 3

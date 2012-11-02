@@ -1,6 +1,6 @@
 "use strict";
 
-var convert = require("./convert")
+var reducible = require("./reducible")
 var accumulate = require("./accumulate")
 var end = require("./end")
 
@@ -11,10 +11,10 @@ function append(left, right) {
   Returns sequences of items in the `left` sequence followed by the
   items in the `right` sequence.
   **/
-  return convert({}, function(self, next, initial) {
+  return reducible(function(next, initial) {
     accumulate(left, function(value, result) {
-      return value && value.is === end ? accumulate(right, next, result) :
-                                         next(value, result)
+      return value === end ? accumulate(right, next, result) :
+             next(value, result)
     }, initial)
   })
 }

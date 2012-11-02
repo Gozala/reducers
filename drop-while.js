@@ -1,7 +1,9 @@
 "use strict";
 
-var transform = require("./transform")
-var transformer = require("./transformer")
+var reducible = require("./reducible")
+var accumulate = require("./accumulate")
+var isError = require("./is-error")
+var end = require("./end")
 
 function dropWhile(source, predicate) {
   /**
@@ -13,14 +15,24 @@ function dropWhile(source, predicate) {
   var numbers = dropWhile([ 2, 7, 10, 23 ], function(value) {
     return value < 10
   })
-  print(numbers)   // => <stream 10 23 />
+  print(numbers)   // => < 10 23 >
   **/
-  return transformer(source, function(source) {
-    var active = true
-    return transform(source, function(next, value, result) {
-      return active && (active = predicate(value)) ? result :
-                                                     next(value, result)
-    })
+  return reducible(function accumulateDropWhile(next, initial) {
+    var dropped = false
+    accumulate(source, function accumulateDropWhileSource(value, result) {
+      // If value is end of collection or is an error (which also includes
+      // end of collection) just pass it through, `reducible` will take care
+      // of everything.
+      if (value === end) return next(value, result)
+      if (isError(value)) return next(value, result)
+
+      // If already dropped all the intended items (if `dropped` is already
+      // being set to `true` or if current predicate returns `false`). Then
+      // just keep on passing values.
+      if (dropped || (dropped = !predicate(value))) return next(value, result)
+
+      return result
+    }, initial)
   })
 }
 

@@ -12,10 +12,10 @@ var close = require("../close")
 var hub = require("../hub")
 var concat = require("../concat")
 var delay = require("../delay")
-var error = require("../error")
 var flatten = require("../flatten")
 var capture = require("../capture")
 var map = require("../map")
+var end = require("../end")
 
 var when = require("eventual/when")
 
@@ -27,22 +27,17 @@ exports["test hub open / close propagate"] = function(assert, done) {
 
   assert.ok(!signal.isOpen(c), "signal is not open")
   assert.ok(!signal.isClosed(c), "signal is not closed")
-  assert.ok(!signal.isClosed(h), "hub is not closed")
-  assert.ok(!signal.isOpen(h), "hub is not opened")
 
   var p = into(h)
 
   assert.ok(signal.isOpen(c), "signal is open after reduce is called")
   assert.ok(!signal.isClosed(c), "signal is not closed until close is called")
-  assert.ok(signal.isOpen(h), "hub is open after reduce is called")
-  assert.ok(!signal.isClosed(h), "hub is not closed until close is called")
 
   emit(c, 1)
   emit(c, 2)
   close(c, 3)
 
   assert.ok(signal.isClosed(c), "signal closed")
-  assert.ok(signal.isClosed(h), "hub is closed")
 
   when(p, function(actual) {
     assert.deepEqual(actual, [ 1, 2, 3 ], "all value were propagated")
@@ -124,7 +119,7 @@ exports["test source is closed on last end"] = function(assert, done) {
   emit(c, 3)
   emit(c, 4)
 
-  assert.ok(signal.isClosed(h), "signal is closed once consumer is done")
+  assert.ok(signal.isClosed(c), "signal is closed once consumer is done")
 
   when(p1, function(actual) {
     assert.deepEqual(actual, [ 1 ], "#1 took 1 item")
@@ -145,7 +140,6 @@ exports["test reducing closed"] = function(assert, done) {
   var p1 = into(h)
 
   close(c, 0)
-  assert.ok(signal.isClosed(h), "hub is closed")
   assert.ok(signal.isClosed(c), "signal is closed")
 
   var p2 = into(h)
@@ -212,7 +206,7 @@ exports["test hub with async stream"] = test(function(assert) {
 exports["test hub with broken stream"] = test(function(assert) {
   var boom = Error("boom!")
   var source = hub(concat(delay([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 ]),
-                   error(boom)))
+                   boom))
 
   var transformed = concat(take(source, 3),
                       "-",
@@ -259,11 +253,11 @@ exports["test map hub"] = test(function(assert) {
   emit(s, 1)
   emit(s, 2)
   emit(s, 3)
-  emit(s, null)
+  emit(s, end)
 
   assert(actual, [ 1, 2, 3, 1, 2, 3, "x", 3 ],
          "hub dispatches on consumers")
 })
 
-if (module == require.main)
+if (require.main === module)
   require("test").run(exports)
