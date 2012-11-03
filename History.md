@@ -1,6 +1,6 @@
 # Changes
 
-## 0.5.0 / 2012-10-31
+## 1.0.0 / 2012-11-02
 
   - Add integration for browser based testing using [phantomify][].
   - Removed lots of low level APIs like `transform`, `trasformer`, `convert`
