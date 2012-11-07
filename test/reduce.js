@@ -97,5 +97,15 @@ exports["test reduce object"] = function(assert) {
   assert.equal(result, boom, "error is errored collection")
 }
 
+exports["test reducer thorws"] = function(assert) {
+  var result = reduce([ 1, 2, 3 ], function(state, value) {
+    if (value === 2) throw Error("I hate 2")
+    return state + value
+  }, 0)
+
+  assert.deepEqual(result, Error("I hate 2"),
+                   "Thrown erros in reduce error results")
+}
+
 if (require.main === module)
   require("test").run(exports)

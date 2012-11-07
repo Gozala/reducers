@@ -15,7 +15,8 @@ function reduce(source, next, initial) {
     if (value === end) return deliver(promise, state)
     else if (isError(value)) return deliver(promise, value)
 
-    state = next(state, value)
+    try { state = next(state, value) }
+    catch (error) { return deliver(promise, error), error }
 
     if (isReduced(state)) deliver(promise, state.value)
 
