@@ -98,13 +98,13 @@ exports["test reduce object"] = function(assert) {
 }
 
 exports["test reducer thorws"] = function(assert) {
+  var error = Error("I hate 2")
   var result = reduce([ 1, 2, 3 ], function(state, value) {
-    if (value === 2) throw Error("I hate 2")
+    if (value === 2) throw error
     return state + value
   }, 0)
 
-  assert.deepEqual(result, Error("I hate 2"),
-                   "Thrown erros in reduce error results")
+  assert.deepEqual(result, error,  "Thrown erros in reduce error results")
 }
 
 if (require.main === module)
