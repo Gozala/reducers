@@ -21,6 +21,7 @@ exports["test cache"] = require("./cache")
 exports["test pipe"] = require("./pipe")
 
 exports["test delay"] = require("./delay")
+exports["test lazy"] = require("./lazy")
 exports["test reductions"] = require("./reductions")
 
 exports["test reduce"] = require("./reduce")

@@ -54,3 +54,5 @@ exports.into = require("./into")
 // core
 exports.reducer = require("./reducer")
 exports.reducible = require("./reducible")
+exports.lazy = require("./lazy")
+
