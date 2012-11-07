@@ -1,5 +1,13 @@
 # Changes
 
+## 1.0.1 / 2012-11-06
+
+  - Define API for [lazy](./lazy.js) creation of reducibles.
+  - Improvements for [print][] function so that it could handle objects with
+    circular references.
+  - Fix [reduce][] so that errors thrown by handler are captured and cause
+    rejections in returned promise.
+
 ## 1.0.0 / 2012-11-02
 
   - Add integration for browser based testing using [phantomify][].
@@ -105,3 +113,5 @@
 
 
 [phantomify]:https://github.com/Gozala/phantomify
+[print]:./debug/print.js
+[reduce]:./reduce.js
