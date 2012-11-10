@@ -1,5 +1,9 @@
 # Changes
 
+## 1.0.3 / 2012-11-10
+
+  - Update dependencies
+
 ## 1.0.2 / 2012-11-09
 
   - Improve definition for `arguments` object.

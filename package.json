@@ -1,7 +1,7 @@
 {
   "name": "reducers",
   "id": "reducers",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A library for collection processing",
   "keywords": [
     "reducers",
@@ -25,12 +25,13 @@
     "url": "http://github.com/Gozala/reducers/issues/"
   },
   "dependencies": {
-    "method": "~0.1.1",
-    "eventual": ">=0.3.1"
+    "method": "~1.0.0",
+    "eventual": "~1.0.0",
+    "watchables": "~0.1.0"
   },
   "devDependencies": {
-    "test": ">=0.4.4",
-    "repl-utils": ">=1.0.0",
+    "test": "~0.5.2",
+    "repl-utils": "~2.0.1",
     "benchmark": ">=0.3.0",
     "phantomify": "~0.x.0"
   },
