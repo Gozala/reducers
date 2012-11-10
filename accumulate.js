@@ -49,7 +49,9 @@ accumulate.define(null, accumulate.empty)
 
 // Array and arguments implement accumulate for indexed sequences.
 accumulate.define(Array, accumulate.indexed)
-accumulate.define((function() { return arguments })(), accumulate.indexed)
+function Arguments() { return arguments }
+Arguments.prototype = Arguments()
+accumulate.define(Arguments, accumulate.indexed)
 
 // All other built-in data structures are treated as single value sequences
 // by default. Of course individual types may choose to override that.
