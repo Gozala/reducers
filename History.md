@@ -1,5 +1,9 @@
 # Changes
 
+## 1.0.2 / 2012-11-09
+
+  - Improve definition for `arguments` object.
+
 ## 1.0.1 / 2012-11-06
 
   - Define API for [lazy](./lazy.js) creation of reducibles.
