@@ -1,6 +1,7 @@
 # reducers
 
 [![Build Status](https://secure.travis-ci.org/Gozala/reducers.png)](http://travis-ci.org/Gozala/reducers)
+
 Library for higher-order manipulation of collections, based upon [reduce][].
 
 ## Rationale
@@ -11,12 +12,12 @@ logical collections and return transformed version of it. Unfortunately they
 tend to [complect][], by implying mechanism, order, laziness and
 representation. This library is attempts to provide simple solution for some of
 the hard problems by decomplecting and building upon simple premise -
-**minimum definition of collection is something that is reducible**.
+minimum definition of collection is something that is reducible.
 
 More specifically library defines super-generalized and minimal abstraction for
 collections - a collection is some set of things that, when given a function to
 apply to its contents, can do so and give you the result, i.e. a collection is
-(at minimum) *reducible*. In other words, you can call `reduce` on it.
+(at minimum) **reducible**. In other words, you can call `reduce` on it.
 
 A very minimal abstraction for collection is more powerful than it may seem at
 first!
@@ -25,19 +26,19 @@ first!
 
 Demonstration of features of this library requires some basic understanding of
 the abstraction above. So let's take a more practical look at the idea. There
-is a `reduce` function with **(very familiar)** API:
+is a `reduce` function with *(very familiar)* API:
 
-    ```js
-    reduce(f, source, initial) // => accumulated result
-    ```
+```js
+reduce(f, source, initial) // => accumulated result
+```
 
 It takes reducing function, a reducible `source` and `initial` value to
 accumulate reductions upon. In return it outputs an accumulated result.
 Reducing functions performing accumulation have a following shape:
 
-    ```js
-    f(result, value) // => new result
-    ```
+```js
+f(result, value) // => new result
+```
 
 A reducing function is simply a binary function, akin to the one you might pass
 to reduce. While the two arguments might be treated symmetrically by the
@@ -52,10 +53,10 @@ All of the collection operations can be expressed in terms of transformations.
 By the definition all transformations will produce **reducible** collections
 that can be reduced via `reduce` function defined above:
 
-    ```js
-    map(source, JSON.parse) // => reducible collection
-    filter(numbers, isEven) // => reducible collection
-    ```
+```js
+map(source, JSON.parse) // => reducible collection
+filter(numbers, isEven) // => reducible collection
+```
 
 In order to explain transformations we'll need a primitive API for producing
 **reducible** collections. Let's define one in form of `reducible` function
@@ -63,15 +64,15 @@ that takes `accumulator` function and returns something that can be reduced
 via `reduce` function:
 
 
-    ```js
-    reducible(accumulator) // => reducible
-    ```
+```js
+reducible(accumulator) // => reducible
+```
 
 Argument it takes, `accumulator` is a function that performs has following shape:
 
-    ```js
-    accumulate(next, initial) // => accumulated result
-    ```
+```js
+accumulate(next, initial) // => accumulated result
+```
 
 And when invoked it performs reductions via `next` reducing function starting
 from `initial` result.
@@ -80,23 +81,23 @@ from `initial` result.
 Now consider following implementation of `map` & `filter` transformation
 functions:
 
-    ```js
-    function map(f, source) {
-      return reducible(function accumulator(next, initial) {
-        return reduce(source, function reducer(result, input) {
-          return next(result, f(input))
-        }, initial)
-      })
-    }
+```js
+function map(f, source) {
+  return reducible(function accumulator(next, initial) {
+    return reduce(source, function reducer(result, input) {
+      return next(result, f(input))
+    }, initial)
+  })
+}
 
-    function filter(predicate, source) {
-      return reducible(function accumulator(next, initial) {
-        return reduce(source, function reducer(result, input) {
-          return predicate(input) ? next(result, input) : result
-        }, initial)
-      })
-    }
-    ```
+function filter(predicate, source) {
+  return reducible(function accumulator(next, initial) {
+    return reduce(source, function reducer(result, input) {
+      return predicate(input) ? next(result, input) : result
+    }, initial)
+  })
+}
+```
 
 There are a few things to note here:
 
@@ -169,7 +170,7 @@ data structures like [node streams][stream-reduce] or [FRP][] events & signals.
 
 This feature is extremely powerful as it allows structuring complex asynchronous
 programs in simple intuitive code without a [callback hell][] and manual error
-propagation. __See [lstree][] for examples__.
+propagation. _See [lstree][] for examples_.
 
 Even better actually exact same code can be used with both synchronous and
 asynchronous data structures. For example exact same code in [fs-reduce][]
