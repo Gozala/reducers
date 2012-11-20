@@ -2,7 +2,7 @@
   "name": "reducers",
   "id": "reducers",
   "version": "1.0.3",
-  "description": "A library for collection processing",
+  "description": "Library for higher-order manipulation of collections",
   "keywords": [
     "reducers",
     "reducible",
@@ -10,9 +10,12 @@
     "data",
     "sequence",
     "stream",
+    "collection",
     "transformation",
     "composable",
-    "async"
+    "async",
+    "signal",
+    "manipulation"
   ],
   "author": "Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)",
   "homepage": "https://github.com/Gozala/reducers",
