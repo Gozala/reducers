@@ -10,8 +10,8 @@ Most functional languages (including beloved JS) typically come with some
 collection transformation functions like [filter][] and [map][] that take a
 logical collections and return transformed version of it. Unfortunately they
 tend to [complect][], by implying mechanism, order, laziness and
-representation. This library is attempts to provide simple solution for some of
-the hard problems by decomplecting and building upon simple premise -
+representation. This library is an attempt to provide simple solution for
+some of the hard problems by decomplecting and building upon simple premise -
 minimum definition of collection is something that is reducible.
 
 More specifically library defines super-generalized and minimal abstraction for
@@ -29,7 +29,7 @@ the abstraction above. So let's take a more practical look at the idea. There
 is a `reduce` function with *(very familiar)* API:
 
 ```js
-reduce(f, source, initial) // => accumulated result
+reduce(source, f, initial) // => accumulated result
 ```
 
 It takes reducing function, a reducible `source` and `initial` value to
