@@ -40,12 +40,13 @@ exports["test multiple reads from async buffer"] = test(function(assert) {
 })
 
 exports["test errored buffer"] = test(function(assert) {
-  var source = [1, 2, 3, Error("boom"), 4, 5]
+  var boom = Error("boom")
+  var source = [1, 2, 3, boom, 4, 5]
   var actual = buffer(source)
 
   assert(actual, {
     values: [1, 2, 3],
-    error: Error("boom")
+    error: boom
   }, "errors propagate")
 })
 
