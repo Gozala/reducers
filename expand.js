@@ -1,6 +1,6 @@
 "use strict";
 
-var flatten = require("./flatten")
+var merge = require("./merge")
 var map = require("./map")
 
 function expand(source, f) {
@@ -19,7 +19,7 @@ function expand(source, f) {
   print(sequence)   // => <stream 1 1 2 4 3 9 />
 
   **/
-  return flatten(map(source, f))
+  return merge(map(source, f))
 }
 
 module.exports = expand

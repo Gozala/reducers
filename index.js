@@ -11,6 +11,7 @@ exports.reductions = require("./reductions")
 
 // Combining streams
 exports.concat = require("./concat")
+exports.merge = require("./merge")
 exports.zip = require("./zip")
 
 // Error handling

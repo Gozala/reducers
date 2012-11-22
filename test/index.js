@@ -8,6 +8,7 @@ exports["test drop"] = require("./drop")
 exports["test drop while"] = require("./drop-while")
 exports["test into"] = require("./into")
 exports["test concat"] = require("./concat")
+exports["test merge"] = require("./merge")
 exports["test zip"] = require("./zip")
 
 exports["test capture"] = require("./capture")
