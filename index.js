@@ -9,12 +9,8 @@ exports.filter = require("./filter")
 exports.map = require("./map")
 exports.reductions = require("./reductions")
 
-// Control flow
-exports.sequential = require("./sequential")
-
 // Combining streams
 exports.concat = require("./concat")
-exports.flatten = require("./flatten")
 exports.zip = require("./zip")
 
 // Error handling
@@ -28,17 +24,9 @@ exports.takeWhile = require("./take-while")
 exports.take = require("./take")
 
 // Buffering / caching / multiplexing
-exports.queue = require("./queue")
 exports.buffer = require("./buffer")
 exports.cache = require("./cache")
 exports.hub = require("./hub")
-
-// Events
-exports.signal = require("./signal")
-exports.channel = require("./channel")
-exports.emit = require("./emit")
-exports.close = require("./close")
-exports.pipe = require("./pipe")
 
 // helpers
 
@@ -54,5 +42,3 @@ exports.into = require("./into")
 // core
 exports.reducer = require("./reducer")
 exports.reducible = require("./reducible")
-exports.lazy = require("./lazy")
-
