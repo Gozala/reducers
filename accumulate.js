@@ -1,6 +1,6 @@
 "use strict";
 
-var Method = require("method")
+var method = require("method")
 
 var isReduced = require("./is-reduced")
 var isError = require("./is-error")
@@ -9,7 +9,7 @@ var end = require("./end")
 var Eventual = require("eventual/type")
 var when = require("eventual/when")
 
-var accumulate = Method()
+var accumulate = method("accumulate")
 
 // Implementation of accumulate for the empty sequences, that immediately
 // signals end of sequence.
