@@ -206,6 +206,18 @@ user events in form of reducibles that pretty much can be infinite.
 That being said reducibles are not the best abstraction for the some types of
 infinite data structures specially ones that rather better be polled instead.
 
+## F.A.Q.
+
+
+##### 1. Q: Can this handle "back pressure" ?  
+   
+**A:** Short answer is **Yes**.
+
+See [IO Coordination] for more detailed answer
+
+
+
+
 ## Install
 
     npm install reducers
@@ -237,3 +249,5 @@ infinite data structures specially ones that rather better be polled instead.
 [callback hell]:http://callbackhell.com/
 [fs-reduce]:https://github.com/Gozala/fs-reduce
 [lstree]:https://github.com/Gozala/callback-reduce
+
+[IO Coordination]:https://github.com/Gozala/reducers/wiki/IO-Coordination
