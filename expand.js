@@ -16,7 +16,7 @@ function expand(source, f) {
   var sequence = expand([ 1, 2, 3 ], function(x) {
     return [ x, x * x ]
   })
-  print(sequence)   // => <stream 1 1 2 4 3 9 />
+  print(sequence)   // => < 1 1 2 4 3 9 >
 
   **/
   return merge(map(source, f))
