@@ -1,9 +1,9 @@
 "use strict";
 
-var reducible = require("./reducible")
-var accumulate = require("./accumulate")
-var end = require("./end")
-var isError = require("./is-error")
+var reduce = require("reducible/reduce")
+var reducible = require("reducible/reducible")
+var end = require("reducible/end")
+var isError = require("reducible/is-error")
 
 function reductions(source, f, initial) {
   /**
@@ -17,9 +17,9 @@ function reductions(source, f, initial) {
   }, 0)
   print(numbers) // => < 1 2 3 4 >
   **/
-  return reducible(function reduceReducible(next, start) {
+  return reducible(function reduceReductions(next, start) {
     var state = initial
-    return accumulate(source, function reduceSource(value, result) {
+    return reduce(source, function reduceReductionsSource(value, result) {
       if (value === end) return next(end, result)
       if (isError(value)) return next(value, result)
       state = f(state, value)

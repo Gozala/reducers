@@ -1,8 +1,8 @@
 "use strict";
 
-var reducible = require("./reducible")
-var accumulate = require("./accumulate")
-var end = require("./end")
+var reducible = require("reducible/reducible")
+var reduce = require("reducible/reduce")
+var end = require("reducible/end")
 
 var slicer = Array.prototype.slice
 
@@ -11,9 +11,9 @@ function append(left, right) {
   Returns sequences of items in the `left` sequence followed by the
   items in the `right` sequence.
   **/
-  return reducible(function(next, initial) {
-    accumulate(left, function(value, result) {
-      return value === end ? accumulate(right, next, result) :
+  return reducible(function reduceConcatination(next, initial) {
+    reduce(left, function reduceLeft(value, result) {
+      return value === end ? reduce(right, next, result) :
              next(value, result)
     }, initial)
   })

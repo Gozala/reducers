@@ -1,5 +1,13 @@
 # Changes
 
+## 2.0.0 / 2012-11-23
+
+  - Factor out [reducible][https://github.com/Gozala/reducible] abstraction
+    into own package, that way we can avoid most of the API breaks.
+  - Remove most of the non-essential / not commonly used APIs.
+  - Remove **reduce** function in favor of [fold](./fold.js) with a more
+    useful API.
+
 ## 1.0.3 / 2012-11-10
 
   - Update dependencies

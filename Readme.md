@@ -25,8 +25,8 @@ first!
 ## Basics
 
 Demonstration of features of this library requires some basic understanding of
-the abstraction above. So let's take a more practical look at the idea. There
-is a `reduce` function with *(very familiar)* API:
+the abstraction above. So let's take a more practical look at the idea. Let's
+say we have a `reduce` function with *(very familiar)* API:
 
 ```js
 reduce(source, f, initial) // => accumulated result
@@ -121,7 +121,7 @@ concrete collection is produced. All the transformations defer actual work
 to a point where result of transformations pipeline is being reduced.
 
 The beautiful thing is that this mechanism also works for all other traditional
-transformations `take`, `drop`, `flatten` etc. Note the fact that `filter` is
+transformations `take`, `drop`, `merge` etc. Note the fact that `filter` is
 (potentially) contractive, and flatten is (potentially) expansive per step -
 the mechanism is general and not limited to 1:1 transformations.
 
