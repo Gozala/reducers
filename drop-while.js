@@ -1,9 +1,9 @@
 "use strict";
 
-var reducible = require("./reducible")
-var accumulate = require("./accumulate")
-var isError = require("./is-error")
-var end = require("./end")
+var reducible = require("reducible/reducible")
+var reduce = require("reducible/reduce")
+var isError = require("reducible/is-error")
+var end = require("reducible/end")
 
 function dropWhile(source, predicate) {
   /**
@@ -17,9 +17,9 @@ function dropWhile(source, predicate) {
   })
   print(numbers)   // => < 10 23 >
   **/
-  return reducible(function accumulateDropWhile(next, initial) {
+  return reducible(function reduceDropWhile(next, initial) {
     var dropped = false
-    accumulate(source, function accumulateDropWhileSource(value, result) {
+    reduce(source, function reduceDropWhileSource(value, result) {
       // If value is end of collection or is an error (which also includes
       // end of collection) just pass it through, `reducible` will take care
       // of everything.

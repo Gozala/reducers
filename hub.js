@@ -1,9 +1,9 @@
 "use strict";
 
-var accumulate = require("./accumulate")
-var reduced = require("./reduced")
-var isReduced = require("./is-reduced")
-var end = require("./end")
+var reduce = require("reducible/reduce")
+var reduced = require("reducible/reduced")
+var isReduced = require("reducible/is-reduced")
+var end = require("reducible/end")
 
 var input = "input@" + module.id
 var consumers = "consumers@" + module.id
@@ -16,7 +16,7 @@ function Hub(source) {
   this[consumers] = []
 }
 
-accumulate.define(Hub, function accumulate(hub, next, initial) {
+reduce.define(Hub, function reduceHub(hub, next, initial) {
   // Enqueue new consumer into consumers array so that new
   // values will be delegated to it.
   hub[consumers].push({ next: next, state: initial })
@@ -24,7 +24,6 @@ accumulate.define(Hub, function accumulate(hub, next, initial) {
   // start it up.
   if (!isOpen(hub)) open(hub)
 })
-
 
 function drain(consumers) {
   while (consumers.length) {
@@ -66,7 +65,7 @@ function open(hub) {
   var source = hub[input]
   var reducers = hub[consumers]
   hub[input] = null         // mark hub as open
-  accumulate(source, function distribute(value) {
+  reduce(source, function distribute(value) {
     // If it's end of the source we close all the reducers including
     // ones that subscribe as side effect.
     if (value === end) drain(reducers)

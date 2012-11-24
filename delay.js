@@ -1,17 +1,17 @@
 "use strict";
 
-var reducible = require("./reducible")
-var accumulate = require("./accumulate")
-var isReduced = require("./is-reduced")
-var end = require("./end")
+var reducible = require("reducible/reducible")
+var reduce = require("reducible/reduce")
+var isReduced = require("reducible/is-reduced")
+var end = require("reducible/end")
 
 function delay(source, ms) {
   ms = ms || 6 // Minimum 6ms, as on less dispatch order becomes unreliable
-  return reducible(function(next, result) {
+  return reducible(function reduceDelayed(next, result) {
     var timeout = 0
     var ended = false
-    accumulate(source, function(value) {
-      setTimeout(function() {
+    reduce(source, function reduceDelaySource(value) {
+      setTimeout(function delayed() {
         if (!ended) {
           timeout = timeout - ms
           result = next(value, result)

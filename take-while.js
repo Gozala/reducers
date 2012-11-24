@@ -1,7 +1,7 @@
 "use strict";
 
 var reducer = require("./reducer")
-var end = require("./end")
+var end = require("reducible/end")
 
 
 var takeWhile = reducer(function takeWhile(predicate, next, value, result) {

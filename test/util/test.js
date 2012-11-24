@@ -1,15 +1,15 @@
 "use strict";
 
-var accumulate = require("../../accumulate")
-var isError = require("../../is-error")
-var end = require("../../end")
-var isReduced = require("../../is-reduced")
+var reduce = require("reducible/reduce")
+var isError = require("reducible/is-error")
+var end = require("reducible/end")
+var isReduced = require("reducible/is-reduced")
 
 function test(unit) {
   return function(assertions, done) {
     function assert(actual, expected, comment) {
       var values = []
-      accumulate(actual, function(actual) {
+      reduce(actual, function(actual) {
         if (actual === end) {
           assert.deepEqual(values, expected, comment)
           done()

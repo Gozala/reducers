@@ -1,9 +1,9 @@
 "use strict";
 
-var accumulate = require("../accumulate")
-var reducible = require("../reducible")
-var end = require("../end")
-var isError = require("../is-error")
+var reduce = require("reducible/reduce")
+var reducible = require("reducible/reducible")
+var end = require("reducible/end")
+var isError = require("reducible/is-error")
 
 var PREFIX = "\u200B"
 var OPEN = PREFIX + "< "
@@ -32,7 +32,7 @@ var write = (function() {
 
 function print(source) {
   var open = false
-  accumulate(source, function printAccumulate(value) {
+  reduce(source, function reducePrintSource(value) {
     if (!open) write(OPEN)
     open = true
 
