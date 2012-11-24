@@ -1,8 +1,8 @@
 "use strict";
 
-var reducible = require("./reducible")
-var accumulate = require("./accumulate")
-var end = require("./end")
+var reducible = require("reducible/reducible")
+var reduce = require("reducible/reduce")
+var end = require("reducible/end")
 
 function take(source, n) {
   /**
@@ -20,11 +20,11 @@ function take(source, n) {
   // then just return `source` back.
   if (n === 0) return void(0)
   if (n < 0) return source
-  return reducible(function accumulateTake(next, initial) {
+  return reducible(function reduceTake(next, initial) {
     // Capture `n` into count, since modifying `n` directly will have side
     // effects on subsequent calls.
     var count = n
-    accumulate(source, function accumulateTakeSource(value, result) {
+    reduce(source, function reduceTakeSource(value, result) {
       count = count - 1
       result = next(value, result)
 

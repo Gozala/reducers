@@ -1,9 +1,9 @@
 "use strict";
 
-var accumulate = require("./accumulate")
-var reducible = require("./reducible")
-var end = require("./end")
-var isError = require("./is-error")
+var reduce = require("reducible/reduce")
+var reducible = require("reducible/reducible")
+var end = require("reducible/end")
+var isError = require("reducible/is-error")
 
 function merge(source) {
   /**
@@ -31,7 +31,7 @@ function merge(source) {
     }
 
 
-    accumulate(source, function accumulateMergeSource(nested) {
+    reduce(source, function accumulateMergeSource(nested) {
       // If there is an error or end of `source` collection just pass it
       // to `forward` it will take care of detecting weather it's error
       // or `end`. In later case it will also figure out if it's `end` of
@@ -42,7 +42,7 @@ function merge(source) {
       // `forward` that keeps track of all collections that are bing forwarded
       // to it.
       open = open + 1
-      accumulate(nested, forward, null)
+      reduce(nested, forward, null)
     }, initial)
   })
 }

@@ -9,18 +9,14 @@ exports["test drop while"] = require("./drop-while")
 exports["test into"] = require("./into")
 exports["test concat"] = require("./concat")
 exports["test merge"] = require("./merge")
-exports["test zip"] = require("./zip")
 
 exports["test capture"] = require("./capture")
 
 exports["test hub"] = require("./hub")
-exports["test buffer"] = require("./buffer")
-exports["test cache"] = require("./cache")
-
 
 exports["test delay"] = require("./delay")
 exports["test reductions"] = require("./reductions")
-exports["test reduce"] = require("./reduce")
+exports["test fold"] = require("./fold")
 
 
 require("test").run(exports)

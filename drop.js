@@ -1,9 +1,9 @@
 "use strict";
 
-var reducible = require("./reducible")
-var accumulate = require("./accumulate")
-var isError = require("./is-error")
-var end = require("./end")
+var reducible = require("reducible/reducible")
+var reduce = require("reducible/reduce")
+var isError = require("reducible/is-error")
+var end = require("reducible/end")
 
 function drop(source, n) {
   /**
@@ -20,9 +20,9 @@ function drop(source, n) {
   // return empty.
   if (n <= 0) return source
   if (n === Infinity) return void(0)
-  return reducible(function accumulateDrop(next, initial) {
+  return reducible(function reduceDrop(next, initial) {
     var count = n
-    accumulate(source, function accumulateDropSource(value, result) {
+    reduce(source, function reduceDropSource(value, result) {
       // If value is end of collection or is an error (which also includes
       // end of collection) just pass it through, `reducible` will take care
       // of everything.

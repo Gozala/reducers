@@ -1,8 +1,7 @@
 "use strict";
 
 // Consumption
-exports.reduce = require("./reduce")
-exports.accumulate = require("./accumulate")
+exports.fold = require("./fold")
 
 // Transformation
 exports.filter = require("./filter")
@@ -12,7 +11,6 @@ exports.reductions = require("./reductions")
 // Combining streams
 exports.concat = require("./concat")
 exports.merge = require("./merge")
-exports.zip = require("./zip")
 
 // Error handling
 exports.capture = require("./capture")
@@ -24,22 +22,12 @@ exports.drop = require("./drop")
 exports.takeWhile = require("./take-while")
 exports.take = require("./take")
 
-// Buffering / caching / multiplexing
-exports.buffer = require("./buffer")
-exports.cache = require("./cache")
+// Multiplexing / sharing transformations
 exports.hub = require("./hub")
 
-// helpers
-
-exports.end = require("./end")
-exports.reduced = require("./reduced")
-exports.isReduced = require("./is-reduced")
-exports.isError = require("./is-error")
-
-// development
+// Development / debug
 exports.print = require("./debug/print")
 exports.into = require("./into")
 
-// core
+// Transformation helper
 exports.reducer = require("./reducer")
-exports.reducible = require("./reducible")

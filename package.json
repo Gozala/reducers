@@ -1,7 +1,7 @@
 {
   "name": "reducers",
   "id": "reducers",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "Library for higher-order manipulation of collections",
   "keywords": [
     "reducers",
@@ -28,9 +28,9 @@
     "url": "http://github.com/Gozala/reducers/issues/"
   },
   "dependencies": {
-    "method": "~1.0.0",
     "eventual": "~1.0.0",
-    "watchables": "~0.1.0"
+    "watchables": "~0.1.0",
+    "reducible": "~1.0.0"
   },
   "devDependencies": {
     "test": "~0.5.2",

@@ -1,8 +1,8 @@
 "use strict";
 
-var reducible = require("../../reducible")
-var end = require("../../end")
-var isReduced = require("../../is-reduced")
+var reducible = require("reducible/reducible")
+var end = require("reducible/end")
+var isReduced = require("reducible/is-reduced")
 
 function event() {
   var self = reducible(function(next, initial) {

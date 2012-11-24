@@ -4,7 +4,7 @@ var test = require("./util/test")
 var event = require("./util/event")
 
 var take = require("../take")
-var reduce = require("../reduce")
+var fold = require("../fold")
 var expand = require("../expand")
 var into = require("../into")
 var hub = require("../hub")
@@ -13,7 +13,7 @@ var delay = require("../delay")
 var merge = require("../merge")
 var capture = require("../capture")
 var map = require("../map")
-var end = require("../end")
+var end = require("reducible/end")
 
 var when = require("eventual/when")
 

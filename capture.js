@@ -1,9 +1,9 @@
 "use strict";
 
-var reducible = require("./reducible")
-var accumulate = require("./accumulate")
-var reduced = require("./reduced")
-var isError = require("./is-error")
+var reducible = require("reducible/reducible")
+var reduce = require("reducible/reduce")
+var reduced = require("reducible/reduced")
+var isError = require("reducible/is-error")
 
 function capture(source, recover) {
   /**
@@ -13,16 +13,16 @@ function capture(source, recover) {
   that representing IO operations like (XHR / WebSockets etc...) where errors
   may occur.
   **/
-  return reducible(function(next, initial) {
+  return reducible(function reduceCapture(next, initial) {
     var failure = void(0)
-    accumulate(source, function(value, result) {
+    reduce(source, function reduceCaptureSource(value, result) {
       // If error has already being captured then return
       if (failure) return failure
       // If value is an error then continue accumulation of recovered
       // sequence.
       else if (isError(value)) {
         failure = reduced(result)
-        accumulate(recover(value, result), next, result)
+        reduce(recover(value, result), next, result)
         return failure
       }
       // Otherwise just forward messages.
