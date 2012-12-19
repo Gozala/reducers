@@ -28,7 +28,7 @@
     "url": "http://github.com/Gozala/reducers/issues/"
   },
   "dependencies": {
-    "reducible": "~1.0.0"
+    "reducible": "~1.x.0"
   },
   "devDependencies": {
     "test": "~0.5.2",
