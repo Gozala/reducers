@@ -181,3 +181,42 @@ exports["test intermidiate error in fold"] = function(assert) {
 
   assert.deepEqual(delivered, [1, 2, 3], "items before error are accumulated")
 }
+
+exports["test error values are thrown if they reach fold"] = function(assert) {
+  var boom = Error("Boom")
+  var source = [1, 2, 3, 4]
+  var input = map(source, function(value) {
+    return value === 3 ? boom :
+           value
+  })
+  var delivered = []
+
+  assert.throws(function() {
+    fold(input, function(value) {
+      delivered.push(value)
+    })
+  }, "Error values passed to fold are thrown")
+
+  assert.deepEqual(delivered, [1, 2], "items till error value are accumulated")
+}
+
+exports["test errors propagate through folds"] = function(assert) {
+  var boom = Error("Boom")
+  var source = event()
+
+  var result = fold(source, function(value, result) {
+    result.push(value)
+    return result
+  }, [])
+
+  source.send(1)
+  assert.throws(function() {
+    source.send(boom)
+  }, "Error is thrown by fold if error reaches it")
+
+  assert.throws(function() {
+    fold(result, function() {
+      assert.fail(Error("Should not be called"))
+    })
+  }, "Error is thrown by folding an errored fold")
+}

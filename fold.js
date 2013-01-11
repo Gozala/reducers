@@ -35,7 +35,10 @@ function fold(source, next, initial) {
   reduce(source, function fold(value, state) {
     // If source is `end`-ed deliver accumulated `state`.
     // If is source has an error, deliver that.
-    if (isError(value)) throw value
+    if (isError(value)) {
+      deliver(promise, value)
+      throw value
+    }
     if (value === end) return deliver(promise, state)
 
     // Accumulate new `state`
