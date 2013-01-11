@@ -88,6 +88,75 @@ exports["test error in recovery code"] = function(assert) {
   assert.deepEqual(delivered, [1, 2], "items yield before error reach fold")
 }
 
+exports["test error in the recovered stream"] = function(assert) {
+  var boom = Error("Boom")
+  var brax = Error("BraxXXx")
+
+  var captured = false
+  var delivered = []
+
+  var source = [1, 2, 3, 4]
+  var input = map(source, function(value) {
+    if (value > 2) throw boom
+    return value
+  })
+
+  var fixed = capture(input, function(error) {
+    captured = true
+    assert.equal(error, boom, "Error was captured")
+    return ["a", "b", brax, "c"]
+  })
+
+  assert.throws(function() {
+    fold(fixed, function(value, result) {
+      delivered.push(value)
+    }, [])
+  }, "Error in recovery collection are thrown if they reach fold")
+
+  assert.ok(capture, "Firs error was captured")
+  assert.deepEqual(delivered, [1, 2, "a", "b"],
+                   "items yield before error reach fold")
+}
+
+exports["test second recovery"] = function(assert) {
+  var boom = Error("Boom")
+  var brax = Error("BraxXXx")
+
+  var captured = false
+  var recaptured = false
+  var delivered = []
+
+  var source = [1, 2, 3, 4]
+  var input = map(source, function(value) {
+    if (value > 2) throw boom
+    return value
+  })
+
+  var fixed = capture(input, function(error) {
+    captured = true
+    assert.equal(error, boom, "Error was captured")
+    return ["a", "b", brax, "c"]
+  })
+
+  var mapped = map(fixed, function(x) { return x + "!" })
+
+  var final = capture(mapped, function(error) {
+    recaptured = true
+    assert.equal(error, brax, "Error was re-captured")
+    return "I give up"
+  })
+
+  var result = fold(final, function(value) {
+    delivered.push(value)
+  })
+
+  assert.ok(capture, "Firs error was captured")
+  assert.ok(recaptured, "Second error was captured")
+
+  assert.deepEqual(delivered, ["1!", "2!", "a!", "b!", "I give up"],
+                   "items yield before error reach fold")
+}
+
 exports["test error in fold"] = function(assert) {
   var input = [1, 2, 3, 4]
 
