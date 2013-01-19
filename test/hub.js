@@ -15,18 +15,16 @@ var capture = require("../capture")
 var map = require("../map")
 var end = require("reducible/end")
 
-var when = require("eventual/when")
-
 function lazy(f) { return expand(1, f) }
 
-exports["test hub open / close propagate"] = function(assert, done) {
+exports["test hub open / close propagate"] = test(function(assert) {
   var c = event()
   var h = hub(c)
 
   assert.ok(!c.isOpen, "event is not open")
   assert.ok(!c.isEnded, "event is not ended")
 
-  var p = into(h)
+  var actual = into(h)
 
   assert.ok(c.isOpen, "event is open after reduce is called")
   assert.ok(!c.isEnded, "event is not closed until close is called")
@@ -38,13 +36,10 @@ exports["test hub open / close propagate"] = function(assert, done) {
 
   assert.ok(c.isEnded, "event ended")
 
-  when(p, function(actual) {
-    assert.deepEqual(actual, [ 1, 2, 3 ], "all value were propagated")
-    done()
-  })
-}
+  assert(actual, [1, 2, 3], "all value were propagated")
+})
 
-exports["test multiple subscribtion"] = function(assert, done) {
+exports["test multiple subscribtion"] = test(function(assert) {
   var c = event()
   var h = hub(c)
   var p1 = into(h)
@@ -63,43 +58,32 @@ exports["test multiple subscribtion"] = function(assert, done) {
 
   c.send(end)
 
-  when(p1, function(actual) {
-    assert.deepEqual(actual, [ 1, 2, 3 ], "first consumer get all messages")
-    when(p2, function(actual) {
-      assert.deepEqual(actual, [ 1, 2, 3],
-                       "second consumer get all messages")
-      when(p3, function(actual) {
-        assert.deepEqual(actual, [ 2, 3 ],
-                         "late consumer gets no prior messages")
-        when(p4, function(actual) {
-          assert.deepEqual(actual, [],
-                           "gets no messages if no messages emitd")
-          done()
-        })
-      })
-    })
-  })
-}
+  var actual = concat("p1", p1, "p2", p2, "p3", p3, "p4", p4)
 
-exports["test source is closed on end"] = function(assert, done) {
+  assert(actual, [
+    "p1", 1, 2, 3,
+    "p2", 1, 2, 3,
+    "p3", 2, 3,
+    "p4"
+  ], "reduce accumulates values send after reduce is called")
+})
+
+exports["test source is closed on end"] = test(function(assert) {
   var c = event()
   var h = hub(c)
   var t = take(h, 2)
 
-  var p = into(t)
+  var actual = into(t)
 
   c.send(1)
   c.send(2)
 
   assert.ok(c.isReduced, "event is closed once consumer is done")
 
-  when(p, function(actual) {
-    assert.deepEqual(actual, [ 1, 2 ], "value propagated")
-    done()
-  })
-}
+  assert(actual, [ 1, 2 ], "value propagated")
+})
 
-exports["test source is closed on last end"] = function(assert, done) {
+exports["test source is closed on last end"] = test(function(assert) {
   var c = event()
   var h = hub(c)
   var t1 = take(h, 1)
@@ -120,17 +104,13 @@ exports["test source is closed on last end"] = function(assert, done) {
 
   assert.ok(c.isReduced, "event reduced")
 
-  when(p1, function(actual) {
-    assert.deepEqual(actual, [ 1 ], "#1 took 1 item")
-    when(p2, function(actual) {
-      assert.deepEqual(actual, [ 1, 2 ], "#2 took 2 items")
-      when(p3, function(actual) {
-        assert.deepEqual(actual, [ 2, 3, 4 ], "#3 took 3 items")
-        done()
-      })
-    })
-  })
-}
+  var actual = concat("#1", p1, "#2", p2, "#3", p3)
+  assert(actual, [
+    "#1", 1,
+    "#2", 1, 2,
+    "#3", 2, 3, 4
+  ], "take picks items from where reduce accumulates")
+})
 
 exports["test hub with non signals"] = function(assert) {
   assert.equal(hub(null), null, "null is considered to be a hub")

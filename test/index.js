@@ -18,5 +18,6 @@ exports["test delay"] = require("./delay")
 exports["test reductions"] = require("./reductions")
 exports["test fold"] = require("./fold")
 
+exports["test errors"] = require("./errors")
 
 require("test").run(exports)
