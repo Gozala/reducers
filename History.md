@@ -2,6 +2,7 @@
 
 ## 3.0.0 / 2013-01-19
 
+  - Remove dependency on global `setTimeout`.
   - Change fold such that errors that reach it are thrown.
   - remove dependency on [eventual](https://github.com/Gozala/eventual) &
     [watchables](https://github.com/Gozala/watchables)
