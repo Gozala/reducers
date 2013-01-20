@@ -23,11 +23,11 @@ exports["test reduced early"] = function(assert) {
 
 exports["test fold errored"] = function(assert) {
   var boom = Error("Boom!")
-  var result = fold([ 1, 2, boom ], function(value, state) {
-    return state + value
-  }, 0)
-
-  assert.equal(result, boom, "errors propagate")
+  assert.throws(function() {
+    fold([ 1, 2, boom ], function(value, state) {
+      return state + value
+    }, 0)
+  }, /Boom!/, "fold throws any propagated errors")
 }
 
 exports["test fold late error"] = function(assert) {
@@ -80,7 +80,7 @@ exports["test fold number"] = function(assert) {
 }
 
 exports["test fold object"] = function(assert) {
-  var result = fold({}, function(state, value) {
+  var result = fold({}, function(value, state) {
     return state + value
   }, "hello ")
 
@@ -90,21 +90,21 @@ exports["test fold object"] = function(assert) {
 
 exports["test fold object"] = function(assert) {
   var boom = Error("Boom!")
-  var result = fold(boom, function(value, state) {
-    return state + value
-  }, "hello ")
-
-  assert.equal(result, boom, "error is errored collection")
+  assert.throws(function() {
+    fold(boom, function(value, state) {
+      return state + value
+    }, "hello ")
+  }, /Boom!/, "fold throws errors")
 }
 
 exports["test reducer thorws"] = function(assert) {
   var error = Error("I hate 2")
-  var result = fold([ 1, 2, 3 ], function(value, state) {
-    if (value === 2) throw error
-    return state + value
-  }, 0)
-
-  assert.deepEqual(result, error,  "Thrown erros in reduce error results")
+  assert.throws(function() {
+    fold([ 1, 2, 3 ], function(value, state) {
+      if (value === 2) throw error
+      return state + value
+    }, 0)
+  }, /I hate 2/, "thrown errors propagate")
 }
 
 if (require.main === module)
