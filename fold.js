@@ -4,22 +4,24 @@ var reduce = require("reducible/reduce")
 var isError = require("reducible/is-error")
 var isReduced = require("reducible/is-reduced")
 var end = require("reducible/end")
+var hub = require("./hub")
 
-var Eventual = require("eventual/type")
-var deliver = require("eventual/deliver")
-var defer = require("eventual/defer")
-var when = require("eventual/when")
-
-
-// All eventual values are reduced same as the values they realize to.
-reduce.define(Eventual, function reduceEventual(eventual, next, initial) {
-  return when(eventual, function delivered(value) {
-    return reduce(value, next, initial)
-  }, function failed(error) {
-    next(error, initial)
-    return error
-  })
+function Promise() {
+  this.delivered = false
+  this.next = void(0)
+  this.initial = void(0)
+}
+reduce.define(Promise, function reducePromise(promise, next, initial) {
+  if (promise.delivered) return reduce(promise.value, next, initial)
+  promise.next = next
+  promise.initial = initial
 })
+
+function deliver(promise, value) {
+  promise.delivered = true
+  promise.value = value
+  if (promise.next) reduce(value, promise.next, promise.initial)
+}
 
 
 function fold(source, next, initial) {
@@ -29,27 +31,25 @@ function fold(source, next, initial) {
   but not always accumulated one. To avoid conflict with array `reduce` we
   have a `fold`.
   **/
-  var promise = defer()
+  var promise = new Promise()
   reduce(source, function fold(value, state) {
     // If source is `end`-ed deliver accumulated `state`.
-    if (value === end) return deliver(promise, state)
     // If is source has an error, deliver that.
-    else if (isError(value)) return deliver(promise, value)
+    if (isError(value)) {
+      deliver(promise, value)
+      throw value
+    }
+    if (value === end) return deliver(promise, state)
 
     // Accumulate new `state`
-    try { state = next(value, state) }
-    // If exception is thrown at accumulation deliver thrown error.
-    catch (error) { return deliver(promise, error) }
-
+    state = next(value, state)
     // If already reduced, then deliver.
     if (isReduced(state)) deliver(promise, state.value)
 
     return state
   }, initial)
 
-  // Wrap in `when` in case `promise` is already delivered to return an
-  // actual value.
-  return when(promise)
+  return promise.delivered ? promise.value : hub(promise)
 }
 
 module.exports = fold
