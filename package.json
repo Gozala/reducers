@@ -33,15 +33,45 @@
   "devDependencies": {
     "test": "~0.5.2",
     "repl-utils": "~2.0.1",
-    "benchmark": ">=0.3.0",
-    "phantomify": "~0.x.0"
+    "phantomify": "~0.x.0",
+    "retape": "~0.x.0",
+    "tape": "~0.1.5"
   },
   "scripts": {
-    "test": "npm run test-node && npm run test-browser",
-    "test-browser": "node ./node_modules/phantomify/bin/cmd.js ./test/index.js",
-    "test-node": "node ./test/index.js",
-    "repl": "node node_modules/repl-utils",
-    "benchmark": "node test/benchmark.js"
+    "benchmark": "node test/benchmark.js",
+    "test": "npm run test-node && npm run test-browser && npm run test-tap",
+    "test-browser": "node ./node_modules/phantomify/bin/cmd.js ./test/common-index.js",
+    "test-node": "node ./test/common-index.js",
+    "test-tap": "node ./test/tap-index.js"
+  },
+  "testling": {
+    "files": "test/tap-index.js",
+    "browsers": {
+      "iexplore": [
+        9
+      ],
+      "chrome": [
+        16,
+        20,
+        25,
+        "canary"
+      ],
+      "firefox": [
+        10,
+        15,
+        16,
+        17,
+        18,
+        "nightly"
+      ],
+      "safari": [
+        5,
+        6
+      ],
+      "opera": [
+        12
+      ]
+    }
   },
   "licenses": [
     {

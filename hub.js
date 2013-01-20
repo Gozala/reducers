@@ -93,7 +93,7 @@ function hub(source) {
   be consumed by many reducers.
   **/
   if (source === null) return null
-  if (source === void(0)) return null
+  if (source === void(0)) return void(0)
   return new Hub(source)
 }
 hub.isOpen = isOpen

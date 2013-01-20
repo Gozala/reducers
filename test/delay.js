@@ -24,6 +24,3 @@ exports["test sequence of numbers"] = test(function(assert) {
   assert(actual, [1, 2, 3, 4, true], "dealy made stream async")
   async = true
 })
-
-if (module == require.main)
-  require("test").run(exports)

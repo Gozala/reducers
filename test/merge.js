@@ -69,7 +69,3 @@ exports["test merge async stream of streams"] = test(function(assert) {
 
   assert(actual, [1, 2, "a", "b", 3, 3, 2, 2, 1, 1], "mixed stream works")
 })
-
-
-if (module == require.main)
-  require("test").run(exports)

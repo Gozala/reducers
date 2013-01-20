@@ -5,6 +5,10 @@ var isError = require("reducible/is-error")
 var end = require("reducible/end")
 var isReduced = require("reducible/is-reduced")
 
+function Assertor(owner, assert) {
+  return function() { return assert.apply(owner, arguments) }
+}
+
 function test(unit) {
   return function(assertions, done) {
     function assert(actual, expected, comment) {
@@ -25,7 +29,12 @@ function test(unit) {
       })
     }
 
-    for (var key in assertions) assert[key] = assertions[key].bind(assertions)
+    for (var key in assertions) {
+      var assertor = assertions[key]
+      if (typeof(assertor) === "function") {
+        assert[key] = Assertor(assertions, assertor)
+      }
+    }
 
     unit(assert)
   }

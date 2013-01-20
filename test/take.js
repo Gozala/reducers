@@ -77,6 +77,3 @@ exports["test error propagation"] = test(function(assert) {
 
   assert(actual, [3, 2, 1, boom.message], "errors with-in take range propagate")
 })
-
-if (module == require.main)
-  require("test").run(exports)

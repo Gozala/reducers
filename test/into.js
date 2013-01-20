@@ -17,6 +17,3 @@ exports["test into buffer"] = function(assert) {
   assert.deepEqual(buffer, [ 0, 1, 2, 3 ],
                    "pre-existing items in buffer are kept")
 }
-
-if (module == require.main)
-  require("test").run(exports)

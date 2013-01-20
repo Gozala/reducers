@@ -2,6 +2,11 @@
 
 [![Build Status](https://secure.travis-ci.org/Gozala/reducers.png)](http://travis-ci.org/Gozala/reducers)
 
+
+[![Browser support](http://ci.testling.com/Gozala/reducers.png)](http://ci.testling.com/Gozala/reducers)
+
+
+
 Library for higher-order manipulation of collections, based upon [reduce][].
 
 ## Rationale

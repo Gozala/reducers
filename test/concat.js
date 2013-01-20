@@ -99,6 +99,3 @@ exports["test concat sequence & error & sequence"] = test(function(assert) {
 
   assert(actual, [1, 2, 3, boom.message], "sequence has an error")
 })
-
-if (module == require.main)
-  require("test").run(exports)

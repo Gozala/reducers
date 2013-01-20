@@ -128,7 +128,3 @@ exports["test error propagation in to take while"] = test(function(assert) {
 
   assert(actual, [1, 2, 3, 4, 5, boom.message, "x", 5], "called until error")
 })
-
-
-if (module == require.main)
-  require("test").run(exports)

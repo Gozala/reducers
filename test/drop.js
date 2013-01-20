@@ -83,7 +83,3 @@ exports["test drop on stream with error in head"] = test(function(assert) {
 
   assert(actual, [boom.message], "attempt to drop on early errors")
 })
-
-
-if (require.main === module)
-  require("test").run(exports)

@@ -113,6 +113,3 @@ exports["test error propagation in drop.while"] = test(function(assert) {
 
   assert(actual, [4, 5, boom.message, 4], "called until error ocurred")
 })
-
-if (require.main === module)
-  require("test").run(exports)
