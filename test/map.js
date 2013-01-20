@@ -62,6 +62,3 @@ exports["test map broken stream"] = test(function(assert) {
 
   assert(actual, [9, 4, 1, boom.message], "errors propagate")
 })
-
-if (require.main === module)
-  require("test").run(exports)

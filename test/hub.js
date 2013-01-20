@@ -217,6 +217,3 @@ exports["test map hub"] = test(function(assert) {
   assert(actual, [ 1, 2, 3, 1, 2, 3, "x", 3 ],
          "hub dispatches on consumers")
 })
-
-if (require.main === module)
-  require("test").run(exports)

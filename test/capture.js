@@ -103,6 +103,3 @@ exports["test ignore error"] = test(function(assert) {
 
   assert(actual, [1, 2, 3], "if nothing returned stream is done")
 })
-
-if (require.main === module)
-  require("test").run(exports)

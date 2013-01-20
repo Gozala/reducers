@@ -100,6 +100,3 @@ exports["test reductions over broken"] = test(function(assert) {
 
   assert(actual, [1, 2, 3, 4, boom.message, "x", 4], "reductions over broken")
 })
-
-if (require.main === module)
-  require("test").run(exports)

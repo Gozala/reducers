@@ -106,6 +106,3 @@ exports["test reducer thorws"] = function(assert) {
     }, 0)
   }, /I hate 2/, "thrown errors propagate")
 }
-
-if (require.main === module)
-  require("test").run(exports)

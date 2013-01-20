@@ -2,6 +2,7 @@
 
 ## 3.0.0 / 2013-01-19
 
+  - Add testling integration tests.
   - Remove dependency on global `setTimeout`.
   - Change fold such that errors that reach it are thrown.
   - remove dependency on [eventual](https://github.com/Gozala/eventual) &
@@ -138,3 +139,5 @@
 [phantomify]:https://github.com/Gozala/phantomify
 [print]:./debug/print.js
 [reduce]:./reduce.js
+[testling-ci]:http://ci.testling.com/
+
