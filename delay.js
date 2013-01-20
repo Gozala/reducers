@@ -4,7 +4,6 @@ var reducible = require("reducible/reducible")
 var reduce = require("reducible/reduce")
 var isReduced = require("reducible/is-reduced")
 var end = require("reducible/end")
-var setTimeout = require("timers").setTimeout
 
 function delay(source, ms) {
   ms = ms || 6 // Minimum 6ms, as on less dispatch order becomes unreliable
