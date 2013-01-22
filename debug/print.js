@@ -8,7 +8,7 @@ var isError = require("reducible/is-error")
 var PREFIX = "\u200B"
 var DELIMITER = PREFIX + " "
 var OPEN = PREFIX + "<---" 
-var CLOSE = PREFIX + "--->" 
+var CLOSE = PREFIX + "--->\n"
 var ERROR = PREFIX + "\u26A1 "
 
 var SPECIALS = [ OPEN, CLOSE, ERROR, DELIMITER ]
@@ -36,7 +36,7 @@ function print(source, delimiter) {
   delimiter = delimiter || DELIMITER
   
   reduce(source, function reducePrintSource(value) {
-    if (!open) write(OPEN)
+    if (!open) write(OPEN, DELIMITER)
     open = true
 
     if (value === end) write(CLOSE)
