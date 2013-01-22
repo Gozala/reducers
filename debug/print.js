@@ -6,10 +6,10 @@ var end = require("reducible/end")
 var isError = require("reducible/is-error")
 
 var PREFIX = "\u200B"
-var OPEN = PREFIX + "< "
-var CLOSE = PREFIX + ">\n"
+var OPEN = PREFIX + "<--------"
+var CLOSE = PREFIX + "-------->"
 var ERROR = PREFIX + "\u26A1 "
-var DELIMITER = PREFIX + " "
+var DELIMITER = PREFIX + "\n"
 
 var SPECIALS = [ OPEN, CLOSE, ERROR, DELIMITER ]
 
@@ -33,10 +33,10 @@ var write = (function() {
 function print(source) {
   var open = false
   reduce(source, function reducePrintSource(value) {
-    if (!open) write(OPEN)
+    if (!open) write(OPEN, DELIMITER)
     open = true
 
-    if (value === end) write(CLOSE)
+    if (value === end) write(CLOSE, DELIMITER)
     else if (isError(value)) write(ERROR, value, DELIMITER, CLOSE)
     else write(value, DELIMITER)
   })
