@@ -7,11 +7,11 @@ var isError = require("reducible/is-error")
 
 var PREFIX = "\u200B"
 var DELIMITER = PREFIX + " "
-var OPEN = PREFIX + "<---" 
+var OPEN = PREFIX + "<---"
 var CLOSE = PREFIX + "--->\n"
 var ERROR = PREFIX + "\u26A1 "
 
-var SPECIALS = [ OPEN, CLOSE, ERROR, DELIMITER ]
+var SPECIALS = [ OPEN, CLOSE, ERROR, DELIMITER, " ", "\n" ]
 
 var write = (function() {
   if (typeof(process) !== "undefined" &&
@@ -32,17 +32,18 @@ var write = (function() {
 
 function print(source, delimiter) {
   var open = false
-  
+
   delimiter = delimiter || DELIMITER
-  
+
   reduce(source, function reducePrintSource(value) {
-    if (!open) write(OPEN, DELIMITER)
+    if (!open) write(OPEN, delimiter)
     open = true
 
     if (value === end) write(CLOSE)
-    else if (isError(value)) write(ERROR, value, DELIMITER, CLOSE)
-    else write(value, DELIMITER)
+    else if (isError(value)) write(ERROR, value, delimiter, CLOSE)
+    else write(value, delimiter)
   })
+  return source
 }
 
 module.exports = print
