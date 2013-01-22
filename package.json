@@ -46,7 +46,8 @@
     "files": "test/tap-index.js",
     "browsers": {
       "iexplore": [
-        9
+        9,
+        10
       ],
       "chrome": [
         16,
