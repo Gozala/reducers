@@ -40,6 +40,7 @@ function print(source) {
     else if (isError(value)) write(ERROR, value, DELIMITER, CLOSE)
     else write(value, DELIMITER)
   })
+  return source
 }
 
 module.exports = print
