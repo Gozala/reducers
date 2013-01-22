@@ -7,8 +7,8 @@ var isError = require("reducible/is-error")
 
 var PREFIX = "\u200B"
 var DELIMITER = PREFIX + " "
-var OPEN = PREFIX + "<---"
-var CLOSE = PREFIX + "--->\n"
+var OPEN = PREFIX + "< "
+var CLOSE = PREFIX + ">\n"
 var ERROR = PREFIX + "\u26A1 "
 
 var SPECIALS = [ OPEN, CLOSE, ERROR, DELIMITER, " ", "\n" ]
