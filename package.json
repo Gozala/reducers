@@ -27,7 +27,7 @@
   "bugs": {
     "url": "http://github.com/Gozala/reducers/issues/"
   },
-  "dependencies": {
+  "peerDependencies": {
     "reducible": "~1.x.0"
   },
   "devDependencies": {
