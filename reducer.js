@@ -43,7 +43,7 @@ function reducer(process) {
         return value === end ? next(value, result) :
                isError(value) ? next(value, result) :
                process(options, next, value, result)
-      })
+      }, initial)
     })
   }
 }
